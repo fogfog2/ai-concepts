@@ -1,5 +1,5 @@
 {
-  "note": "catalog.py 가 단일 출처 — 직접 편집하지 말 것.",
+  "note": "catalog.py 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
   "stages": [
     {
       "id": "basics",
