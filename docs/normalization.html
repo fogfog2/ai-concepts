@@ -1,0 +1,441 @@
+<title>Normalization — 분포를 붙잡아 학습을 안정시키다</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">Normalization</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #eaedef;
+    --panel: #dfe3e6;
+    --ink: #12171a;
+    --ink-soft: #4b555c;
+    --ink-faint: #7e888f;
+    --rule: #c8ced3;
+    --rule-strong: #a6adb4;
+    --accent: #b05416;
+    --accent-fill: #f2ddc9;
+    --accent-line: #cd7834;
+    --muted: #6d7f8a;
+    --muted-fill: #d6dce0;
+    --warn: #96343f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #0d1114;
+    --panel: #151a1e;
+    --ink: #e3e8eb;
+    --ink-soft: #a2adb4;
+    --ink-faint: #6d7880;
+    --rule: #232a2f;
+    --rule-strong: #384249;
+    --accent: #f0a15e;
+    --accent-fill: #3a2211;
+    --accent-line: #b3743a;
+    --muted: #7f919c;
+    --muted-fill: #1b2126;
+    --warn: #d9707c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0d1114;
+    --panel: #151a1e;
+    --ink: #e3e8eb;
+    --ink-soft: #a2adb4;
+    --ink-faint: #6d7880;
+    --rule: #232a2f;
+    --rule-strong: #384249;
+    --accent: #f0a15e;
+    --accent-fill: #3a2211;
+    --accent-line: #b3743a;
+    --muted: #7f919c;
+    --muted-fill: #1b2126;
+    --warn: #d9707c;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Foundations · Normalization Layers · 2015–2024</p>
+    <h1>Normalization</h1>
+    <p class="subtitle">분포를 붙잡아 학습을 안정시키다 — 평균을 어느 방향으로 낼 것인가</p>
+    <p class="dek">정규화 층은 코드로 두 줄이고 파라미터도 거의 없다. 그런데 이것 없이 깊은 모델을 학습시키기는 매우 어렵다. BatchNorm과 LayerNorm의 차이는 <em>평균을 어느 축으로 내느냐</em> 하나뿐인데, 그 선택이 배치 크기 의존성·추론 동작·재현성까지 결정한다. <strong>트랜스포머가 LayerNorm을 쓰는 것은 취향이 아니라 구조적 필연이다.</strong></p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>공통 형태</dt><dd>(x−μ)/σ 후 γ·x̂+β</dd></div>
+    <div><dt>BatchNorm</dt><dd>배치 축 · 배치 의존</dd></div>
+    <div><dt>LayerNorm</dt><dd>특징 축 · 배치 무관</dd></div>
+    <div><dt>배치 위치</dt><dd>Pre-LN 이 현대 표준</dd></div>
+    <div><dt>RMSNorm</dt><dd>평균 생략 · 7–64% 가속</dd></div>
+  </dl>
+
+
+  <section>
+    <h2><span class="n">01</span>층을 쌓으면 분포가 흘러간다</h2>
+    <p>
+      깊은 신경망이 학습되지 않던 시절의 문제 중 하나는 <strong>층마다 입력 분포가 계속 변한다</strong>는 것이었다.
+      3번 층은 2번 층의 출력을 입력으로 받는데, 학습이 진행되며 2번 층의 가중치가 바뀌면
+      3번 층이 보는 입력의 평균과 분산도 함께 움직인다. 3번 층은 <em>고정된 목표가 아니라 움직이는 목표</em>에
+      맞춰 학습해야 한다.
+    </p>
+    <p>
+      그 결과가 두 방향의 실패다. 값이 층을 지날수록 커지면 <strong>그래디언트 폭발</strong>,
+      작아지면 <strong>그래디언트 소실</strong>이다. 어느 쪽이든 깊이를 늘릴수록 심해지므로
+      학습률을 아주 작게 잡아야 하고, 그러면 수렴이 한없이 느려진다.
+    </p>
+    <p>
+      정규화의 발상은 간단하다. <strong>각 층의 입력을 평균 0, 분산 1로 다시 맞춰</strong> 놓는 것이다.
+      그러면 뒤 층은 안정된 분포를 받게 된다. 문제는 <em>무엇을 기준으로 평균과 분산을 구하느냐</em>이고,
+      이 선택 하나가 BatchNorm과 LayerNorm을 가른다.
+    </p>
+    <div class="eq">
+      <span class="cap">공통 뼈대 — 정규화 후 다시 스케일·이동</span>
+      <div class="line">x̂ = (x − μ) / √(σ² + ε)</div>
+      <div class="line">y = γ · x̂ + β&nbsp;&nbsp;&nbsp;// γ, β 는 학습되는 파라미터</div>
+    </div>
+    <p>
+      마지막 줄이 중요하다. 무조건 평균 0·분산 1로 강제하면 표현력이 줄어든다 —
+      예컨대 시그모이드의 비선형 구간을 못 쓰게 될 수 있다. 그래서 <code>γ</code>와 <code>β</code>를 두어
+      <strong>모델이 필요하면 정규화를 되돌릴 수 있게</strong> 해 둔다. 정규화를 강제가 아니라 선택지로 만드는 장치다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>배치를 가로지를 것인가, 특징을 가로지를 것인가</h2>
+    <p>
+      입력을 <code>(배치 N, 특징 C)</code> 행렬로 보면 평균을 낼 방향은 둘이다.
+      <strong>BatchNorm은 세로로</strong>(같은 특징을 배치 전체에서), <strong>LayerNorm은 가로로</strong>(한 샘플의 모든 특징을) 낸다.
+      한 글자 차이 같지만 성질이 완전히 다르다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 260" role="img" aria-label="BatchNorm과 LayerNorm의 통계 계산 방향 비교. BatchNorm은 배치 축을 따라 같은 특징끼리 평균을 내고, LayerNorm은 한 샘플 안의 모든 특징을 가로질러 평균을 낸다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <!-- BatchNorm -->
+            <text x="30" y="22" font-size="10.5" letter-spacing="1.4" fill="var(--muted)">BatchNorm — 배치 축을 따라 (세로)</text>
+
+            <text x="30" y="48" font-size="9.5" fill="var(--ink-faint)">특징 →</text>
+            <g>
+              <rect x="86" y="36" width="44" height="26" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.6"/>
+              <rect x="132" y="36" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+              <rect x="178" y="36" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+              <rect x="224" y="36" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+
+              <rect x="86" y="64" width="44" height="26" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.6"/>
+              <rect x="132" y="64" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+              <rect x="178" y="64" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+              <rect x="224" y="64" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+
+              <rect x="86" y="92" width="44" height="26" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.6"/>
+              <rect x="132" y="92" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+              <rect x="178" y="92" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+              <rect x="224" y="92" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+            </g>
+            <text x="30" y="82" font-size="9.5" fill="var(--ink-faint)">배치 ↓</text>
+            <text x="86" y="136" font-size="10" fill="var(--muted)">이 열의 평균·분산</text>
+            <text x="86" y="150" font-size="10" fill="var(--warn)">→ 다른 샘플에 의존한다</text>
+
+            <!-- divider -->
+            <line x1="330" y1="20" x2="330" y2="240" stroke="var(--rule)" stroke-width="1"/>
+
+            <!-- LayerNorm -->
+            <text x="356" y="22" font-size="10.5" letter-spacing="1.4" fill="var(--accent)">LayerNorm — 특징 축을 따라 (가로)</text>
+
+            <g>
+              <rect x="412" y="36" width="44" height="26" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.6"/>
+              <rect x="458" y="36" width="44" height="26" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.6"/>
+              <rect x="504" y="36" width="44" height="26" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.6"/>
+              <rect x="550" y="36" width="44" height="26" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.6"/>
+
+              <rect x="412" y="64" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+              <rect x="458" y="64" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+              <rect x="504" y="64" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+              <rect x="550" y="64" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+
+              <rect x="412" y="92" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+              <rect x="458" y="92" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+              <rect x="504" y="92" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+              <rect x="550" y="92" width="44" height="26" fill="var(--panel)" stroke="var(--rule)" stroke-width="1"/>
+            </g>
+            <text x="412" y="136" font-size="10" fill="var(--accent)">이 행의 평균·분산</text>
+            <text x="412" y="150" font-size="10" fill="var(--accent)">→ 샘플 하나로 완결된다</text>
+
+            <line x1="30" y1="172" x2="660" y2="172" stroke="var(--rule-strong)" stroke-width="1"/>
+
+            <rect x="30" y="186" width="290" height="58" fill="var(--panel)" stroke="var(--muted)" stroke-width="1.3"/>
+            <text x="46" y="206" font-size="10.5" fill="var(--muted)">따라오는 제약</text>
+            <text x="46" y="224" font-size="10" fill="var(--ink-soft)">배치가 작으면 통계가 불안정.</text>
+            <text x="46" y="238" font-size="10" fill="var(--ink-soft)">학습·추론 동작이 다르다.</text>
+
+            <rect x="356" y="186" width="304" height="58" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="372" y="206" font-size="10.5" fill="var(--accent)">따라오는 자유</text>
+            <text x="372" y="224" font-size="10" fill="var(--ink-soft)">배치 크기 1도 무관. 길이가 달라도 무관.</text>
+            <text x="372" y="238" font-size="10" fill="var(--ink-soft)">학습과 추론이 완전히 같다.</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        BatchNorm에서는 한 샘플의 출력이 <strong>같은 배치에 우연히 함께 들어온 다른 샘플들</strong>에 영향을 받는다.
+        학습에서는 약한 잡음으로 작용해 정규화 효과를 내지만, 추론에서는 이 의존성을 없애야 하므로
+        학습 중 모아 둔 이동평균을 대신 쓴다 — <em>학습과 추론의 동작이 달라진다.</em>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>트랜스포머가 LayerNorm을 쓸 수밖에 없는 이유</h2>
+    <p>
+      BatchNorm은 CNN에서 대단히 성공적이었다. 그런데 언어 모델로 오면 세 가지가 동시에 걸린다.
+    </p>
+    <ul>
+      <li>
+        <strong>길이가 제각각이다.</strong> 문장마다 토큰 수가 다르니 패딩이 들어간다.
+        배치 축으로 평균을 내면 <em>패딩 자리까지 통계에 섞인다</em>. 위치마다 유효한 샘플 수도 달라진다.
+      </li>
+      <li>
+        <strong>추론이 대체로 배치 1이다.</strong> 대화형 생성에서는 한 요청을 처리한다.
+        배치 통계라는 개념 자체가 성립하지 않는다.
+      </li>
+      <li>
+        <strong>자기회귀 생성과 충돌한다.</strong> 배치 안의 다른 시퀀스가 내 출력에 영향을 주면
+        생성 결과가 <em>함께 처리된 요청에 따라 달라진다</em>. 서빙에서 이는 재현성 문제다.
+      </li>
+    </ul>
+    <p>
+      LayerNorm은 이 셋을 모두 피한다. 한 토큰의 특징 벡터 안에서만 평균과 분산을 구하므로
+      배치와 무관하고, 길이와 무관하며, 학습과 추론의 동작이 같다.
+      트랜스포머가 처음부터 LayerNorm을 쓴 것은 취향이 아니라 <strong>구조적 필연</strong>에 가깝다.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>기법</th><th>통계 범위</th><th>배치 의존</th><th>주 사용처</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>BatchNorm</td><td>배치 × 공간</td><td class="hi">있음</td><td>CNN (큰 배치)</td></tr>
+          <tr><td>LayerNorm</td><td>한 샘플의 전 특징</td><td>없음</td><td class="hi">트랜스포머</td></tr>
+          <tr><td>RMSNorm</td><td>한 샘플 · 평균 생략</td><td>없음</td><td class="hi">Llama · 최신 LLM</td></tr>
+          <tr><td>GroupNorm</td><td>채널 그룹</td><td>없음</td><td>검출 · 분할 (작은 배치)</td></tr>
+          <tr><td>InstanceNorm</td><td>샘플별 채널 하나</td><td>없음</td><td>스타일 변환</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>어디에 놓느냐가 학습 안정성을 가른다</h2>
+    <p>
+      원래 트랜스포머 논문은 정규화를 잔차 연결 <em>뒤</em>에 놓았다(Post-LN).
+      그런데 이 배치는 깊은 모델에서 학습이 불안정하다. 학습 초기에 큰 학습률을 쓰면 발산해 버려서,
+      <strong>워밍업</strong>(학습률을 0부터 서서히 올리는 구간)이 없으면 학습 자체가 안 되는 경우가 많았다.
+    </p>
+    <p>
+      원인은 잔차 경로에 있다. Post-LN에서는 잔차 신호가 매 층 정규화를 거치므로,
+      역전파 때 그래디언트가 층을 지날 때마다 변형된다. 깊이가 깊어질수록 누적된다.
+    </p>
+    <div class="eq">
+      <span class="cap">두 배치</span>
+      <div class="line">Post-LN:  x ← LayerNorm(x + Sublayer(x))&nbsp;&nbsp;&nbsp;// 원 논문</div>
+      <div class="line">Pre-LN:   x ← x + Sublayer(LayerNorm(x))&nbsp;&nbsp;&nbsp;// 현대 표준</div>
+    </div>
+    <p>
+      Pre-LN은 정규화를 서브층 <em>안쪽</em>으로 옮긴다. 그러면 <strong>잔차 경로가 아무 변형 없이 뚫린다</strong> —
+      입력에서 출력까지 정규화를 거치지 않는 항등 경로가 생기므로 그래디언트가 깨끗하게 흐른다.
+      워밍업 없이도 학습되고, 큰 학습률을 견디며, 깊게 쌓아도 안정적이다. 오늘날 대부분의 LLM이 이 방식이다.
+    </p>
+    <div class="note">
+      <b>다만 공짜는 아니다.</b> Pre-LN은 층을 지날수록 잔차 스트림의 분산이 누적돼 커지고,
+      최종 성능이 Post-LN보다 약간 낮다는 보고가 있다. 그래서 마지막에 최종 LayerNorm을 하나 더 두는 것이 관례이며,
+      두 방식을 섞거나(Sandwich·DeepNorm) 잔차 가중치를 조정하는 변형도 쓰인다.
+      <em>안정성과 최종 성능 사이의 맞교환</em>인데, 대형 모델에서는 애초에 학습이 되는 쪽이 압도적으로 중요하다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>평균을 빼는 것은 사실 필요 없었다</h2>
+    <p>
+      2019년 Zhang과 Sennrich가 던진 질문은 이것이었다. LayerNorm의 효과가
+      <em>평균을 0으로 맞추는 것</em>(re-centering)에서 오는가, <em>크기를 맞추는 것</em>(re-scaling)에서 오는가?
+      실험 결과는 <strong>후자만으로 충분</strong>하다는 것이었다.
+    </p>
+    <div class="eq">
+      <span class="cap">RMSNorm — 평균 계산을 생략한다</span>
+      <div class="line">RMS(x) = √( (1/n) Σ x<sub>i</sub>² )</div>
+      <div class="line">y = γ · x / RMS(x)&nbsp;&nbsp;&nbsp;// μ 도 β 도 없다</div>
+    </div>
+    <p>
+      평균을 구하는 순회 한 번과 뺄셈이 사라진다. 연산량으로는 미미해 보이지만,
+      정규화는 <strong>모든 층에서 여러 번</strong> 호출되고 <em>메모리 바운드</em> 연산이라
+      실제로 7~64%의 속도 향상이 보고됐다. 품질은 대등하다.
+      Llama, Mistral, Gemma를 비롯한 최근 모델 대부분이 RMSNorm을 쓴다.
+    </p>
+    <p>
+      정규화 연구는 흥미로운 역사를 갖고 있다. BatchNorm 논문은 그 효과를
+      "내부 공변량 변화를 줄인다"로 설명했는데, 이후 연구들이 <strong>그 설명이 틀렸다는 증거</strong>를 내놓았다.
+      실제 이유는 <em>손실 지형을 매끄럽게 만들어</em> 더 큰 학습률을 쓸 수 있게 하는 데 가깝다는 것이다.
+      기법은 잘 작동하는데 이유에 대한 최초 설명은 부정확했던 셈이다.
+    </p>
+    <p>
+      최근에는 정규화 층을 아예 없애려는 시도도 나왔다. 초기화와 잔차 스케일링을 잘 설계하면
+      정규화 없이도 깊은 트랜스포머를 학습시킬 수 있다는 결과들이다.
+      그럼에도 정규화가 계속 쓰이는 이유는 <strong>강건함</strong> 때문이다 —
+      하이퍼파라미터를 정교하게 맞추지 않아도 그냥 학습이 된다.
+      눈에 띄지 않는 두 줄짜리 연산이지만, 이것 없이 100층을 쌓는 일은 여전히 훨씬 어렵다.
+    </p>
+  </section>
+
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Ioffe &amp; Szegedy, <em>Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift</em> (arXiv:1502.03167) — 시작점.</li>
+      <li>Ba et al., <em>Layer Normalization</em> (arXiv:1607.06450) — 배치 의존성을 제거한 변형.</li>
+      <li>Zhang &amp; Sennrich, <em>Root Mean Square Layer Normalization</em> (arXiv:1910.07467) — 평균 계산이 필요 없다는 발견.</li>
+      <li>Xiong et al., <em>On Layer Normalization in the Transformer Architecture</em> (arXiv:2002.04745) — Pre-LN이 워밍업을 없애는 이유의 이론적 분석.</li>
+      <li>Santurkar et al., <em>How Does Batch Normalization Help Optimization?</em> (arXiv:1805.11604) — 내부 공변량 변화 설명에 대한 반박.</li>
+      <li>Wang et al., <em>DeepNet: Scaling Transformers to 1,000 Layers</em> (arXiv:2203.00555) — 잔차 스케일을 조정해 극단적 깊이를 안정화.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>

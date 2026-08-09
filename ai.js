@@ -84,13 +84,16 @@
       if (!items.length) return '';
 
       var cards = items.map(function (a) {
-        return '<a class="doc" href="' + esc(a.url) + '" target="_blank" rel="noopener noreferrer">' +
+        /* 내부 문서는 같은 탭에서, 외부 링크만 새 탭으로 연다. */
+        var ext = !a.local;
+        return '<a class="doc" href="' + esc(a.url) + '"' +
+            (ext ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' +
           '<span class="doc-head">' +
             '<b>' + esc(a.title) + '</b>' +
             (a.subtitle ? '<i>' + esc(a.subtitle) + '</i>' : '') +
           '</span>' +
           (a.summary ? '<span class="doc-sum">' + esc(a.summary) + '</span>' : '') +
-          '<span class="doc-go" aria-hidden="true">↗</span>' +
+          '<span class="doc-go" aria-hidden="true">' + (ext ? '↗' : '→') + '</span>' +
         '</a>';
       }).join('');
 

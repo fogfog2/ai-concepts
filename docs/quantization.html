@@ -1,0 +1,463 @@
+<title>Quantization — 정밀도를 깎아 모델을 옮기다</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">Quantization</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #eceded;
+    --panel: #e0e2e3;
+    --ink: #14181a;
+    --ink-soft: #4f565b;
+    --ink-faint: #818a8f;
+    --rule: #cbcfd2;
+    --rule-strong: #a9aeb2;
+    --accent: #a35a24;
+    --accent-fill: #f0dfd0;
+    --accent-line: #c47c40;
+    --muted: #6b7f8c;
+    --muted-fill: #d5dade;
+    --warn: #9c3f3f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #101315;
+    --panel: #181c1f;
+    --ink: #e6e9ea;
+    --ink-soft: #a5aeb3;
+    --ink-faint: #6f787d;
+    --rule: #252b2f;
+    --rule-strong: #3a4247;
+    --accent: #e29a5c;
+    --accent-fill: #331f0f;
+    --accent-line: #b0713a;
+    --muted: #7d919e;
+    --muted-fill: #1c2226;
+    --warn: #d9706e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #101315;
+    --panel: #181c1f;
+    --ink: #e6e9ea;
+    --ink-soft: #a5aeb3;
+    --ink-faint: #6f787d;
+    --rule: #252b2f;
+    --rule-strong: #3a4247;
+    --accent: #e29a5c;
+    --accent-fill: #331f0f;
+    --accent-line: #b0713a;
+    --muted: #7d919e;
+    --muted-fill: #1c2226;
+    --warn: #d9706e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Efficiency · Post-Training Quantization · 2022–2024</p>
+    <h1>Quantization</h1>
+    <p class="subtitle">정밀도를 깎아 모델을 옮기다 — 무엇을 보존할 것인지 다시 정의하면서</p>
+    <p class="dek">양자화를 <code>fp16</code>을 <code>int4</code>로 바꾸는 반올림 작업이라고 하면 절반만 맞다. 그렇게 하면 4비트에서 모델이 무너진다. 실제로 작동하는 방법들은 모두 목표를 한 번 바꿔 놓고 시작한다 — <em>가중치를 정확히 보존하는 대신, 레이어의 출력을 보존한다</em>. 이 재정의 하나로 70B 모델이 <strong>140GB에서 35GB</strong>로 내려가고, 소비자용 GPU에 들어가기 시작한다.</p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>목표</dt><dd>가중치 아닌 출력 보존</dd></div>
+    <div><dt>70B fp16</dt><dd>140 GB → 35 GB</dd></div>
+    <div><dt>실무 경계</dt><dd>8비트 안전 · 4비트 양호</dd></div>
+    <div><dt>GPTQ</dt><dd>2차 정보로 오차 분배</dd></div>
+    <div><dt>AWQ</dt><dd>활성값 기준 채널 보호</dd></div>
+  </dl>
+
+
+  <section>
+    <h2><span class="n">01</span>가중치는 생각보다 좁은 곳에 모여 있다</h2>
+    <p>
+      70B 모델을 fp16으로 올리려면 <code>70 × 2 = 140 GB</code>가 필요하다. A100 80GB 두 장이다.
+      같은 모델을 4비트로 낮추면 <strong>약 35 GB</strong> — 소비자용 24GB 카드 두 장, 혹은 조금 더 줄이면 한 장에도 들어간다.
+      양자화가 하는 일은 이 산술이 전부다. 흥미로운 것은 <em>왜 그래도 모델이 망가지지 않는가</em>이다.
+    </p>
+    <p>
+      학습된 가중치의 분포를 그려 보면 대체로 0 근처에 뾰족하게 모인 종 모양이다.
+      fp16은 <code>6×10⁻⁸</code>부터 <code>65504</code>까지를 표현하도록 설계됐지만, 실제 가중치는
+      그 범위의 아주 좁은 구간만 쓴다. <strong>표현력의 대부분이 놀고 있다</strong>는 뜻이다.
+      양자화는 그 좁은 구간에 눈금을 촘촘히 다시 새기는 일이다.
+    </p>
+    <div class="eq">
+      <span class="cap">비대칭 정수 양자화</span>
+      <div class="line">s = (max(w) − min(w)) / (2<sup>b</sup> − 1),&nbsp;&nbsp; z = round(−min(w) / s)</div>
+      <div class="line">q = clamp(round(w / s) + z, 0, 2<sup>b</sup> − 1)</div>
+      <div class="line">ŵ = s · (q − z)&nbsp;&nbsp;&nbsp;// 복원 — w 와 정확히 같지는 않다</div>
+    </div>
+    <p>
+      <code>s</code>는 눈금 간격(scale), <code>z</code>는 0이 정수 어디에 놓이는지(zero-point)다.
+      핵심은 <code>s</code>와 <code>z</code>를 <strong>어느 범위마다 따로 정하느냐</strong>다.
+      텐서 전체에 하나만 쓰면(per-tensor) 이상치 하나가 눈금 간격을 벌려 나머지를 뭉갠다.
+      그래서 실무에서는 보통 <em>128개 값마다 한 쌍</em>씩 둔다(group-wise). 이 경우 4비트 가중치에
+      스케일·제로포인트 오버헤드가 붙어 실효 비트는 4가 아니라 약 4.5가 된다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>학습 후에 깎을 것인가, 깎으면서 학습할 것인가</h2>
+    <p>
+      갈림길은 하나다. 이미 학습된 모델을 건드리지 않고 바꿀 것인가(PTQ), 아니면 양자화된 상태를 가정하고
+      다시 학습할 것인가(QAT). 대형 언어모델에서는 <strong>거의 항상 PTQ</strong>다. 재학습 비용이 모델 크기에
+      비례해 감당이 안 되기 때문이다.
+    </p>
+    <div class="pair">
+      <div class="fast">
+        <span class="kicker">PTQ — 학습 후 양자화</span>
+        <p>보정용 데이터 수백 문장만 있으면 된다. GPU 한 장에서 수십 분. LLM 양자화는 사실상 전부 이쪽이다.</p>
+      </div>
+      <div class="slow">
+        <span class="kicker">QAT — 양자화 인지 학습</span>
+        <p>학습 중 반올림을 흉내 내 모델이 미리 적응하게 한다. 품질은 낫지만 전체 재학습이 필요해 LLM에는 잘 쓰이지 않는다.</p>
+      </div>
+    </div>
+    <p>
+      PTQ 안에서도 순진한 방법은 실패한다. 가중치를 그냥 가장 가까운 정수로 반올림하면(round-to-nearest)
+      4비트에서 모델이 무너진다. 각 가중치의 오차는 작아도, 한 레이어에 수백만 개가 쌓이면
+      출력이 원래와 달라지고 그 오차가 다음 레이어로 증폭되며 전파되기 때문이다.
+    </p>
+    <p>
+      여기서 관점이 하나 바뀐다. <strong>목표는 가중치를 정확히 보존하는 것이 아니라, 레이어의 출력을 보존하는 것이다.</strong>
+      가중치가 좀 틀려도 출력이 같으면 상관없다. 이 재정의가 GPTQ와 AWQ 양쪽의 출발점이다.
+    </p>
+    <div class="eq">
+      <span class="cap">최소화 대상 — 가중치 오차가 아니라 출력 오차</span>
+      argmin<sub>Ŵ</sub> ‖ W·X − Ŵ·X ‖²<sub>2</sub>&nbsp;&nbsp;&nbsp;(X = 보정 데이터의 입력 활성값)
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>GPTQ — 틀린 만큼 옆에서 보상한다</h2>
+    <p>
+      GPTQ는 가중치를 <strong>한 열씩 순서대로</strong> 양자화한다. 핵심은 하나를 양자화한 직후,
+      그로 인해 생긴 출력 오차를 <em>아직 양자화하지 않은 나머지 가중치를 조금씩 움직여 상쇄</em>하는 것이다.
+      먼저 처리한 것의 실수를 뒤에 남은 것들이 나눠서 갚는 구조다.
+    </p>
+    <p>
+      어느 방향으로 얼마나 움직일지는 2차 정보가 알려 준다. 출력 오차를 가중치에 대해 두 번 미분한
+      헤시안이 <code>H = 2XXᵀ</code> 형태로 나오는데, 이것은 <strong>보정 데이터만 있으면 구할 수 있다</strong>.
+      OBQ 계열의 고전적 아이디어를 대형 모델에서 감당 가능하게 다듬은 것이 GPTQ의 기여다.
+    </p>
+    <div class="eq">
+      <span class="cap">한 열을 양자화한 뒤 남은 열들에 뿌리는 보정</span>
+      <div class="line">δ = − (w<sub>q</sub> − quant(w<sub>q</sub>)) / [H⁻¹]<sub>qq</sub> · H⁻¹<sub>q,:</sub></div>
+      <div class="line">// 오차를 헤시안이 가리키는 방향으로 나머지 열에 분배</div>
+    </div>
+    <p>
+      원래 알고리즘은 오차가 큰 열부터 처리하려고 열마다 순서를 새로 정했는데, 이러면 행마다 순서가 달라져
+      느리다. GPTQ는 <em>모든 행에 같은 순서를 쓴다</em>는 단순화로 큰 속도를 얻었고, 여기에
+      콜레스키 분해로 수치 안정성을 확보하고 블록 단위로 갱신을 묶어 175B 모델을
+      <strong>GPU 한 장에서 약 4시간</strong>에 처리할 수 있게 만들었다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 250" role="img" aria-label="GPTQ의 순차 양자화와 오차 보정 도식. 왼쪽 열부터 차례로 양자화하며, 각 단계에서 발생한 오차를 아직 처리하지 않은 오른쪽 열들에 헤시안 기반으로 분배한다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <defs>
+              <marker id="gq-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-line)"/>
+              </marker>
+            </defs>
+
+            <text x="30" y="24" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">가중치 행렬 — 열 단위로 왼쪽부터 순차 처리</text>
+
+            <!-- columns -->
+            <rect x="30" y="38" width="54" height="120" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.5"/>
+            <text x="57" y="94" text-anchor="middle" font-size="10" fill="var(--accent)">완료</text>
+            <text x="57" y="110" text-anchor="middle" font-size="9" fill="var(--accent)">int4</text>
+
+            <rect x="88" y="38" width="54" height="120" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.5"/>
+            <text x="115" y="94" text-anchor="middle" font-size="10" fill="var(--accent)">완료</text>
+            <text x="115" y="110" text-anchor="middle" font-size="9" fill="var(--accent)">int4</text>
+
+            <rect x="146" y="38" width="54" height="120" fill="var(--panel)" stroke="var(--warn)" stroke-width="2.2"/>
+            <text x="173" y="88" text-anchor="middle" font-size="10" fill="var(--warn)">지금</text>
+            <text x="173" y="104" text-anchor="middle" font-size="10" fill="var(--warn)">처리</text>
+            <text x="173" y="120" text-anchor="middle" font-size="9" fill="var(--warn)">오차 발생</text>
+
+            <rect x="204" y="38" width="54" height="120" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="231" y="100" text-anchor="middle" font-size="10" fill="var(--ink-faint)">대기</text>
+            <rect x="262" y="38" width="54" height="120" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="289" y="100" text-anchor="middle" font-size="10" fill="var(--ink-faint)">대기</text>
+            <rect x="320" y="38" width="54" height="120" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="347" y="100" text-anchor="middle" font-size="10" fill="var(--ink-faint)">대기</text>
+
+            <!-- correction arrows -->
+            <path d="M200 62 Q240 20 289 56" stroke="var(--accent-line)" stroke-width="1.4" fill="none" marker-end="url(#gq-ar)"/>
+            <path d="M200 70 Q260 26 347 56" stroke="var(--accent-line)" stroke-width="1.2" fill="none" marker-end="url(#gq-ar)"/>
+            <text x="250" y="18" text-anchor="middle" font-size="10" fill="var(--accent)">오차를 남은 열에 분배</text>
+
+            <text x="30" y="180" font-size="11" fill="var(--ink-soft)">처리된 열은 다시 건드리지 않는다. 대기 열은 아직 fp16이므로 조정 여지가 있다.</text>
+
+            <!-- divider -->
+            <line x1="410" y1="30" x2="410" y2="200" stroke="var(--rule)" stroke-width="1"/>
+
+            <text x="434" y="24" font-size="10.5" letter-spacing="1.4" fill="var(--accent)">두 방식의 차이</text>
+
+            <rect x="434" y="38" width="226" height="62" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="446" y="58" font-size="11" fill="var(--ink-soft)">단순 반올림 (RTN)</text>
+            <text x="446" y="76" font-size="10.5" fill="var(--ink-faint)">각자 가장 가까운 눈금으로.</text>
+            <text x="446" y="92" font-size="10.5" fill="var(--ink-faint)">오차가 누적돼 4비트에서 붕괴.</text>
+
+            <rect x="434" y="112" width="226" height="76" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.5"/>
+            <text x="446" y="132" font-size="11" fill="var(--accent)">GPTQ</text>
+            <text x="446" y="150" font-size="10.5" fill="var(--ink-soft)">반올림 오차를 남은 가중치가</text>
+            <text x="446" y="166" font-size="10.5" fill="var(--ink-soft)">흡수하도록 헤시안 기반 보정.</text>
+            <text x="446" y="182" font-size="10.5" fill="var(--accent)">175B → GPU 1장 · 약 4시간</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        GPTQ의 순차 보정. 아직 양자화되지 않은 열은 <em>자유도</em>다. 앞에서 생긴 오차를 그 자유도에 떠넘기면,
+        마지막 열에 이를 때까지 출력 오차가 계속 상쇄된다. 가중치 하나하나는 더 틀리지만
+        <strong>레이어 출력은 더 정확해진다</strong>.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>AWQ — 1%의 가중치가 결과를 좌우한다</h2>
+    <p>
+      AWQ는 다른 관찰에서 출발한다. 모든 가중치가 똑같이 중요하지 않다는 것이다.
+      실험해 보면 <strong>상위 약 1%의 가중치만 fp16으로 남겨도</strong> 성능 저하가 거의 사라진다.
+      그렇다면 그 1%를 찾아 지키면 된다.
+    </p>
+    <p>
+      결정적인 부분은 <em>중요도를 무엇으로 재느냐</em>다. 직관적으로는 크기가 큰 가중치일 것 같지만,
+      AWQ의 측정은 다르다. <strong>큰 활성값과 곱해지는 가중치</strong>가 중요하다. 가중치 자체가 작아도
+      입력이 크면 출력에 미치는 영향이 크기 때문이다. 그래서 가중치가 아니라
+      <em>활성값 분포</em>를 보고 중요한 채널을 고른다 — 이름의 A(activation-aware)가 여기서 온다.
+    </p>
+    <p>
+      다만 일부만 fp16으로 남기면 자료형이 섞여 커널이 느려진다. AWQ는 이를 피하는 우회로를 쓴다.
+      중요한 채널의 가중치에 <code>s &gt; 1</code>을 곱해 <strong>키워 놓고</strong> 양자화한 뒤,
+      대응하는 입력을 <code>1/s</code>로 나눈다. 곱은 그대로인데, 키워서 양자화한 채널은
+      상대적 반올림 오차가 줄어든다.
+    </p>
+    <div class="eq">
+      <span class="cap">스케일 이동 — 곱의 값은 보존하고 오차만 줄인다</span>
+      <div class="line">Q(w · s) · (x / s) ≈ w · x&nbsp;&nbsp;&nbsp;// 중요 채널일수록 s 를 크게</div>
+    </div>
+    <p>
+      결과적으로 모든 가중치가 같은 4비트 형식으로 남아 커널이 단순하고 빠르다.
+      또 AWQ는 역전파나 헤시안을 쓰지 않아 보정 데이터에 덜 민감하고,
+      <strong>보정 집합과 다른 도메인에 일반화가 잘 되는 편</strong>이다.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>방식</th><th>기준</th><th>필요한 것</th><th>성격</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>RTN</td><td>가장 가까운 눈금</td><td>없음</td><td>즉시, 4비트에서 붕괴</td></tr>
+          <tr><td>GPTQ</td><td>출력 오차 (2차)</td><td>보정 데이터 + 헤시안</td><td class="hi">정밀, 다소 느림</td></tr>
+          <tr><td>AWQ</td><td>활성값 크기</td><td>보정 데이터 (통계만)</td><td class="hi">빠름, 일반화 우수</td></tr>
+          <tr><td>SmoothQuant</td><td>활성 이상치 이전</td><td>보정 데이터</td><td>W8A8 (활성값도 양자화)</td></tr>
+          <tr><td>QLoRA / NF4</td><td>정규분포 최적 눈금</td><td>없음</td><td class="hi">학습용 (LoRA 결합)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <b>가중치만 줄이면 절반만 푼 것이다.</b> 위 방법 대부분은 가중치를 4비트로 두고
+      계산은 fp16으로 되돌려서 한다(W4A16). 이러면 <em>메모리는 줄지만 연산량은 그대로다</em>.
+      디코딩은 메모리 바운드라 그것만으로도 빨라지지만, 프리필처럼 연산 바운드인 구간에서는 이득이 적거나
+      역전될 수 있다. 활성값까지 8비트로 낮추는 W8A8(SmoothQuant 등)은 계산 자체를 정수 텐서 코어로 돌리려는
+      다른 갈래이고, 여기서는 <strong>활성값의 이상치</strong>가 주된 적이다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>어디까지 내려갈 수 있는가</h2>
+    <p>
+      실무 감각으로는 <strong>8비트는 사실상 공짜</strong>이고, <strong>4비트는 잘 된 방법이라면 대체로 안전</strong>하며,
+      3비트 이하부터는 눈에 띄게 나빠진다. 다만 이 경계는 모델 크기에 따라 움직인다.
+      큰 모델일수록 양자화에 강하다 — 파라미터가 많아 정보가 중복돼 있기 때문이다.
+      그래서 <em>같은 메모리 예산이라면, 작은 모델을 fp16으로 쓰는 것보다 큰 모델을 4비트로 쓰는 편이
+      대체로 낫다</em>는 경험칙이 성립한다.
+    </p>
+    <p>
+      벤치마크를 읽을 때 주의할 점이 하나 있다. perplexity는 양자화 손상에 <strong>둔감한 지표</strong>다.
+      perplexity가 거의 그대로인데 코드 생성이나 다단계 추론에서 눈에 띄게 떨어지는 경우가 흔하다.
+      긴 출력에서 오차가 누적되는 작업일수록 손상이 드러난다. 실제로 쓸 작업으로 직접 재 보는 편이 안전하다.
+    </p>
+    <ul>
+      <li>
+        <strong>보정 데이터가 결과를 바꾼다.</strong> GPTQ는 보정 집합에 맞춰 오차를 최적화하므로,
+        보정에 쓴 텍스트와 실제 사용 도메인이 다르면 손해를 본다. 한국어로 쓸 모델을 영어 위키로만 보정하는 식의 실수가 흔하다.
+      </li>
+      <li>
+        <strong>양자화와 파인튜닝을 함께.</strong> QLoRA는 베이스 모델을 4비트(NF4)로 얼려 두고 LoRA 어댑터만 학습한다.
+        메모리가 줄어 단일 GPU에서 65B 파인튜닝이 가능해졌다.
+      </li>
+      <li>
+        <strong>형식은 런타임이 정한다.</strong> GGUF(llama.cpp), AWQ·GPTQ 체크포인트, bitsandbytes 등은
+        서로 호환되지 않는다. 쓸 엔진을 먼저 정하고 그에 맞는 형식을 받는 편이 낫다.
+      </li>
+    </ul>
+    <p>
+      한 걸음 물러나 보면, 양자화가 작동하는 이유는 <strong>신경망이 애초에 과잉 정밀도로 학습되기 때문</strong>이다.
+      fp32와 fp16이 필요한 것은 학습 중 그래디언트를 누적할 때이지, 학습이 끝난 뒤 추론할 때가 아니다.
+      학습과 추론이 요구하는 정밀도가 다르다는 이 비대칭이, 모델을 노트북에서 돌릴 수 있게 만든 근거다.
+    </p>
+  </section>
+
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Frantar et al., <em>GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers</em> (arXiv:2210.17323) — 순차 보정과 콜레스키 안정화.</li>
+      <li>Lin et al., <em>AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration</em> (arXiv:2306.00978) — 1% 중요 가중치와 스케일 이동.</li>
+      <li>Xiao et al., <em>SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models</em> (arXiv:2211.10438) — 활성 이상치를 가중치 쪽으로 옮기는 W8A8.</li>
+      <li>Dettmers et al., <em>QLoRA: Efficient Finetuning of Quantized LLMs</em> (arXiv:2305.14314) — NF4와 이중 양자화, LoRA 결합.</li>
+      <li>Dettmers &amp; Zettlemoyer, <em>The case for 4-bit precision: k-bit Inference Scaling Laws</em> (arXiv:2212.09720) — 같은 예산이면 큰 모델을 낮은 비트로 쓰는 편이 낫다는 분석.</li>
+      <li>Frantar &amp; Alistarh, <em>Optimal Brain Compression</em> (arXiv:2208.11580) — GPTQ가 딛고 선 OBQ 계열의 정리.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>

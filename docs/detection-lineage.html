@@ -1,0 +1,455 @@
+<title>Object Detection 계보 — 2단계에서 1단계로</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">① Object Detection 계보</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #eef0ee;
+    --panel: #e3e6e3;
+    --ink: #141a16;
+    --ink-soft: #4c5750;
+    --ink-faint: #7f8a83;
+    --rule: #cbd2cd;
+    --rule-strong: #a9b0ab;
+    --accent: #0f7a5a;
+    --accent-fill: #d0eae0;
+    --accent-line: #2f9c78;
+    --muted: #87817a;
+    --muted-fill: #dcd9d5;
+    --warn: #a34a2a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #0e1210;
+    --panel: #161b18;
+    --ink: #e4e9e5;
+    --ink-soft: #a2aea8;
+    --ink-faint: #6d7873;
+    --rule: #232b27;
+    --rule-strong: #38423d;
+    --accent: #4fd6a8;
+    --accent-fill: #0f3028;
+    --accent-line: #2e8a6c;
+    --muted: #8d8780;
+    --muted-fill: #201e1c;
+    --warn: #dd8459;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0e1210;
+    --panel: #161b18;
+    --ink: #e4e9e5;
+    --ink-soft: #a2aea8;
+    --ink-faint: #6d7873;
+    --rule: #232b27;
+    --rule-strong: #38423d;
+    --accent: #4fd6a8;
+    --accent-fill: #0f3028;
+    --accent-line: #2e8a6c;
+    --muted: #8d8780;
+    --muted-fill: #201e1c;
+    --warn: #dd8459;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Detector Series 1/4 · Two-Stage → One-Stage · 2014–2017</p>
+    <h1>Object Detection 계보</h1>
+    <p class="subtitle">2단계에서 1단계로 — 검출기가 무엇을 하나씩 버려 왔는가</p>
+    <p class="dek">검출이 어려운 이유는 <em>출력 개수가 입력마다 다르다</em>는 데 있다. 신경망은 고정 크기 출력을 내놓는데, 객체는 0개일 수도 50개일 수도 있다. 검출기 10년의 역사는 이 하나의 질문에 대한 답의 변천이고, 동시에 <strong>보조 장치를 하나씩 떼어내는 과정</strong>이다 — 제안 단계, 앵커, 그리고 NMS.</p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>근본 난점</dt><dd>가변 개수 출력</dd></div>
+    <div><dt>R-CNN</dt><dd>이미지당 CNN 2000회</dd></div>
+    <div><dt>1단계</dt><dd>격자가 직접 예측</dd></div>
+    <div><dt>불균형</dt><dd>배경 : 객체 ≈ 5000 : 1</dd></div>
+    <div><dt>남은 목발</dt><dd>앵커 · NMS</dd></div>
+  </dl>
+
+
+  <section>
+    <h2><span class="n">01</span>분류와 검출은 다른 문제다</h2>
+    <p>
+      이미지 분류는 "이 사진에 무엇이 있는가"에 답한다. 출력이 하나다.
+      검출은 "무엇이 <em>어디에</em> 몇 개 있는가"에 답해야 한다.
+      출력 개수가 <strong>입력마다 다르다</strong> — 이것이 문제를 근본적으로 어렵게 만든다.
+    </p>
+    <p>
+      신경망은 고정 크기 출력을 내놓는다. 객체가 0개일 수도 50개일 수도 있는 문제를
+      어떻게 고정 크기 출력에 담을 것인가. 검출기 20년 역사의 상당 부분이
+      <em>이 하나의 질문에 대한 서로 다른 답</em>이다.
+    </p>
+    <p>
+      가장 직관적인 답은 <strong>후보를 잔뜩 만들고 각각을 분류하는 것</strong>이다.
+      "여기에 객체가 있나?"를 수천 번 물으면, 가변 개수 문제가 고정 개수 분류 문제로 바뀐다.
+      2단계 검출기가 이 길을 갔다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>2단계 — 후보를 먼저 고르고, 그다음 판단한다</h2>
+    <p>
+      R-CNN(2014)의 절차는 단순하다. 선택적 탐색(selective search)이라는 <em>고전 알고리즘</em>으로
+      객체가 있을 법한 영역 약 2000개를 뽑고, 각 영역을 잘라내 CNN에 넣어 분류한다.
+      정확도는 당시 기준으로 압도적이었다. 문제는 속도였다.
+    </p>
+    <p>
+      <strong>이미지 한 장에 CNN을 2000번 돌린다.</strong> 영역들이 서로 크게 겹치는데도
+      겹친 부분의 특징을 매번 다시 계산한다. 이미지 한 장 처리에 수십 초가 걸렸다.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>모델</th><th>바꾼 것</th><th>CNN 호출</th><th>영역 제안</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>R-CNN (2014)</td><td>—</td><td>~2000회</td><td>외부 알고리즘</td></tr>
+          <tr><td>Fast R-CNN (2015)</td><td>RoI 풀링</td><td class="hi">1회</td><td>외부 알고리즘</td></tr>
+          <tr><td>Faster R-CNN (2015)</td><td>RPN</td><td class="hi">1회</td><td class="hi">신경망 내부</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Fast R-CNN은 CNN을 이미지 전체에 <em>한 번만</em> 돌리고, 특징 맵에서 각 영역에 해당하는
+      부분을 잘라내 쓴다(RoI 풀링). 중복 계산이 사라졌다.
+      Faster R-CNN은 마지막 외부 의존이던 영역 제안까지 신경망(RPN)으로 흡수했다.
+      이제 검출 전체가 <strong>하나의 학습 가능한 신경망</strong>이 됐다.
+    </p>
+    <p>
+      그럼에도 구조는 여전히 2단계다. 제안을 만들고, 각 제안을 판단한다.
+      실시간(30 FPS)에는 미치지 못했다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>1단계 — 격자에 직접 예측하기</h2>
+    <p>
+      YOLO(2015)의 발상은 후보 선별 단계를 <strong>아예 없애는 것</strong>이었다.
+      이미지를 격자로 나누고, <em>각 칸이 직접</em> "내 칸에 객체 중심이 있는가, 있다면 어떤 박스인가"를
+      한 번에 예측한다. 이름 그대로 이미지를 한 번만 본다.
+    </p>
+    <div class="eq">
+      <span class="cap">1단계 검출의 출력 — 고정 크기 텐서 하나</span>
+      <div class="line">출력 = S × S × (B × 5 + C)</div>
+      <div class="line">// S×S 격자, 칸마다 B개 박스(x,y,w,h,신뢰도) + C개 클래스 확률</div>
+    </div>
+    <p>
+      가변 개수 문제가 이렇게 풀린다. 출력은 항상 고정 크기이고,
+      <em>신뢰도가 낮은 칸을 버리는 것</em>으로 개수를 조절한다.
+      속도는 극적으로 빨라져 처음으로 실시간 검출이 가능해졌다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 260" role="img" aria-label="2단계 검출기와 1단계 검출기의 구조 비교. 2단계는 영역 제안 후 각 제안을 분류하고, 1단계는 격자의 각 칸이 직접 박스와 클래스를 예측한다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <defs>
+              <marker id="d1-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+              </marker>
+              <marker id="d1-ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-line)"/>
+              </marker>
+            </defs>
+
+            <text x="30" y="22" font-size="10.5" letter-spacing="1.4" fill="var(--muted)">2단계 — 제안하고, 판단한다</text>
+
+            <rect x="30" y="34" width="86" height="40" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="73" y="58" text-anchor="middle" font-size="10" fill="var(--ink-soft)">이미지</text>
+            <path d="M120 54 L148 54" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#d1-ar)"/>
+
+            <rect x="152" y="34" width="110" height="40" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="207" y="52" text-anchor="middle" font-size="10" fill="var(--ink-soft)">영역 제안</text>
+            <text x="207" y="66" text-anchor="middle" font-size="9" fill="var(--ink-faint)">~2000개</text>
+            <path d="M266 54 L294 54" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#d1-ar)"/>
+
+            <rect x="298" y="34" width="110" height="40" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="353" y="52" text-anchor="middle" font-size="10" fill="var(--ink-soft)">제안별 분류</text>
+            <text x="353" y="66" text-anchor="middle" font-size="9" fill="var(--warn)">반복 계산</text>
+            <path d="M412 54 L440 54" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#d1-ar)"/>
+
+            <rect x="444" y="34" width="86" height="40" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="487" y="58" text-anchor="middle" font-size="10" fill="var(--ink-soft)">박스</text>
+
+            <text x="546" y="50" font-size="9.5" fill="var(--ink-faint)">정확하지만</text>
+            <text x="546" y="64" font-size="9.5" fill="var(--warn)">실시간 불가</text>
+
+            <line x1="30" y1="94" x2="670" y2="94" stroke="var(--rule)" stroke-width="1"/>
+
+            <text x="30" y="118" font-size="10.5" letter-spacing="1.4" fill="var(--accent)">1단계 — 격자가 직접 예측한다</text>
+
+            <!-- grid -->
+            <g>
+              <rect x="30" y="132" width="104" height="104" fill="var(--panel)" stroke="var(--rule-strong)" stroke-width="1.2"/>
+              <line x1="56" y1="132" x2="56" y2="236" stroke="var(--rule)" stroke-width="0.8"/>
+              <line x1="82" y1="132" x2="82" y2="236" stroke="var(--rule)" stroke-width="0.8"/>
+              <line x1="108" y1="132" x2="108" y2="236" stroke="var(--rule)" stroke-width="0.8"/>
+              <line x1="30" y1="158" x2="134" y2="158" stroke="var(--rule)" stroke-width="0.8"/>
+              <line x1="30" y1="184" x2="134" y2="184" stroke="var(--rule)" stroke-width="0.8"/>
+              <line x1="30" y1="210" x2="134" y2="210" stroke="var(--rule)" stroke-width="0.8"/>
+              <rect x="56" y="158" width="52" height="52" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.8"/>
+              <text x="82" y="188" text-anchor="middle" font-size="9" fill="var(--accent)">객체</text>
+            </g>
+            <text x="30" y="252" font-size="9.5" fill="var(--ink-faint)">S×S 격자</text>
+
+            <path d="M142 184 L172 184" stroke="var(--accent-line)" stroke-width="1.4" marker-end="url(#d1-ac)"/>
+
+            <rect x="176" y="150" width="180" height="68" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.5"/>
+            <text x="190" y="170" font-size="10" fill="var(--accent)">각 칸이 직접 출력</text>
+            <text x="190" y="188" font-size="9.5" fill="var(--ink-soft)">박스 (x, y, w, h) + 신뢰도</text>
+            <text x="190" y="204" font-size="9.5" fill="var(--ink-soft)">+ 클래스 확률</text>
+
+            <path d="M362 184 L392 184" stroke="var(--accent-line)" stroke-width="1.4" marker-end="url(#d1-ac)"/>
+
+            <rect x="396" y="150" width="120" height="68" fill="var(--panel)" stroke="var(--warn)" stroke-width="1.5"/>
+            <text x="456" y="172" text-anchor="middle" font-size="10" fill="var(--warn)">NMS</text>
+            <text x="456" y="190" text-anchor="middle" font-size="9" fill="var(--ink-soft)">중복 박스 제거</text>
+            <text x="456" y="206" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">후처리로 남음</text>
+
+            <text x="530" y="176" font-size="9.5" fill="var(--accent)">한 번의 통과</text>
+            <text x="530" y="192" font-size="9.5" fill="var(--accent)">실시간 가능</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        1단계는 제안 단계를 없앴지만 <strong>NMS라는 후처리를 남겼다</strong>.
+        같은 객체를 여러 칸이 동시에 예측하기 때문이다. 이 후처리를 없애는 것이
+        이후 10년의 과제가 된다.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>1단계가 정확도를 잃던 이유</h2>
+    <p>
+      초기 YOLO는 빨랐지만 2단계보다 정확도가 낮았다. 특히 작은 객체와 밀집한 객체에 약했다.
+      원인 중 하나는 <strong>극단적인 클래스 불균형</strong>이다.
+    </p>
+    <p>
+      2단계 검출기는 제안 단계에서 이미 후보를 걸러낸다. 분류기가 보는 것은
+      "그럴듯한" 영역 수백 개다. 반면 1단계는 격자의 <em>모든 위치</em>를 판단해야 하고,
+      그중 실제 객체는 극소수다.
+    </p>
+    <div class="eq">
+      <span class="cap">불균형의 규모</span>
+      <div class="line">후보 100,000개 중 실제 객체 20개 → 배경이 99.98%</div>
+      <div class="line">배경 : 객체 = 4,999 : 1</div>
+    </div>
+    <p>
+      배경이 압도적으로 많으면 학습이 망가진다. 개별 배경 예제는 쉽지만(신뢰도 0.99로 맞힘),
+      <em>개수가 워낙 많아 손실 총합을 지배</em>한다. 모델은 "전부 배경"이라고 답하는 쪽으로 끌려간다.
+    </p>
+    <p>
+      RetinaNet(2017)의 <strong>Focal Loss</strong>가 이것을 정면으로 풀었다.
+      교차 엔트로피에 <code>(1−p)<sup>γ</sup></code>를 곱해 <em>이미 잘 맞히는 예제의 손실을 억제</em>한다.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>예측 확률 p</th><th>γ=0 (일반 CE)</th><th>γ=2 (Focal)</th><th>억제 배율</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0.9 (쉬운 배경)</td><td>1.0000</td><td class="hi">0.0100</td><td>100배 감소</td></tr>
+          <tr><td>0.99 (매우 쉬움)</td><td>1.0000</td><td class="hi">0.0001</td><td>10,000배 감소</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <b>손실 함수 하나가 구조 차이를 지웠다.</b> Focal Loss 이후 1단계 검출기는
+      2단계와 대등한 정확도에 도달했고, 속도 우위는 그대로였다.
+      이 시점부터 <em>2단계는 사실상 밀려났다</em>.
+      검출기의 성능을 가른 것이 백본도 해상도도 아닌 <strong>라벨과 손실을 다루는 방식</strong>이었다는 관찰은
+      이후 YOLOX의 SimOTA에서 다시 반복된다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>남은 두 개의 목발 — 앵커와 NMS</h2>
+    <p>
+      1단계가 자리를 잡은 뒤에도 두 가지 보조 장치가 남았다. 둘 다 "가변 개수 출력"이라는
+      원래 문제를 우회하려고 도입된 것이고, 이후 발전의 주된 표적이 된다.
+    </p>
+    <ul>
+      <li>
+        <strong>앵커 박스.</strong> 격자 칸마다 미리 정한 크기·비율의 기준 박스를 두고,
+        그 기준에서 얼마나 벗어나는지를 예측한다. 학습이 쉬워지지만
+        <em>데이터셋마다 앵커를 다시 정해야 하고</em>, 하이퍼파라미터가 늘어난다.
+        YOLOX가 이것을 걷어낸다(앵커 프리).
+      </li>
+      <li>
+        <strong>NMS(비최대 억제).</strong> 같은 객체를 이웃한 여러 칸이 동시에 예측하므로,
+        겹치는 박스 중 신뢰도가 높은 것만 남기고 지운다. 학습되지 않는 후처리이고,
+        <em>밀집한 객체에서 진짜 박스를 지우는 실수</em>를 한다. 임계값도 손으로 정해야 한다.
+      </li>
+    </ul>
+    <p>
+      정리하면 검출기의 계보는 <strong>세 번의 제거</strong>로 읽을 수 있다.
+      2단계는 <em>제안 단계</em>를 제거해 1단계가 됐고, YOLOX 계열은 <em>앵커</em>를 제거했으며,
+      마지막 남은 <em>NMS</em>를 제거하는 것이 DETR 계열과 최신 YOLO(v10, YOLO26)의 과제였다.
+    </p>
+    <p>
+      다음 편에서는 YOLO 계열이 v5부터 최신까지 이 목발들을 어떻게 하나씩 떼어냈는지,
+      그다음 편에서는 아예 다른 각도에서 출발해 처음부터 NMS가 없던 DETR 계보를 다룬다.
+    </p>
+  </section>
+
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Girshick et al., <em>Rich feature hierarchies for accurate object detection</em> (arXiv:1311.2524) — R-CNN. 영역 제안 + CNN 분류의 출발점.</li>
+      <li>Girshick, <em>Fast R-CNN</em> (arXiv:1504.08083) — RoI 풀링으로 중복 계산 제거.</li>
+      <li>Ren et al., <em>Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks</em> (arXiv:1506.01497) — 제안까지 신경망으로.</li>
+      <li>Redmon et al., <em>You Only Look Once: Unified, Real-Time Object Detection</em> (arXiv:1506.02640) — 1단계 검출의 시작.</li>
+      <li>Liu et al., <em>SSD: Single Shot MultiBox Detector</em> (arXiv:1512.02325) — 다중 스케일 특징 맵에서의 1단계 검출.</li>
+      <li>Lin et al., <em>Focal Loss for Dense Object Detection</em> (arXiv:1708.02002) — RetinaNet. 클래스 불균형을 손실 함수로 푼 지점.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>

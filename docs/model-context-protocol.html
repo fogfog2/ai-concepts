@@ -1,0 +1,501 @@
+<title>Model Context Protocol — 도구를 모델에 꽂는 규약</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">Model Context Protocol</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #f0ecef;
+    --panel: #e6e0e4;
+    --ink: #181318;
+    --ink-soft: #564c55;
+    --ink-faint: #8a7f88;
+    --rule: #d6ccd3;
+    --rule-strong: #b3a7b0;
+    --accent: #a01e6e;
+    --accent-fill: #f5d8e8;
+    --accent-line: #c4519a;
+    --muted: #6f7d85;
+    --muted-fill: #d8dde0;
+    --warn: #9c5218;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #120f12;
+    --panel: #1b171b;
+    --ink: #ece6ea;
+    --ink-soft: #afa3ac;
+    --ink-faint: #7a6f78;
+    --rule: #2b242a;
+    --rule-strong: #443a41;
+    --accent: #f472b6;
+    --accent-fill: #3a1128;
+    --accent-line: #b04d84;
+    --muted: #7f8f99;
+    --muted-fill: #1c2226;
+    --warn: #dd9052;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #120f12;
+    --panel: #1b171b;
+    --ink: #ece6ea;
+    --ink-soft: #afa3ac;
+    --ink-faint: #7a6f78;
+    --rule: #2b242a;
+    --rule-strong: #443a41;
+    --accent: #f472b6;
+    --accent-fill: #3a1128;
+    --accent-line: #b04d84;
+    --muted: #7f8f99;
+    --muted-fill: #1c2226;
+    --warn: #dd9052;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Protocol · Model Context Protocol · 2024–2026</p>
+    <h1>Model Context Protocol</h1>
+    <p class="subtitle">도구를 모델에 꽂는 규약 — 그리고 스스로를 덜어내는 중인 프로토콜</p>
+    <p class="dek">MCP를 "AI용 USB-C"라고 부르면 절반만 맞다. 규격을 통일했다는 점은 맞지만, 더 중요한 것은 <em>무엇을 규정하지 않기로 했는가</em>다. 최근 <code>2026-07-28</code> 개정판은 프로토콜에서 <strong>상태를 걷어내고</strong>, 클라이언트 프리미티브 넷 중 셋(sampling · roots · logging)을 폐기했다. 기능을 더한 개정이 아니라 <strong>범위를 다시 좁힌</strong> 개정이다.</p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>기반</dt><dd>JSON-RPC 2.0</dd></div>
+    <div><dt>최신 개정</dt><dd>2026-07-28</dd></div>
+    <div><dt>연결</dt><dd>클라이언트 : 서버 = 1 : 1</dd></div>
+    <div><dt>상태</dt><dd>무상태 · _meta 자기완결</dd></div>
+    <div><dt>클라이언트 프리미티브</dt><dd>elicitation 만 유효</dd></div>
+  </dl>
+
+
+  <section>
+    <h2><span class="n">01</span>M×N 문제</h2>
+    <p>
+      모델에 외부 기능을 붙이는 일은 원래 <strong>제곱으로 늘어나는 통합 작업</strong>이었다.
+      AI 애플리케이션이 <code>M</code>개, 연결할 시스템(깃허브, 파일시스템, 데이터베이스, 사내 API)이 <code>N</code>개면
+      필요한 커넥터는 <code>M × N</code>개다. 각 애플리케이션이 각 시스템마다 전용 통합을 따로 작성했다.
+    </p>
+    <p>
+      MCP는 이 사이에 <em>규약</em>을 하나 끼워 넣는다. 애플리케이션은 MCP를 한 번 말할 줄 알면 되고,
+      시스템은 MCP 서버를 한 번 만들면 된다. <code>M × N</code>이 <code>M + N</code>이 된다.
+      언어 서버 프로토콜(LSP)이 에디터와 언어 사이에서 한 일과 같은 구조다 —
+      실제로 MCP는 JSON-RPC 2.0을 쓴다는 점까지 LSP를 닮았다.
+    </p>
+    <div class="note">
+      <b>범위를 좁게 잡은 것이 설계의 핵심이다.</b> MCP는 <em>맥락을 주고받는 방법</em>만 규정하고,
+      애플리케이션이 그 맥락으로 무엇을 하는지, 어떤 모델을 쓰는지, 프롬프트를 어떻게 구성하는지는
+      <strong>일절 규정하지 않는다</strong>. 공식 문서의 표현대로 "MCP는 오직 맥락 교환 프로토콜에만 집중한다."
+      이 절제 덕분에 특정 모델·특정 벤더에 묶이지 않는다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>참여자 — 호스트, 클라이언트, 서버</h2>
+    <p>
+      용어가 혼동되기 쉬운데, 관계는 단순하다.
+    </p>
+    <ul>
+      <li><strong>호스트(Host)</strong> — AI 애플리케이션 본체. Claude Code, Claude Desktop, VS Code 같은 것. 여러 클라이언트를 만들고 관리한다.</li>
+      <li><strong>클라이언트(Client)</strong> — 서버 <em>하나</em>와의 연결을 유지하는 부품. 호스트 안에 산다.</li>
+      <li><strong>서버(Server)</strong> — 맥락을 제공하는 프로그램.</li>
+    </ul>
+    <p>
+      핵심은 <strong>클라이언트와 서버가 1:1</strong>이라는 것이다. 호스트가 서버 세 개에 붙으면
+      클라이언트 객체를 <em>세 개</em> 만든다. 하나의 클라이언트가 여러 서버를 관리하지 않는다.
+      이 격리 덕분에 서버 하나가 죽어도 나머지 연결은 살아 있고, 권한도 연결 단위로 끊을 수 있다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 250" role="img" aria-label="MCP 참여자 구조 도식. 호스트 안에 클라이언트 네 개가 있고 각각 전용 연결로 서버에 붙는다. 로컬 서버는 STDIO 전송을, 원격 서버는 Streamable HTTP 전송을 쓰며 원격 서버 하나에 여러 클라이언트가 붙을 수 있다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <defs>
+              <marker id="mcp-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-line)"/>
+              </marker>
+            </defs>
+
+            <!-- host box -->
+            <rect x="24" y="30" width="220" height="190" fill="var(--panel)" stroke="var(--rule-strong)" stroke-width="1.5"/>
+            <text x="36" y="50" font-size="10.5" letter-spacing="1.2" fill="var(--ink-faint)">MCP HOST (AI 애플리케이션)</text>
+
+            <rect x="40" y="62" width="188" height="30" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.3"/>
+            <text x="134" y="82" text-anchor="middle" font-size="10.5" fill="var(--accent)">MCP 클라이언트 1</text>
+            <rect x="40" y="98" width="188" height="30" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.3"/>
+            <text x="134" y="118" text-anchor="middle" font-size="10.5" fill="var(--accent)">MCP 클라이언트 2</text>
+            <rect x="40" y="134" width="188" height="30" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.3"/>
+            <text x="134" y="154" text-anchor="middle" font-size="10.5" fill="var(--accent)">MCP 클라이언트 3</text>
+            <rect x="40" y="170" width="188" height="30" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.3"/>
+            <text x="134" y="190" text-anchor="middle" font-size="10.5" fill="var(--accent)">MCP 클라이언트 4</text>
+
+            <!-- connections -->
+            <path d="M232 77 L360 77" stroke="var(--accent-line)" stroke-width="1.4" marker-end="url(#mcp-ar)"/>
+            <path d="M232 113 L360 113" stroke="var(--accent-line)" stroke-width="1.4" marker-end="url(#mcp-ar)"/>
+            <path d="M232 149 L360 172" stroke="var(--accent-line)" stroke-width="1.4" marker-end="url(#mcp-ar)"/>
+            <path d="M232 185 L360 186" stroke="var(--accent-line)" stroke-width="1.4" marker-end="url(#mcp-ar)"/>
+
+            <text x="252" y="70" font-size="9" fill="var(--ink-faint)">전용 연결</text>
+
+            <!-- servers -->
+            <rect x="366" y="60" width="200" height="34" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.3"/>
+            <text x="378" y="74" font-size="10.5" fill="var(--ink-soft)">서버 A — 로컬 (파일시스템)</text>
+            <text x="378" y="88" font-size="9" fill="var(--muted)">STDIO 전송</text>
+
+            <rect x="366" y="96" width="200" height="34" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.3"/>
+            <text x="378" y="110" font-size="10.5" fill="var(--ink-soft)">서버 B — 로컬 (데이터베이스)</text>
+            <text x="378" y="124" font-size="9" fill="var(--muted)">STDIO 전송</text>
+
+            <rect x="366" y="158" width="200" height="46" fill="var(--panel)" stroke="var(--accent-line)" stroke-width="1.6"/>
+            <text x="378" y="176" font-size="10.5" fill="var(--accent)">서버 C — 원격 (Sentry 등)</text>
+            <text x="378" y="192" font-size="9" fill="var(--ink-soft)">Streamable HTTP · 다수 클라이언트</text>
+
+            <text x="580" y="180" font-size="9.5" fill="var(--ink-faint)">원격 서버 하나에</text>
+            <text x="580" y="194" font-size="9.5" fill="var(--ink-faint)">여러 연결이 붙는다</text>
+
+            <line x1="24" y1="228" x2="676" y2="228" stroke="var(--rule)" stroke-width="1"/>
+            <text x="24" y="244" font-size="10" fill="var(--ink-soft)">"로컬 / 원격"은 서버가 <tspan fill="var(--accent)">어디서 실행되는가</tspan>의 문제일 뿐, 서버의 종류가 다른 것이 아니다.</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        클라이언트는 서버당 하나씩 생긴다. 로컬 서버(STDIO)는 보통 클라이언트 하나를 상대하지만,
+        원격 서버(Streamable HTTP)는 <strong>여러 클라이언트를 동시에</strong> 상대한다.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>두 개의 층 — 데이터와 전송</h2>
+    <p>
+      MCP는 안쪽의 <strong>데이터 층</strong>과 바깥의 <strong>전송 층</strong>으로 나뉜다.
+      데이터 층은 JSON-RPC 2.0 기반의 메시지 의미를 정의하고, 전송 층은 그 메시지가 실제로
+      어떤 채널을 타고 오가는지를 정의한다. 둘이 분리돼 있어 <em>같은 JSON-RPC 메시지가 어떤 전송에서도 그대로 통한다</em>.
+    </p>
+
+    <div class="pair">
+      <div class="fast">
+        <span class="kicker">STDIO 전송</span>
+        <p>표준 입출력으로 같은 기계 안의 프로세스끼리 직접 통신한다. 네트워크 오버헤드가 없어 가장 빠르다. 로컬 서버의 기본 선택.</p>
+      </div>
+      <div class="slow">
+        <span class="kicker">Streamable HTTP 전송</span>
+        <p>클라이언트→서버는 HTTP POST, 스트리밍이 필요하면 서버센트 이벤트(SSE)를 얹는다. 원격 서버용이며 표준 HTTP 인증(베어러 토큰 등)을 쓴다 — 권장은 OAuth.</p>
+      </div>
+    </div>
+
+    <p>
+      과거의 <code>HTTP+SSE</code> 전송은 <strong>폐기됐다</strong>(2025-03-26 기준).
+      새로 만든다면 Streamable HTTP를 쓴다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>프로토콜이 상태를 버렸다</h2>
+    <p>
+      여기가 최근 개정에서 가장 크게 바뀐 지점이다. 초기 MCP는 <em>연결을 맺고 핸드셰이크를 한 뒤
+      그 상태를 유지</em>하는 구조였다. <code>initialize</code>로 버전과 능력을 합의하고,
+      이후 요청들은 그 합의를 전제로 오갔다.
+    </p>
+    <p>
+      <code>2026-07-28</code> 개정판의 MCP는 <strong>상태 없는(stateless) 프로토콜</strong>이다.
+      모든 요청이 <em>스스로를 처리하는 데 필요한 정보를 전부 담는다</em>.
+      프로토콜 버전과 클라이언트 능력이 매 요청의 <code>_meta</code> 필드에 실린다.
+      서버는 이전 요청을 기억할 필요가 없다.
+    </p>
+    <div class="eq">
+      <span class="cap">매 요청에 실리는 _meta</span>
+      <div class="line">"_meta": {</div>
+      <div class="line">&nbsp;&nbsp;"io.modelcontextprotocol/protocolVersion": "2026-07-28",</div>
+      <div class="line">&nbsp;&nbsp;"io.modelcontextprotocol/clientInfo": { "name": ..., "version": ... },</div>
+      <div class="line">&nbsp;&nbsp;"io.modelcontextprotocol/clientCapabilities": { "elicitation": {} }</div>
+      <div class="line">}</div>
+    </div>
+    <p>
+      능력 탐색은 <code>server/discover</code> 요청 하나로 대체됐다. 모든 서버가 반드시 구현해야 하고,
+      응답은 지원 버전 목록과 능력, 그리고 <strong>캐시 힌트</strong>(<code>ttlMs</code>, <code>cacheScope</code>)를 담는다.
+      게다가 <em>선택 사항</em>이다 — 어차피 모든 요청이 버전을 들고 다니므로,
+      클라이언트는 곧바로 원하는 요청을 보내고 버전 오류가 오면 그때 맞춰도 된다.
+    </p>
+    <div class="note">
+      <b>왜 상태를 버렸나.</b> 상태 있는 연결은 원격 서버에서 비싸다 —
+      로드 밸런서 뒤의 어느 인스턴스가 그 세션을 들고 있는지 관리해야 하고, 재연결마다 핸드셰이크를 다시 해야 한다.
+      상태가 없으면 <strong>아무 인스턴스나 아무 요청이나 처리할 수 있다</strong>.
+      HTTP가 상태를 버려서 웹이 확장된 것과 같은 이유다. 대가는 매 요청의 메타데이터 오버헤드인데,
+      캐시 가능한 <code>server/discover</code>가 그것을 상당 부분 상쇄한다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>프리미티브 — 그리고 사라지고 있는 것들</h2>
+    <p>
+      프리미티브는 <em>서로에게 무엇을 제공할 수 있는가</em>를 규정한다. 서버 쪽 셋이 핵심이다.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>서버 프리미티브</th><th>무엇인가</th><th>주요 메서드</th><th>제어 주체</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="hi">Tools</td><td>실행 가능한 함수 — 행동을 수행</td><td><code>tools/list</code> · <code>tools/call</code></td><td>모델이 호출</td></tr>
+          <tr><td class="hi">Resources</td><td>맥락 데이터 — 파일 내용, DB 레코드</td><td><code>resources/list</code> · <code>resources/read</code></td><td>애플리케이션이 선택</td></tr>
+          <tr><td class="hi">Prompts</td><td>재사용 가능한 상호작용 템플릿</td><td><code>prompts/list</code> · <code>prompts/get</code></td><td>사용자가 호출</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      패턴이 일정하다. <strong>발견은 <code>*/list</code>, 사용은 <code>*/get</code> 또는 <code>tools/call</code></strong>.
+      목록이 런타임에 결정되므로 서버가 상황에 따라 도구를 늘리거나 줄일 수 있다.
+    </p>
+    <p>
+      클라이언트도 프리미티브를 제공한다 — 서버가 <em>거꾸로</em> 요청을 걸 수 있게 하는 장치다.
+      그런데 여기가 최근 크게 정리됐다. <code>2026-07-28</code> 기준으로 살아 있는 클라이언트 프리미티브는
+      <strong>하나뿐</strong>이다.
+    </p>
+    <ul>
+      <li>
+        <strong>Elicitation (유효).</strong> 서버가 사용자에게 추가 정보를 요청한다.
+        확인을 받거나 빠진 값을 물을 때 쓴다. <code>elicitation/create</code>.
+      </li>
+      <li>
+        <strong>Sampling (폐기).</strong> 서버가 클라이언트에게 모델 추론을 요청하던 기능.
+        서버가 LLM SDK를 품지 않고도 모델을 쓸 수 있게 하려던 것이었으나, 이제
+        <em>LLM 제공자 API에 직접 통합하라</em>는 권고로 대체됐다.
+      </li>
+      <li>
+        <strong>Roots (폐기).</strong> 클라이언트가 서버에 파일시스템 경계를 알려 주던 기능.
+        도구 파라미터나 리소스 URI, 서버 설정으로 넘기는 방식으로 대체됐다.
+      </li>
+      <li>
+        <strong>Logging (폐기).</strong> 서버가 클라이언트로 로그를 보내던 기능.
+        STDIO에서는 <code>stderr</code>로, 관측이 필요하면 OpenTelemetry로 대체됐다.
+      </li>
+    </ul>
+
+    <div class="note">
+      <b>폐기는 즉시 제거가 아니다.</b> MCP는 기능 수명주기 정책을 두고 있다.
+      폐기된 기능은 명세에 남아 있되 <em>새 구현은 채택하지 말아야 하고</em>, 실제 제거는
+      <strong>2027-07-28 이후 릴리스</strong>부터 가능해진다. 지금 MCP 서버를 새로 만든다면
+      sampling·roots·logging에 의존하지 않는 편이 안전하다.
+    </div>
+
+    <p>
+      이 정리의 방향은 분명하다. <strong>MCP를 다시 좁히는 것</strong>이다.
+      sampling은 프로토콜이 모델 추론까지 중개하게 만들었고, roots는 파일시스템 개념을 프로토콜에 새겼고,
+      logging은 관측 도구가 이미 잘하는 일을 중복했다. 세 가지 모두 "맥락 교환"이라는 원래 범위를 넘어선 것이었다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">06</span>알림은 이제 구독해야 받는다</h2>
+    <p>
+      서버의 도구 목록이 바뀌었을 때 클라이언트에 알리는 메커니즘도 상태 없는 설계에 맞춰 바뀌었다.
+      과거에는 연결만 있으면 알림이 흘러왔지만, 지금은 <strong>명시적으로 구독</strong>해야 한다.
+    </p>
+    <div class="eq">
+      <span class="cap">구독 → 확인 → 알림</span>
+      <div class="line">→ subscriptions/listen  { notifications: { toolsListChanged: true } }</div>
+      <div class="line">← notifications/subscriptions/acknowledged  (서버가 수락한 항목만 반영)</div>
+      <div class="line">← notifications/tools/list_changed  (변경 발생 시)</div>
+    </div>
+    <p>
+      확인 응답이 중요하다. 서버는 <em>자신이 지원하는 알림만</em> 골라 수락하고 나머지는 응답에서 빠뜨린다.
+      클라이언트는 무엇을 실제로 받게 될지 확실히 알 수 있다. 모든 알림에는
+      구독 요청의 JSON-RPC ID가 <code>subscriptionId</code>로 붙어 어느 구독에서 온 것인지 추적된다.
+    </p>
+    <p>
+      다만 명세는 알림이 <strong>최선 노력(best effort)</strong>이라고 못 박는다.
+      특히 전송 재연결 구간에서 알림이 유실될 수 있으므로,
+      <em>클라이언트는 폴링도 병행해 신선도를 유지해야 한다</em>.
+      알림을 유일한 진실 공급원으로 삼는 설계는 위험하다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">07</span>실무에서 걸리는 지점들</h2>
+    <ul>
+      <li>
+        <strong>도구 이름은 네임스페이스처럼.</strong> 여러 서버의 도구가 한 모델의 도구 목록에 합쳐지므로
+        <code>calculate</code>보다 <code>calculator_arithmetic</code>이 낫다. 충돌이 실제로 일어난다.
+      </li>
+      <li>
+        <strong>도구 설명은 트리거 조건까지 쓴다.</strong> 모델은 설명을 읽고 언제 부를지 정한다.
+        "무엇을 하는가"만이 아니라 <em>"언제 불러야 하는가"</em>를 명시하면 호출률이 눈에 띄게 오른다.
+      </li>
+      <li>
+        <strong>도구가 많으면 점진적 발견을 쓴다.</strong> 서버를 여럿 연결하면 도구 수가 금방 수십 개가 된다.
+        전부 미리 올리는 대신 필요할 때 찾아 올리는 방식이 문맥과 정확도 양쪽에 유리하다.
+      </li>
+      <li>
+        <strong>캐시 힌트를 존중한다.</strong> <code>ttlMs</code>와 <code>cacheScope</code>가 응답에 실린다.
+        매 요청마다 <code>tools/list</code>를 다시 부르는 클라이언트는 상태 없는 설계의 비용만 지불하고 이득은 못 챙긴다.
+      </li>
+      <li>
+        <strong>원격 서버는 인증이 본체다.</strong> Streamable HTTP는 표준 HTTP 인증을 쓰고 OAuth를 권장한다.
+        참고로 동적 클라이언트 등록(DCR)도 폐기 대상이 되어 Client ID Metadata Documents로 옮겨 가고 있다.
+      </li>
+    </ul>
+    <p>
+      한 걸음 물러나 보면, MCP의 최근 개정은 <strong>프로토콜이 스스로를 덜어내는 과정</strong>이다.
+      상태를 버려 확장성을 얻고, 모델 추론·파일 경계·로깅을 밖으로 밀어내 범위를 좁혔다.
+      좋은 프로토콜은 기능을 더해서가 아니라 <em>무엇을 규정하지 않을지 정확히 알아서</em> 오래간다.
+      TCP가 그랬고 HTTP가 그랬다. MCP가 지금 그 방향으로 스스로를 다듬고 있다.
+    </p>
+  </section>
+
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li><em>Architecture overview</em> — modelcontextprotocol.io/docs/learn/architecture. 참여자·층·프리미티브의 1차 출처이고, JSON-RPC 예제가 단계별로 실려 있다.</li>
+      <li><em>MCP Specification 2026-07-28</em> — modelcontextprotocol.io/specification/latest. 상태 없음(statelessness)과 <code>server/discover</code>의 규범적 정의.</li>
+      <li><em>Deprecated Features</em> — /specification/2026-07-28/deprecated. sampling·roots·logging·DCR의 폐기 사유와 마이그레이션 경로, 제거 예정 시점.</li>
+      <li>SEP-2577 · SEP-2596 — 클라이언트 프리미티브 폐기와 기능 수명주기 정책을 도입한 두 제안서.</li>
+      <li><em>Subscriptions</em> — /specification/2026-07-28/basic/patterns/subscriptions. 알림 구독 스트림의 상세 규약.</li>
+      <li><em>Client best practices</em> — 점진적 도구 발견 등 다수 서버를 다루는 클라이언트의 권장 패턴.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>

@@ -1,0 +1,478 @@
+<title>Backpropagation & Optimizers — 학습이 실제로 도는 방식</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">Backpropagation &amp; Optimizers</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #eff0eb;
+    --panel: #e4e5df;
+    --ink: #17180f;
+    --ink-soft: #53553f;
+    --ink-faint: #87896f;
+    --rule: #d0d1c6;
+    --rule-strong: #adae9f;
+    --accent: #5c6b12;
+    --accent-fill: #e4e9c4;
+    --accent-line: #88992c;
+    --muted: #7d7488;
+    --muted-fill: #dcd8e0;
+    --warn: #a34a22;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #111208;
+    --panel: #1a1b11;
+    --ink: #e9eadf;
+    --ink-soft: #a9ab96;
+    --ink-faint: #767861;
+    --rule: #272818;
+    --rule-strong: #3f4128;
+    --accent: #c3d654;
+    --accent-fill: #2c3110;
+    --accent-line: #8b9a30;
+    --muted: #8d8498;
+    --muted-fill: #1f1c23;
+    --warn: #dd8752;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #111208;
+    --panel: #1a1b11;
+    --ink: #e9eadf;
+    --ink-soft: #a9ab96;
+    --ink-faint: #767861;
+    --rule: #272818;
+    --rule-strong: #3f4128;
+    --accent: #c3d654;
+    --accent-fill: #2c3110;
+    --accent-line: #8b9a30;
+    --muted: #8d8498;
+    --muted-fill: #1f1c23;
+    --warn: #dd8752;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Foundations · Gradients & Optimization · 1986–2024</p>
+    <h1>Backpropagation &amp; Optimizers</h1>
+    <p class="subtitle">학습이 실제로 도는 방식 — 방향을 구하는 법과 보폭을 정하는 법</p>
+    <p class="dek">역전파의 기여는 새로운 수학이 아니다. 연쇄 법칙은 17세기부터 있었고, 달라진 것은 <em>계산 순서</em>다 — 뒤에서부터 곱해 내려오면 수십억 개의 편미분이 순전파 두 번 값에 나온다. 그리고 그 곱셈의 연쇄가 바로 <strong>깊은 신경망을 20년간 학습 불가능하게 만든 원인</strong>이기도 했다.</p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>비용</dt><dd>순전파의 약 2배</dd></div>
+    <div><dt>병목</dt><dd>곱셈 연쇄 · 소실/폭발</dd></div>
+    <div><dt>20층 시그모이드</dt><dd>배율 9×10⁻¹³</dd></div>
+    <div><dt>Adam</dt><dd>1차·2차 모멘트 + 편향 보정</dd></div>
+    <div><dt>옵티마이저 상태</dt><dd>파라미터의 2배</dd></div>
+  </dl>
+
+
+  <section>
+    <h2><span class="n">01</span>미분을 수백만 번 계산하는 문제</h2>
+    <p>
+      학습이란 손실을 줄이는 방향으로 파라미터를 조금씩 옮기는 일이다. 그 "방향"이 그래디언트,
+      즉 각 파라미터에 대한 손실의 편미분이다. 문제는 <strong>파라미터가 수십억 개</strong>라는 것이다.
+    </p>
+    <p>
+      순진한 방법은 각 파라미터를 조금 흔들어 손실 변화를 재는 것(수치 미분)이다.
+      파라미터 하나당 순전파를 한 번씩 돌려야 하므로, 10억 개면 <em>한 스텝에 10억 번의 순전파</em>가 필요하다.
+      계산이 불가능하다.
+    </p>
+    <p>
+      <strong>역전파</strong>는 이것을 <em>순전파 한 번 + 역방향 한 번</em>으로 끝낸다.
+      비결은 새로운 수학이 아니라 <strong>연쇄 법칙을 계산 순서를 바꿔 적용하는 것</strong>이다.
+      미적분학의 연쇄 법칙은 17세기부터 있었고, 역전파의 기여는 <em>중복 계산을 제거한 배치</em>에 있다.
+    </p>
+    <div class="eq">
+      <span class="cap">연쇄 법칙 — 뒤에서부터 곱해 내려온다</span>
+      <div class="line">∂L/∂w₁ = (∂L/∂a₃)(∂a₃/∂a₂)(∂a₂/∂a₁)(∂a₁/∂w₁)</div>
+      <div class="line">// 앞에서부터 계산하면 층마다 처음부터 다시 — 뒤에서부터면 한 번에</div>
+    </div>
+    <p>
+      핵심은 <em>공유</em>다. <code>∂L/∂a₂</code>는 2층의 모든 파라미터가 함께 쓴다.
+      뒤에서부터 계산하며 이 값을 한 번만 구해 아래로 넘기면, 층 하나를 지날 때마다
+      그 층 파라미터 전부의 그래디언트가 동시에 나온다. 총 비용은 순전파의 약 2배에 그친다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>곱셈이 반복되면 폭발하거나 사라진다</h2>
+    <p>
+      연쇄 법칙은 <strong>곱셈의 연쇄</strong>다. 층을 지날 때마다 국소 미분값이 곱해진다.
+      이것이 깊은 신경망을 오랫동안 학습 불가능하게 만든 원인이었다.
+    </p>
+    <p>
+      시그모이드 활성화의 도함수는 최대 <code>0.25</code>다. 층을 지날 때마다 그래디언트가
+      최대 4분의 1로 줄어든다는 뜻이다. 층이 깊어지면 결과는 극적이다.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>깊이</th><th>그래디언트 배율 상한 (0.25<sup>L</sup>)</th><th>결과</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>5층</td><td>9.77 × 10⁻⁴</td><td>1000분의 1</td></tr>
+          <tr><td>10층</td><td>9.54 × 10⁻⁷</td><td>백만분의 1</td></tr>
+          <tr><td>20층</td><td>9.10 × 10⁻¹³</td><td class="hi">사실상 0 — 학습 정지</td></tr>
+          <tr><td>50층</td><td>7.89 × 10⁻³¹</td><td class="hi">fp32 정밀도 밖</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      앞쪽 층은 그래디언트를 거의 받지 못해 <strong>학습되지 않는다</strong>(그래디언트 소실).
+      반대로 가중치가 크면 곱이 발산해 <strong>그래디언트 폭발</strong>이 일어난다.
+      두 현상은 같은 원인 — 곱셈의 연쇄 — 의 양쪽 끝이다.
+    </p>
+    <p>
+      해결은 여러 갈래에서 동시에 왔다. <strong>ReLU</strong>는 양수 구간의 도함수가 정확히 1이라
+      곱해도 줄지 않는다. <strong>잔차 연결</strong>은 그래디언트가 층을 <em>건너뛰어</em> 흐르는
+      항등 경로를 만든다. <strong>정규화</strong>는 분포를 붙잡아 값이 극단으로 가지 않게 한다.
+      그래디언트 클리핑은 폭발 쪽을 직접 잘라낸다.
+    </p>
+    <div class="note">
+      <b>세 기법이 같은 문제를 다른 각도에서 친다.</b> ReLU는 <em>곱해지는 값</em>을 1로 만들고,
+      잔차 연결은 <em>곱셈 자체를 우회</em>하고, 정규화는 <em>입력 분포</em>를 고정한다.
+      깊은 신경망이 갑자기 학습되기 시작한 2015년 전후는 이 셋이 함께 자리 잡은 시기다.
+      어느 하나가 결정타였다기보다, 곱셈 연쇄라는 병목을 여러 곳에서 동시에 푼 결과다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>방향을 알아도 얼마나 갈지는 별개다</h2>
+    <p>
+      그래디언트는 <em>방향</em>만 알려준다. 얼마나 갈지는 학습률이 정하는데, 이것이 만만치 않다.
+      크면 발산하고 작으면 수렴이 한없이 느리다. 게다가 <strong>파라미터마다 적절한 크기가 다르다</strong>.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 250" role="img" aria-label="옵티마이저 계보 도식. SGD에서 모멘텀을 더하고, 적응적 학습률을 더하고, 둘을 합쳐 Adam이 되고, 가중치 감쇠를 분리해 AdamW가 되는 흐름.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <defs>
+              <marker id="opt-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-line)"/>
+              </marker>
+            </defs>
+
+            <text x="30" y="22" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">옵티마이저 계보 — 무엇을 더했는가</text>
+
+            <!-- SGD -->
+            <rect x="30" y="40" width="128" height="66" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.3"/>
+            <text x="44" y="60" font-size="11" fill="var(--ink-soft)">SGD</text>
+            <text x="44" y="78" font-size="9.5" fill="var(--ink-faint)">w −= lr · g</text>
+            <text x="44" y="94" font-size="9" fill="var(--warn)">모든 축에 같은 보폭</text>
+
+            <path d="M162 73 L192 73" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#opt-ar)"/>
+            <text x="166" y="66" font-size="8.5" fill="var(--ink-faint)">관성</text>
+
+            <!-- Momentum -->
+            <rect x="196" y="40" width="128" height="66" fill="var(--panel)" stroke="var(--rule-strong)" stroke-width="1.3"/>
+            <text x="210" y="60" font-size="11" fill="var(--ink)">+ Momentum</text>
+            <text x="210" y="78" font-size="9.5" fill="var(--ink-faint)">과거 방향을 누적</text>
+            <text x="210" y="94" font-size="9" fill="var(--ink-soft)">진동을 줄이고 가속</text>
+
+            <path d="M328 73 L358 73" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#opt-ar)"/>
+
+            <!-- Adam -->
+            <rect x="362" y="40" width="140" height="66" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.7"/>
+            <text x="376" y="60" font-size="11" fill="var(--accent)">Adam</text>
+            <text x="376" y="78" font-size="9.5" fill="var(--ink-soft)">1차 + 2차 모멘트</text>
+            <text x="376" y="94" font-size="9" fill="var(--ink-soft)">축마다 보폭을 다르게</text>
+
+            <path d="M506 73 L536 73" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#opt-ar)"/>
+
+            <!-- AdamW -->
+            <rect x="540" y="40" width="130" height="66" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.7"/>
+            <text x="554" y="60" font-size="11" fill="var(--accent)">AdamW</text>
+            <text x="554" y="78" font-size="9.5" fill="var(--ink-soft)">감쇠를 분리</text>
+            <text x="554" y="94" font-size="9" fill="var(--accent)">현대 LLM 표준</text>
+
+            <line x1="30" y1="124" x2="670" y2="124" stroke="var(--rule)" stroke-width="1"/>
+
+            <!-- adaptive illustration -->
+            <text x="30" y="148" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">적응적 학습률이 필요한 이유</text>
+
+            <rect x="30" y="160" width="300" height="72" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="44" y="180" font-size="10" fill="var(--muted)">SGD — 한 학습률을 전부에 적용</text>
+            <text x="44" y="199" font-size="9.5" fill="var(--ink-soft)">자주 등장하는 파라미터: 과하게 움직임</text>
+            <text x="44" y="216" font-size="9.5" fill="var(--ink-soft)">드물게 등장하는 파라미터: 거의 안 움직임</text>
+
+            <rect x="346" y="160" width="324" height="72" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="360" y="180" font-size="10" fill="var(--accent)">Adam — 그래디언트 제곱의 이동평균으로 나눈다</text>
+            <text x="360" y="199" font-size="9.5" fill="var(--ink-soft)">크게 흔들린 축은 보폭을 줄이고,</text>
+            <text x="360" y="216" font-size="9.5" fill="var(--ink-soft)">잠잠했던 축은 보폭을 키운다</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        옵티마이저의 역사는 <strong>무엇을 기억할 것인가</strong>의 역사다.
+        SGD는 아무것도 기억하지 않고, 모멘텀은 방향을, Adam은 방향과 크기를 함께 기억한다.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>Adam — 그리고 아무도 설명하지 않는 그 한 줄</h2>
+    <p>
+      Adam은 두 가지 이동평균을 들고 다닌다. 그래디언트 자체의 평균(1차 모멘트, 방향)과
+      그래디언트 제곱의 평균(2차 모멘트, 크기)이다. 갱신할 때 방향을 크기로 나눈다.
+    </p>
+    <div class="eq">
+      <span class="cap">Adam</span>
+      <div class="line">m<sub>t</sub> = β₁·m<sub>t−1</sub> + (1−β₁)·g<sub>t</sub>&nbsp;&nbsp;&nbsp;// 방향 (β₁ ≈ 0.9)</div>
+      <div class="line">v<sub>t</sub> = β₂·v<sub>t−1</sub> + (1−β₂)·g<sub>t</sub>²&nbsp;&nbsp;// 크기 (β₂ ≈ 0.999)</div>
+      <div class="line">m̂ = m<sub>t</sub>/(1−β₁<sup>t</sup>),&nbsp;&nbsp; v̂ = v<sub>t</sub>/(1−β₂<sup>t</sup>)&nbsp;&nbsp;// 편향 보정</div>
+      <div class="line">w ← w − lr · m̂ / (√v̂ + ε)</div>
+    </div>
+    <p>
+      셋째 줄의 <strong>편향 보정</strong>이 자주 지나쳐지는데, 없으면 학습 초반이 망가진다.
+      <code>m</code>과 <code>v</code>를 0에서 시작하기 때문이다. 그래디언트가 계속 1.0이어도
+      첫 스텝의 <code>m</code>은 <code>0.1</code>에 불과하다 — 실제 크기의 10분의 1이다.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>스텝</th><th>m (보정 전)</th><th>m̂ (보정 후)</th><th>v (보정 전)</th><th>v̂ (보정 후)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>0.1000</td><td class="hi">1.0000</td><td>0.001000</td><td class="hi">1.0000</td></tr>
+          <tr><td>2</td><td>0.1900</td><td class="hi">1.0000</td><td>0.001999</td><td class="hi">1.0000</td></tr>
+          <tr><td>3</td><td>0.2710</td><td class="hi">1.0000</td><td>0.002997</td><td class="hi">1.0000</td></tr>
+          <tr><td>5</td><td>0.4095</td><td class="hi">1.0000</td><td>0.004990</td><td class="hi">1.0000</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      위 값은 <em>직접 계산해 확인한 것</em>이다. 보정 없이는 <code>v</code>가 특히 심각하다 —
+      1스텝째 <code>0.001</code>로, 제곱근을 취해 나누면 갱신량이 30배 넘게 부풀어 발산하기 쉽다.
+      보정을 넣으면 첫 스텝부터 올바른 크기가 된다. <strong>두 줄짜리 나눗셈이 초기 안정성을 좌우한다.</strong>
+    </p>
+    <p>
+      대가는 메모리다. Adam은 파라미터당 <code>m</code>과 <code>v</code>를 들고 있어야 하므로
+      <strong>옵티마이저 상태만 파라미터의 2배</strong>다. fp32 기준으로 7B 모델이면
+      가중치 28GB에 옵티마이저 상태 56GB가 더 붙는다. 대형 모델 학습에서 메모리가 터지는
+      주된 이유 중 하나이고, ZeRO 같은 분산 기법이 가장 먼저 쪼개는 대상이기도 하다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>AdamW — 한 줄을 옮겼더니 달라졌다</h2>
+    <p>
+      가중치 감쇠(weight decay)는 가중치가 커지지 않게 억제하는 정규화다.
+      전통적으로는 손실에 <code>λ‖w‖²</code>를 더해 구현했다. L2 정규화와 같은 것으로 여겨졌다.
+    </p>
+    <p>
+      그런데 Adam에서는 이 둘이 <strong>같지 않다</strong>. 손실에 더하면 그 항의 그래디언트도
+      <code>√v̂</code>로 나눠진다. 그 결과 <em>그래디언트가 컸던 파라미터일수록 감쇠가 약해진다</em> —
+      정규화가 필요한 곳에 정규화가 덜 걸리는, 의도와 반대인 동작이다.
+    </p>
+    <div class="eq">
+      <span class="cap">감쇠를 어디에 두느냐</span>
+      <div class="line">Adam  (L2):  g ← g + λw&nbsp;&nbsp;→ 이후 √v̂ 로 나뉨&nbsp;&nbsp;<em>감쇠가 왜곡됨</em></div>
+      <div class="line">AdamW:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;w ← w − lr·(m̂/(√v̂+ε) <b>+ λw</b>)&nbsp;&nbsp;<em>감쇠를 갱신에 직접</em></div>
+    </div>
+    <p>
+      AdamW는 감쇠 항을 적응적 스케일링 <em>바깥</em>으로 빼낸다(decoupled weight decay).
+      모든 파라미터가 같은 비율로 감쇠한다. 수식 한 줄의 위치를 옮긴 것뿐인데
+      일반화 성능이 눈에 띄게 개선됐고, 오늘날 LLM 학습은 사실상 전부 AdamW를 쓴다.
+    </p>
+    <div class="note">
+      <b>이론이 아니라 구현이 문제였다.</b> Loshchilov와 Hutter의 논문이 지적한 것은
+      새로운 최적화 이론이 아니라, <em>널리 쓰이던 구현이 의도한 수식과 달랐다</em>는 사실이다.
+      "Adam은 SGD보다 일반화가 나쁘다"는 당시의 통념도 상당 부분 이 구현 문제에서 왔다.
+      정규화 층의 사례와 같은 교훈이다 — 잘 작동하는 기법의 이유를 우리가 늘 정확히 알고 있는 것은 아니다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">06</span>실무에서 실제로 만지는 것들</h2>
+    <ul>
+      <li>
+        <strong>학습률 스케줄이 옵티마이저 선택보다 중요할 때가 많다.</strong>
+        초반에 0부터 서서히 올리는 <em>워밍업</em>과 이후 코사인 곡선으로 낮추는 조합이 표준이다.
+        워밍업은 Adam의 2차 모멘트가 아직 신뢰할 만큼 쌓이지 않은 초기 구간을 보호한다.
+      </li>
+      <li>
+        <strong>그래디언트 클리핑은 보험이다.</strong> 전체 그래디언트의 노름이 임계값(보통 1.0)을 넘으면
+        비율로 줄인다. 방향은 유지하고 크기만 자른다. 데이터에 이상치가 섞였을 때 학습이
+        한 번에 무너지는 것을 막는다.
+      </li>
+      <li>
+        <strong>배치 크기와 학습률은 함께 움직인다.</strong> 배치를 키우면 그래디언트 추정이 정확해져
+        더 큰 학습률을 견딘다. 선형 스케일링(배치 2배 → 학습률 2배)이 흔한 출발점이지만
+        아주 큰 배치에서는 무너지므로 제곱근 스케일링을 쓰기도 한다.
+      </li>
+      <li>
+        <strong>메모리가 부족하면 옵티마이저부터 본다.</strong> 상태가 파라미터의 2배이므로,
+        8비트 Adam이나 ZeRO 분할이 먼저 검토된다. 활성값 체크포인팅보다 효과가 클 때가 많다.
+      </li>
+    </ul>
+    <p>
+      역전파와 옵티마이저는 모델 구조를 논할 때 거의 언급되지 않는다. Transformer냐 Mamba냐,
+      MoE를 쓰느냐 같은 이야기가 앞자리를 차지한다. 그러나 <strong>어떤 구조든 학습이 되려면
+      이 층이 먼저 작동해야 한다</strong>. 딥러닝의 겨울이 끝난 것은 새 구조가 발명돼서가 아니라,
+      곱셈 연쇄를 다루는 법(ReLU·잔차·정규화)과 보폭을 정하는 법(Adam 계열)이
+      함께 자리 잡았기 때문이다.
+    </p>
+  </section>
+
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Rumelhart, Hinton &amp; Williams, <em>Learning representations by back-propagating errors</em> (Nature, 1986) — 역전파를 신경망 학습의 표준으로 만든 논문.</li>
+      <li>Kingma &amp; Ba, <em>Adam: A Method for Stochastic Optimization</em> (arXiv:1412.6980) — 1차·2차 모멘트와 편향 보정.</li>
+      <li>Loshchilov &amp; Hutter, <em>Decoupled Weight Decay Regularization</em> (arXiv:1711.05101) — AdamW. 감쇠를 적응 스케일링 밖으로.</li>
+      <li>Glorot &amp; Bengio, <em>Understanding the difficulty of training deep feedforward neural networks</em> (AISTATS 2010) — 그래디언트 소실과 초기화의 관계.</li>
+      <li>He et al., <em>Deep Residual Learning for Image Recognition</em> (arXiv:1512.03385) — 잔차 연결이 그래디언트 경로를 뚫는 방식.</li>
+      <li>Rajbhandari et al., <em>ZeRO: Memory Optimizations Toward Training Trillion Parameter Models</em> (arXiv:1910.02054) — 옵티마이저 상태를 먼저 쪼개는 이유.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>

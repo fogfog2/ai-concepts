@@ -1,0 +1,430 @@
+<title>RF-DETR — 실시간 검출의 현재 도달점</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">④ RF-DETR</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #edf0f1;
+    --panel: #e2e6e8;
+    --ink: #0f1a1d;
+    --ink-soft: #455459;
+    --ink-faint: #77878d;
+    --rule: #c8d1d5;
+    --rule-strong: #a5b0b5;
+    --accent: #046f8f;
+    --accent-fill: #cee7f0;
+    --accent-line: #2b93b3;
+    --muted: #8a8175;
+    --muted-fill: #dedad3;
+    --warn: #a24a22;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #0c1113;
+    --panel: #141a1d;
+    --ink: #e2e9ec;
+    --ink-soft: #9fadb3;
+    --ink-faint: #6a787e;
+    --rule: #212a2e;
+    --rule-strong: #36434a;
+    --accent: #4cc6e8;
+    --accent-fill: #0a2c3a;
+    --accent-line: #2b7f9c;
+    --muted: #8f8779;
+    --muted-fill: #1f1d19;
+    --warn: #dd8752;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0c1113;
+    --panel: #141a1d;
+    --ink: #e2e9ec;
+    --ink-soft: #9fadb3;
+    --ink-faint: #6a787e;
+    --rule: #212a2e;
+    --rule-strong: #36434a;
+    --accent: #4cc6e8;
+    --accent-fill: #0a2c3a;
+    --accent-line: #2b7f9c;
+    --muted: #8f8779;
+    --muted-fill: #1f1d19;
+    --warn: #dd8752;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Detector Series 4/4 · Current SOTA · 2025–2026</p>
+    <h1>RF-DETR</h1>
+    <p class="subtitle">실시간 검출의 현재 도달점 — 그리고 당신의 모델을 옮길 것인가</p>
+    <p class="dek">COCO 60 AP는 오랫동안 <em>느린 모델의 영역</em>이었다. RF-DETR-2XL이 60.1 AP를 17.2 ms에 내면서 그 경계가 무너졌다. 구조는 새 발명이 아니라 <strong>DINOv2 백본 + deformable 디코더</strong>의 조합이고, 강점의 출처도 어텐션이 아니라 <em>웹 규모 사전학습을 흡수하는 통로</em>에 있다. 다만 Apache 2.0은 Large까지이고, CPU 경로는 사실상 없다.</p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>최고</dt><dd>60.1 AP / 17.2 ms</dd></div>
+    <div><dt>실용 상한</dt><dd>Large 56.5 AP (Apache)</dd></div>
+    <div><dt>백본</dt><dd>DINOv2 자기지도</dd></div>
+    <div><dt>후처리</dt><dd>앵커·NMS 모두 없음</dd></div>
+    <div><dt>약점</dt><dd>CPU 경로 없음 · 30M+</dd></div>
+  </dl>
+
+
+  <section>
+    <h2><span class="n">01</span>실시간에서 60 AP를 넘긴 첫 모델</h2>
+    <p>
+      COCO에서 60 AP는 오랫동안 <em>느린 모델의 영역</em>이었다. 큰 백본에 높은 해상도,
+      테스트 시 증강까지 동원해야 도달했고 실시간과는 거리가 멀었다.
+      RF-DETR-2XL이 <strong>60.1 AP를 17.2 ms</strong>에 내면서 그 경계가 무너졌다.
+    </p>
+    <p>
+      구조 자체는 앞 편에서 본 DETR 계보의 연장이다. 새로운 발명이라기보다
+      <em>이미 있던 조각들을 제대로 조합한 것</em>에 가깝다.
+    </p>
+    <ul>
+      <li><strong>DINOv2 백본</strong> — 웹 규모 자기지도 사전학습 모델. 여기가 결정적이다.</li>
+      <li><strong>deformable attention 디코더</strong> — Deformable DETR의 참조점 샘플링.</li>
+      <li><strong>앵커 없음 · NMS 없음</strong> — DETR 계보가 처음부터 가진 성질.</li>
+    </ul>
+    <div class="note">
+      <b>핵심은 백본이다.</b> 앞의 ViT 편에서 본 원리가 그대로 작동한다 —
+      트랜스포머 백본을 쓰면 <em>비전 사전학습의 발전을 그대로 흡수한다</em>.
+      DINOv2는 레이블 없이 방대한 이미지로 학습된 범용 시각 특징 추출기이고,
+      RF-DETR은 그 위에 검출 헤드를 얹었을 뿐이다.
+      <strong>커스텀 데이터셋 전이가 유독 강한 이유</strong>가 여기 있다 —
+      백본이 이미 세상을 많이 봤기 때문이다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>모델 표 — 그리고 라이선스가 갈리는 지점</h2>
+    <p>
+      변형은 여섯 가지다. 아래 수치는 공식 저장소 기준이며,
+      <strong>NVIDIA T4 · TensorRT · FP16 · 배치 1</strong>에서 측정된 값이다.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>변형</th><th>COCO AP</th><th>지연</th><th>파라미터</th><th>입력</th><th>라이선스</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Nano</td><td class="hi">48.4</td><td>2.3 ms</td><td>30.5M</td><td>384²</td><td class="hi">Apache 2.0</td></tr>
+          <tr><td>Small</td><td class="hi">53.0</td><td>3.5 ms</td><td>32.1M</td><td>512²</td><td class="hi">Apache 2.0</td></tr>
+          <tr><td>Medium</td><td class="hi">54.7</td><td>4.4 ms</td><td>33.7M</td><td>576²</td><td class="hi">Apache 2.0</td></tr>
+          <tr><td>Large</td><td class="hi">56.5</td><td>6.8 ms</td><td>33.9M</td><td>704²</td><td class="hi">Apache 2.0</td></tr>
+          <tr><td>XLarge</td><td>58.6</td><td>11.5 ms</td><td>126.4M</td><td>700²</td><td>PML 1.0</td></tr>
+          <tr><td>2XLarge</td><td>60.1</td><td>17.2 ms</td><td>126.9M</td><td>880²</td><td>PML 1.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      <strong>주의할 점 하나.</strong> "RF-DETR은 Apache 2.0"이라는 요약을 자주 보는데,
+      정확히는 <em>Nano ~ Large까지만</em> Apache 2.0이다.
+      60 AP를 내는 XLarge·2XLarge는 별도 라이선스(PML 1.0)다.
+      상용 배포를 염두에 둔다면 <strong>Large가 실질적인 상한선</strong>이라고 보는 편이 안전하다.
+      다행히 Large도 56.5 AP로 충분히 높다.
+    </p>
+    <p>
+      파라미터 수에서 눈에 띄는 점은 Nano부터 Large까지가 <em>30~34M로 거의 같다</em>는 것이다.
+      크기 차이는 주로 <strong>입력 해상도</strong>에서 온다(384² → 704²).
+      YOLO 계열이 채널 폭과 깊이를 조절해 크기를 나누는 것과 다른 방식이다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>YOLOv5s · YOLOX-tiny에서 옮긴다면</h2>
+    <p>
+      직접 비교는 조심해야 한다. 해상도와 측정 조건이 다르고, 원 논문들의 보고 기준도 제각각이다.
+      그럼에도 대략의 위치를 잡으면 이렇다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 250" role="img" aria-label="현행 모델과 RF-DETR의 COCO mAP 비교 막대 그래프. YOLOX-tiny 32.8, YOLOv5s 약 37.4, RF-DETR Nano 48.4, Small 53.0, Large 56.5, 2XL 60.1을 보여준다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <text x="30" y="22" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">COCO AP50:95 — 대략적 위치 (측정 조건이 달라 참고용)</text>
+
+            <!-- axis -->
+            <line x1="150" y1="196" x2="660" y2="196" stroke="var(--rule-strong)" stroke-width="1"/>
+            <text x="150" y="212" font-size="9" fill="var(--ink-faint)">30</text>
+            <text x="320" y="212" font-size="9" fill="var(--ink-faint)">40</text>
+            <text x="490" y="212" font-size="9" fill="var(--ink-faint)">50</text>
+            <text x="655" y="212" font-size="9" fill="var(--ink-faint)">60</text>
+
+            <!-- bars: scale x = 150 + (ap-30)*17 -->
+            <text x="30" y="49" font-size="10" fill="var(--muted)">YOLOX-tiny</text>
+            <rect x="150" y="38" width="47.6" height="16" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="206" y="50" font-size="9.5" fill="var(--muted)">32.8</text>
+
+            <text x="30" y="75" font-size="10" fill="var(--muted)">YOLOv5s</text>
+            <rect x="150" y="64" width="125.8" height="16" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="284" y="76" font-size="9.5" fill="var(--muted)">37.4</text>
+
+            <line x1="30" y1="90" x2="660" y2="90" stroke="var(--rule)" stroke-width="1" stroke-dasharray="3 3"/>
+
+            <text x="30" y="111" font-size="10" fill="var(--accent)">RF-DETR Nano</text>
+            <rect x="150" y="100" width="312.8" height="16" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.5"/>
+            <text x="471" y="112" font-size="9.5" fill="var(--accent)">48.4 · 2.3ms</text>
+
+            <text x="30" y="137" font-size="10" fill="var(--accent)">RF-DETR Small</text>
+            <rect x="150" y="126" width="391" height="16" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.5"/>
+            <text x="549" y="138" font-size="9.5" fill="var(--accent)">53.0 · 3.5ms</text>
+
+            <text x="30" y="163" font-size="10" fill="var(--accent)">RF-DETR Large</text>
+            <rect x="150" y="152" width="450.5" height="16" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.8"/>
+            <text x="608" y="164" font-size="9.5" fill="var(--accent)">56.5 · 6.8ms</text>
+
+            <text x="30" y="189" font-size="10" fill="var(--ink-faint)">RF-DETR 2XL</text>
+            <rect x="150" y="178" width="511.7" height="16" fill="var(--panel)" stroke="var(--rule-strong)" stroke-width="1.2"/>
+            <text x="600" y="234" font-size="9" fill="var(--warn)">PML 1.0 — 상용 시 확인</text>
+
+            <text x="30" y="234" font-size="9.5" fill="var(--ink-faint)">Apache 2.0 구간: Nano ~ Large</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        <code>YOLOX-tiny</code>에서 <code>RF-DETR-Nano</code>로 옮기면 COCO 기준 <strong>약 15p</strong>의 차이가 난다.
+        다만 해상도(416² vs 384²)와 측정 조건이 달라 <em>정확한 비교가 아니라 위치 감각</em>으로만 읽어야 한다.
+        실제 이득은 자기 데이터셋에서 직접 재야 한다.
+      </figcaption>
+    </figure>
+
+    <p>
+      실무에서 바뀌는 것은 정확도만이 아니다.
+    </p>
+    <ul>
+      <li>
+        <strong>후처리 코드가 사라진다.</strong> NMS 임계값·IoU 임계값 튜닝이 없어지고,
+        박스 수에 따라 지연이 흔들리던 문제도 사라진다. 실시간 시스템에서 이 <em>예측 가능성</em>은 큰 이점이다.
+      </li>
+      <li>
+        <strong>앵커 재계산이 없다.</strong> 데이터셋을 바꿀 때마다 k-means로 앵커를 다시 뽑을 필요가 없다.
+      </li>
+      <li>
+        <strong>커스텀 데이터 전이가 강하다.</strong> DINOv2 백본 덕분에 소량 데이터 파인튜닝에서 유리하다고 보고된다.
+        도메인 전이 벤치마크(RF100-VL)를 근거로 내세우는 부분이다.
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>대가 — 이 모델을 쓰면 안 되는 경우</h2>
+    <p>
+      RF-DETR이 모든 상황에서 낫지는 않다. 명확한 제약이 있다.
+    </p>
+    <div class="pair">
+      <div class="slow">
+        <span class="kicker">RF-DETR을 피해야 할 때</span>
+        <p><strong>CPU·저전력 기기.</strong> 실질적인 CPU 경로가 없다. 파라미터가 Nano도 30.5M으로, YOLO26-N(2.4M)의 12배가 넘는다. 라즈베리파이·모바일 NPU 환경이면 후보가 아니다.</p>
+      </div>
+      <div class="fast">
+        <span class="kicker">RF-DETR이 맞을 때</span>
+        <p><strong>GPU가 있는 서버·엣지 GPU.</strong> T4·Jetson 급 이상에서 TensorRT로 돌린다면, 같은 지연에서 더 높은 정확도를 얻는다. 정확도가 제품 가치를 좌우하는 경우.</p>
+      </div>
+    </div>
+    <p>
+      파라미터 수 차이가 이 갈림을 만든다. YOLO 계열은 오랜 기간 <em>작게 만드는 것</em>을 최적화해 왔고,
+      DETR 계열은 <em>정확하게 만드는 것</em>을 최적화해 왔다.
+      Nano라는 이름이 붙어 있어도 30M은 임베디드 기준으로 작지 않다.
+    </p>
+    <div class="note">
+      <b>측정 조건을 옮겨 적을 때 주의.</b> 표의 지연은 <em>T4 + TensorRT + FP16 + 배치 1</em>이다.
+      PyTorch로 그냥 돌리거나, GPU가 다르거나, 배치를 키우면 숫자가 크게 달라진다.
+      벤더 벤치마크는 대개 <strong>가장 유리한 조건</strong>에서 측정된다는 점을 감안해야 하고,
+      결국 <em>자기 하드웨어에서 자기 데이터로 재보는 것</em> 외에 방법이 없다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>2026년 시점의 선택 가이드</h2>
+    <p>
+      네 편을 통과한 결론을 하나의 표로 정리하면 이렇다.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>상황</th><th>후보</th><th>라이선스</th><th>이유</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>GPU 있음 · 정확도 우선</td><td class="hi">RF-DETR (N~L)</td><td>Apache 2.0</td><td>같은 지연에서 최고 정확도, 전이 강함</td></tr>
+          <tr><td>CPU·엣지 · 저전력</td><td class="hi">YOLO26-N/S</td><td>AGPL-3.0</td><td>2.4M급, CPU 추론 최적화</td></tr>
+          <tr><td>AGPL 회피 필요</td><td>YOLOX · RTMDet</td><td>Apache / MIT</td><td>상용 배포에 제약 적음</td></tr>
+          <tr><td>순수 처리량 최대</td><td>RTMDet</td><td>MIT</td><td>3090에서 300+ FPS급 보고</td></tr>
+          <tr><td>학습 데이터 없음</td><td>YOLO-World · Grounding DINO</td><td>각기 다름</td><td>텍스트 프롬프트로 검출</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      <strong>당신의 경우</strong> — <code>YOLOv5s</code>·<code>YOLOX-tiny</code>를 쓰고 있다면
+      판단 기준은 하나로 좁혀진다. <em>추론이 GPU에서 도는가</em>.
+      GPU라면 RF-DETR-Nano나 Small부터 시험해 볼 만하고(Apache 2.0 구간),
+      CPU·임베디드라면 RF-DETR은 후보가 아니며 YOLO26 쪽이 맞다.
+      단 YOLO26은 AGPL-3.0이므로 배포 형태를 먼저 확인해야 한다.
+    </p>
+    <p>
+      네 편을 관통하는 흐름을 한 줄로 줄이면 이렇다.
+      <strong>검출기의 역사는 사람이 손으로 정하던 것을 하나씩 학습으로 넘긴 역사</strong>다 —
+      영역 제안, 앵커, 라벨 할당, 그리고 마지막으로 NMS.
+      RF-DETR은 그 목록이 모두 비워진 상태에서 출발해,
+      남은 자리를 <em>대규모 사전학습</em>으로 채운 모델이다.
+      다음에 올 것이 무엇이든, 아마 지금 우리가 여전히 손으로 정하고 있는 무언가를 대체할 것이다.
+    </p>
+  </section>
+
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Roboflow, <em>RF-DETR</em> 저장소 (github.com/roboflow/rf-detr) — 변형별 AP·지연·파라미터 공식 표와 라이선스. 수치는 갱신되므로 원문 확인 권장.</li>
+      <li>Roboflow, <em>Advancing State of the Art Object Detection (Again) with RF-DETR</em> (blog.roboflow.com/rf-detr-nano-small-medium) — Nano/Small/Medium 벤치마크와 측정 조건.</li>
+      <li>Oquab et al., <em>DINOv2: Learning Robust Visual Features without Supervision</em> (arXiv:2304.07193) — RF-DETR 백본.</li>
+      <li>Zhu et al., <em>Deformable DETR</em> (arXiv:2010.04159) — 디코더가 쓰는 어텐션 메커니즘.</li>
+      <li>Zhao et al., <em>DETRs Beat YOLOs on Real-time Object Detection</em> (arXiv:2304.08069) — RT-DETR. 실시간 DETR의 직전 단계.</li>
+      <li>Lyu et al., <em>RTMDet: An Empirical Study of Designing Real-Time Object Detectors</em> (arXiv:2212.07784) — MIT 라이선스 · 처리량 중심 대안.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>

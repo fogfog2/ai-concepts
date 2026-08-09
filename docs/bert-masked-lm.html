@@ -1,0 +1,440 @@
+<title>BERT & Masked LM — 빈칸을 메우며 언어를 익히다</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">BERT &amp; Masked LM</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #ebeee9;
+    --panel: #dfe4dc;
+    --ink: #131813;
+    --ink-soft: #4a554a;
+    --ink-faint: #7d8a7d;
+    --rule: #c9d0c6;
+    --rule-strong: #a6afa3;
+    --accent: #2c6b3f;
+    --accent-fill: #d5e8d9;
+    --accent-line: #4b8f60;
+    --muted: #87807a;
+    --muted-fill: #dad7d3;
+    --warn: #a05423;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #0e120f;
+    --panel: #161c17;
+    --ink: #e4e9e3;
+    --ink-soft: #a2aea1;
+    --ink-faint: #6d786c;
+    --rule: #232b24;
+    --rule-strong: #38423a;
+    --accent: #6cc98a;
+    --accent-fill: #122e1c;
+    --accent-line: #3f8a58;
+    --muted: #8d8680;
+    --muted-fill: #201e1c;
+    --warn: #dd8b52;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0e120f;
+    --panel: #161c17;
+    --ink: #e4e9e3;
+    --ink-soft: #a2aea1;
+    --ink-faint: #6d786c;
+    --rule: #232b24;
+    --rule-strong: #38423a;
+    --accent: #6cc98a;
+    --accent-fill: #122e1c;
+    --accent-line: #3f8a58;
+    --muted: #8d8680;
+    --muted-fill: #201e1c;
+    --warn: #dd8b52;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Foundations · Bidirectional Pre-training · 2018–2020</p>
+    <h1>BERT &amp; Masked LM</h1>
+    <p class="subtitle">빈칸을 메우며 언어를 익히다 — 과제를 바꿔 제약을 없앤다는 발상</p>
+    <p class="dek">양방향으로 문맥을 읽는 것이 좋다는 건 누구나 알았다. 문제는 <em>다음 단어 맞히기</em>에서 양쪽을 다 보게 하면 답이 입력에 들어 있다는 것이었다. BERT의 해법은 더 좋은 구조가 아니라 <strong>다른 과제</strong>였다 — 가린 자리를 복원하게 하면 양쪽을 봐도 답이 새지 않는다. 사전학습 과제의 설계가 곧 표현의 성격을 정한다는 것을 보여 준 사례다.</p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>과제</dt><dd>빈칸 복원 (MLM)</dd></div>
+    <div><dt>마스킹</dt><dd>15% · 80/10/10</dd></div>
+    <div><dt>구조</dt><dd>인코더 전용 · 생성 불가</dd></div>
+    <div><dt>대가</dt><dd>학습 신호 1/7</dd></div>
+    <div><dt>현재 용도</dt><dd>임베딩 · 대량 분류</dd></div>
+  </dl>
+
+
+  <section>
+    <h2><span class="n">01</span>왼쪽만 보는 모델의 한계</h2>
+    <p>
+      2018년 이전, 사전학습된 언어 표현을 얻는 주된 방법은 <strong>다음 단어 맞히기</strong>였다.
+      문장을 왼쪽에서 오른쪽으로 읽으며 다음에 올 단어를 예측한다. GPT가 이 방식이다.
+      생성에는 자연스럽지만, <em>문장을 이해하는 것</em>이 목적이라면 이상한 제약이 하나 붙는다.
+    </p>
+    <p>
+      "그 배는 <strong>부두</strong>에 정박했다"와 "그 배는 <strong>맛있게</strong> 익었다"에서 '배'가 무엇인지는
+      뒤를 봐야 안다. 왼쪽만 보는 모델은 '배'를 인코딩하는 시점에 뒤를 볼 수 없다.
+      질의응답이나 문장 분류처럼 <strong>입력 전체가 이미 주어진</strong> 과제에서 이 제약은 순전히 손해다.
+    </p>
+    <p>
+      우회로가 없진 않았다. ELMo는 왼→오 모델과 오→왼 모델을 따로 학습해 표현을 이어 붙였다.
+      그러나 이것은 각각 반쪽만 본 표현을 <em>사후에 접합</em>한 것이지, 양방향으로 함께 학습한 것이 아니다.
+      진짜 양방향이 어려웠던 이유는 뻔하다 — <strong>다음 단어를 맞히는 과제에서 양쪽을 다 보게 하면
+      답이 입력에 들어 있다.</strong> 모델은 아무것도 배우지 않는다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>빈칸 문제로 바꾸면 답이 새지 않는다</h2>
+    <p>
+      BERT의 해결은 과제를 바꾸는 것이었다. 다음 단어를 맞히는 대신, 문장 중간의 단어를 가리고
+      <strong>그 자리를 복원</strong>하게 한다. 가려진 자리는 입력에 없으므로 양쪽을 모두 봐도 답이 새지 않는다.
+      언어학에서 오래된 <em>클로즈 테스트</em>(cloze test)를 그대로 가져온 셈이다.
+    </p>
+    <div class="eq">
+      <span class="cap">Masked Language Modeling — 가린 자리만 예측</span>
+      <div class="line">입력:  그 배는 [MASK] 에 정박했다</div>
+      <div class="line">목표:  P(부두 | 그 배는 __ 에 정박했다)&nbsp;&nbsp;← 양쪽 문맥 모두 사용</div>
+    </div>
+    <p>
+      전체 토큰의 <strong>15%</strong>를 골라 가린다. 그런데 그 15%를 전부 <code>[MASK]</code>로 바꾸면 문제가 생긴다.
+      <code>[MASK]</code>는 학습에만 등장하고 실제 사용할 때는 나타나지 않는 토큰이라,
+      모델이 "<code>[MASK]</code>가 보일 때만 열심히 일하는" 습관을 들인다. 학습과 추론의 입력 분포가 어긋나는 것이다.
+    </p>
+    <p>
+      그래서 BERT는 고른 15%를 다시 쪼갠다. <strong>80%는 <code>[MASK]</code>로, 10%는 무작위 단어로,
+      10%는 원래 단어 그대로</strong> 둔다. 뒤의 두 경우 때문에 모델은 <em>가려지지 않은 자리도 의심해야</em> 하고,
+      결국 모든 위치에 대해 문맥에 맞는 표현을 유지하게 된다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 250" role="img" aria-label="BERT의 마스킹 전략 도식. 전체 토큰의 15퍼센트를 선택한 뒤 그중 80퍼센트는 MASK 토큰으로, 10퍼센트는 무작위 단어로, 10퍼센트는 원래 단어 그대로 두어 학습과 추론의 분포 차이를 줄인다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <text x="30" y="22" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">전체 토큰 중 15%를 예측 대상으로 선택</text>
+
+            <!-- token row -->
+            <rect x="30" y="34" width="76" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="1"/>
+            <text x="68" y="54" text-anchor="middle" font-size="11" fill="var(--ink-soft)">그</text>
+            <rect x="110" y="34" width="76" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="1"/>
+            <text x="148" y="54" text-anchor="middle" font-size="11" fill="var(--ink-soft)">배는</text>
+            <rect x="190" y="34" width="76" height="30" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="2"/>
+            <text x="228" y="54" text-anchor="middle" font-size="11" fill="var(--accent)">부두</text>
+            <rect x="270" y="34" width="76" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="1"/>
+            <text x="308" y="54" text-anchor="middle" font-size="11" fill="var(--ink-soft)">에</text>
+            <rect x="350" y="34" width="96" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="1"/>
+            <text x="398" y="54" text-anchor="middle" font-size="11" fill="var(--ink-soft)">정박했다</text>
+
+            <text x="470" y="54" font-size="10.5" fill="var(--accent)">← 이 자리가 선택됨</text>
+
+            <line x1="30" y1="82" x2="660" y2="82" stroke="var(--rule)" stroke-width="1"/>
+
+            <text x="30" y="106" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">선택된 자리를 다시 세 갈래로 나눈다</text>
+
+            <!-- 80% -->
+            <rect x="30" y="118" width="200" height="80" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.6"/>
+            <text x="44" y="138" font-size="11" fill="var(--accent)">80% — [MASK] 로 치환</text>
+            <text x="44" y="158" font-size="11.5" fill="var(--ink-soft)">그 배는 [MASK] 에</text>
+            <text x="44" y="180" font-size="10" fill="var(--ink-faint)">기본 형태. 양방향 문맥으로 복원.</text>
+
+            <!-- 10% random -->
+            <rect x="238" y="118" width="200" height="80" fill="var(--panel)" stroke="var(--warn)" stroke-width="1.6"/>
+            <text x="252" y="138" font-size="11" fill="var(--warn)">10% — 무작위 단어</text>
+            <text x="252" y="158" font-size="11.5" fill="var(--ink-soft)">그 배는 사과 에</text>
+            <text x="252" y="180" font-size="10" fill="var(--ink-faint)">틀린 단어도 고칠 수 있어야 한다.</text>
+
+            <!-- 10% same -->
+            <rect x="446" y="118" width="214" height="80" fill="var(--panel)" stroke="var(--rule-strong)" stroke-width="1.6"/>
+            <text x="460" y="138" font-size="11" fill="var(--ink)">10% — 그대로 둠</text>
+            <text x="460" y="158" font-size="11.5" fill="var(--ink-soft)">그 배는 부두 에</text>
+            <text x="460" y="180" font-size="10" fill="var(--ink-faint)">맞는 단어도 표현을 유지해야 한다.</text>
+
+            <text x="30" y="228" font-size="10.5" fill="var(--ink-soft)">뒤의 두 갈래가 없으면 모델은 [MASK] 가 보이는 자리에서만 일하게 된다 — 추론 때는 그 토큰이 없다.</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        80/10/10 비율은 <strong>학습·추론 분포 불일치</strong>를 줄이기 위한 장치다.
+        모델은 어느 자리가 조작됐는지 모르므로, 결국 <em>모든 위치</em>에 대해 문맥 정합적인 표현을 유지해야 한다.
+      </figcaption>
+    </figure>
+
+    <div class="note">
+      <b>대가는 효율이다.</b> 다음 단어 예측은 토큰 <code>N</code>개짜리 문장에서 <code>N</code>개의 학습 신호를 준다.
+      MLM은 15%만 예측하므로 <em>같은 데이터에서 얻는 신호가 7분의 1 이하</em>다.
+      BERT가 더 많은 학습량을 요구하는 이유이고, ELECTRA가 "모든 토큰이 진짜인지 가짜인지 판별"하는
+      과제로 이 낭비를 메우려 한 이유이기도 하다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>인코더라는 선택, 그리고 [CLS]</h2>
+    <p>
+      BERT는 트랜스포머의 <strong>인코더만</strong> 쌓는다. 디코더가 없으므로 인과 마스킹도 없고,
+      모든 토큰이 모든 토큰을 본다. 대신 <em>생성을 못 한다</em>. 이 맞교환이 BERT 계열과 GPT 계열을 가른다.
+    </p>
+    <div class="pair">
+      <div class="fast">
+        <span class="kicker">인코더 (BERT)</span>
+        <p>양방향. 입력 전체를 한 번에 이해한다. 분류·개체 인식·검색용 임베딩에 강하다. 생성은 불가.</p>
+      </div>
+      <div class="slow">
+        <span class="kicker">디코더 (GPT)</span>
+        <p>단방향. 다음 토큰을 이어 붙인다. 생성에 자연스럽고, 규모를 키우면 이해 과제도 흡수한다.</p>
+      </div>
+    </div>
+    <p>
+      입력 표현에는 세 가지 임베딩이 더해진다. 토큰 임베딩(WordPiece 단위), 위치 임베딩,
+      그리고 <strong>세그먼트 임베딩</strong>이다. 마지막 것은 문장 두 개를 함께 넣을 때
+      어느 쪽에 속하는지 알려 준다 — 문장 관계를 다루는 과제를 염두에 둔 설계다.
+    </p>
+    <p>
+      맨 앞에는 항상 <code>[CLS]</code>라는 특수 토큰이 붙는다. 이 자리에는 예측할 단어가 없으므로,
+      어텐션을 통해 <em>문장 전체의 정보가 모이는 빈 그릇</em> 역할을 하게 된다.
+      분류 과제에서는 이 <code>[CLS]</code> 벡터 하나에 작은 분류기를 얹는 것으로 끝난다.
+    </p>
+    <p>
+      원 논문은 <strong>NSP</strong>(다음 문장 예측)라는 두 번째 과제도 함께 썼다. 두 문장을 주고
+      실제로 이어지는 문장인지 판별하게 하는 것이다. 다만 이후 RoBERTa가 <em>NSP를 빼는 편이 오히려 낫다</em>는
+      결과를 내놓았다. 과제가 너무 쉬워서 — 무작위로 고른 문장은 주제부터 다르므로 —
+      문장 관계를 배우기보다 주제 일치만 판별하고 있었던 것으로 해석된다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>사전학습 → 파인튜닝이라는 표준을 만들다</h2>
+    <p>
+      BERT의 실질적 영향은 구조보다 <strong>작업 방식</strong>에 있었다. 그 전까지 NLP는 과제마다
+      전용 아키텍처를 설계했다. BERT 이후에는 하나의 사전학습 모델에
+      <em>얇은 출력층 하나만 얹어 미세조정하는</em> 방식이 표준이 됐다.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>과제 유형</th><th>쓰는 출력</th><th>얹는 것</th><th>예</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>문장 분류</td><td>[CLS] 벡터</td><td>선형층 1개</td><td class="hi">감성 분석 · 스팸 판별</td></tr>
+          <tr><td>문장 쌍 관계</td><td>[CLS] 벡터</td><td>선형층 1개</td><td>함의 · 유사도</td></tr>
+          <tr><td>토큰 분류</td><td>각 토큰 벡터</td><td>토큰별 선형층</td><td class="hi">개체명 인식 · 품사</td></tr>
+          <tr><td>추출형 QA</td><td>각 토큰 벡터</td><td>시작·끝 위치 예측</td><td>SQuAD</td></tr>
+          <tr><td>문장 임베딩</td><td>평균 풀링</td><td>대조 학습 추가</td><td class="hi">검색 · 클러스터링</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      성능은 즉각적이었다. 발표 시점에 GLUE 벤치마크의 11개 과제에서 동시에 최고 기록을 갈아치웠고,
+      SQuAD에서는 사람 성능을 넘겼다. 2019~2020년의 NLP 논문 상당수가
+      "BERT를 우리 도메인에 적용해 봤다"는 형태였을 만큼 지배적이었다.
+    </p>
+    <p>
+      후속 연구는 대체로 세 방향이었다. <strong>더 잘 학습하기</strong>(RoBERTa — NSP 제거, 더 큰 배치,
+      동적 마스킹), <strong>더 작게 만들기</strong>(DistilBERT, ALBERT — 파라미터 공유와 증류),
+      <strong>과제를 더 효율적으로 바꾸기</strong>(ELECTRA — 판별 과제로 전환).
+      DeBERTa는 위치와 내용을 분리해 어텐션을 계산하는 방식으로 정확도를 더 끌어올렸다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>GPT가 이겼는데도 BERT가 남아 있는 이유</h2>
+    <p>
+      2020년 이후 흐름은 디코더 쪽으로 기울었다. GPT-3가 보여 준 것은
+      <em>충분히 크게 만들면 파인튜닝 없이 프롬프트만으로</em> 과제를 수행한다는 것이었고,
+      이것은 과제마다 파인튜닝하는 BERT 방식보다 운영이 훨씬 간단하다.
+      생성까지 되니 활용 범위도 넓다. 대중의 관심이 옮겨 간 것은 자연스럽다.
+    </p>
+    <p>
+      그런데도 인코더 모델은 사라지지 않았다. 오히려 <strong>보이지 않는 곳에서 대량으로 돌아간다</strong>.
+      이유는 성능이 아니라 경제성이다.
+    </p>
+    <ul>
+      <li>
+        <strong>임베딩은 여전히 인코더의 일이다.</strong> 앞서 다룬 RAG의 검색 단계, 추천, 중복 제거는 모두
+        문장을 벡터로 바꾸는 작업이다. 여기에 생성 능력은 필요 없고, 양방향 표현이 유리하다.
+        주요 임베딩 모델 상당수가 인코더 계열이거나 그 후예다.
+      </li>
+      <li>
+        <strong>분류에 LLM은 과하다.</strong> 문장 하나를 스팸인지 판별하는 데 70B 모델을 호출하는 것은
+        비용과 지연 양쪽에서 낭비다. 파인튜닝한 100M급 인코더가 <em>수십 배 싸고 빠르며 정확도도 대등</em>하다.
+        대량 트래픽에서 이 차이는 결정적이다.
+      </li>
+      <li>
+        <strong>결정적 출력.</strong> 분류는 확률과 임계값으로 다루기 쉬운 반면, 생성 모델의 출력은
+        형식을 강제해도 흔들릴 수 있다. 감사와 재현성이 중요한 파이프라인에서는 이 차이가 크다.
+      </li>
+    </ul>
+    <p>
+      최근에는 인코더를 현대적으로 다시 만든 시도(ModernBERT 등)도 나왔다.
+      RoPE 위치 인코딩, 긴 문맥, 최신 학습 기법을 얹어 2018년 설계를 갱신한 것이다.
+      <strong>모든 문제가 생성 문제는 아니라는 사실</strong>이 이 계열을 살려 두고 있다.
+    </p>
+    <p>
+      돌아보면 BERT의 진짜 기여는 성능 수치가 아니라 관점이었다.
+      <em>어떤 자기지도 과제를 설계하느냐가 어떤 표현을 얻느냐를 결정한다</em>는 것.
+      다음 단어 맞히기와 빈칸 채우기는 같은 데이터에서 다른 능력을 끌어냈다.
+      이 통찰은 언어를 넘어 이미지로도 옮겨 갔고, 다음 편에서 다룰 비전 트랜스포머의
+      마스크 기반 사전학습(MAE)이 바로 그 계보다.
+    </p>
+  </section>
+
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Devlin et al., <em>BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</em> (arXiv:1810.04805) — 원 논문. 마스킹 비율과 80/10/10의 근거는 부록에 있다.</li>
+      <li>Liu et al., <em>RoBERTa: A Robustly Optimized BERT Pretraining Approach</em> (arXiv:1907.11692) — NSP를 빼고 더 오래 학습하면 어디까지 오르는가.</li>
+      <li>Clark et al., <em>ELECTRA: Pre-training Text Encoders as Discriminators Rather Than Generators</em> (arXiv:2003.10555) — 15%만 쓰는 낭비를 없애려는 시도.</li>
+      <li>He et al., <em>DeBERTa: Decoding-enhanced BERT with Disentangled Attention</em> (arXiv:2006.03654) — 내용과 위치를 분리한 어텐션.</li>
+      <li>Sanh et al., <em>DistilBERT, a distilled version of BERT</em> (arXiv:1910.01108) — 40% 작고 60% 빠른 증류판.</li>
+      <li>Reimers &amp; Gurevych, <em>Sentence-BERT</em> (arXiv:1908.10084) — 인코더를 문장 임베딩으로 쓰는 표준 방식.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>

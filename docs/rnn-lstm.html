@@ -1,0 +1,454 @@
+<title>RNN & LSTM — 순서대로 읽던 시절</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">RNN &amp; LSTM</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #f0eeeb;
+    --panel: #e6e2dd;
+    --ink: #1a1613;
+    --ink-soft: #57504a;
+    --ink-faint: #8b8279;
+    --rule: #d6cfc7;
+    --rule-strong: #b3aba1;
+    --accent: #8a4b1f;
+    --accent-fill: #f0dfcd;
+    --accent-line: #b57a42;
+    --muted: #6f7f85;
+    --muted-fill: #d9dee0;
+    --warn: #9c3f3f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #131110;
+    --panel: #1c1917;
+    --ink: #ece7e2;
+    --ink-soft: #b0a89f;
+    --ink-faint: #7c736a;
+    --rule: #2b2622;
+    --rule-strong: #443d36;
+    --accent: #e69a5e;
+    --accent-fill: #38230f;
+    --accent-line: #b0723c;
+    --muted: #7f9199;
+    --muted-fill: #1c2124;
+    --warn: #d97070;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #131110;
+    --panel: #1c1917;
+    --ink: #ece7e2;
+    --ink-soft: #b0a89f;
+    --ink-faint: #7c736a;
+    --rule: #2b2622;
+    --rule-strong: #443d36;
+    --accent: #e69a5e;
+    --accent-fill: #38230f;
+    --accent-line: #b0723c;
+    --muted: #7f9199;
+    --muted-fill: #1c2124;
+    --warn: #d97070;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Architecture · Recurrent Networks · 1997–2024</p>
+    <h1>RNN &amp; LSTM</h1>
+    <p class="subtitle">순서대로 읽던 시절 — 어텐션이 무엇을 대체했는가</p>
+    <p class="dek">LSTM이 밀려난 이유를 "기억력이 부족해서"라고 하면 틀리다. 셀 상태는 그래디언트 문제를 상당히 풀었다. 진짜 병목은 <em>순차성</em>이었다 — 길이 1000이면 1000번을 차례로 계산해야 하고, GPU가 아무리 많아도 그 사슬은 줄지 않는다. 어텐션은 <strong>100배 많이 계산하는 대신 한꺼번에</strong> 계산해서 이겼다.</p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>기억</dt><dd>고정 크기 은닉 상태</dd></div>
+    <div><dt>치명상</dt><dd>같은 W의 반복 곱</dd></div>
+    <div><dt>LSTM 핵심</dt><dd>셀 상태 · 곱셈 우회</dd></div>
+    <div><dt>파라미터</dt><dd>단순 RNN의 4배</dd></div>
+    <div><dt>진짜 병목</dt><dd>순차성 · 병렬화 불가</dd></div>
+  </dl>
+
+
+  <section>
+    <h2><span class="n">01</span>기억을 하나의 벡터에 욱여넣기</h2>
+    <p>
+      문장은 길이가 제각각이다. 고정 크기 입력을 받는 신경망에 이것을 어떻게 넣을 것인가.
+      순환 신경망(RNN)의 답은 <strong>한 번에 한 토큰씩 읽고, 읽은 것을 요약해 들고 다니는 것</strong>이었다.
+    </p>
+    <div class="eq">
+      <span class="cap">RNN — 같은 함수를 반복 적용한다</span>
+      <div class="line">h<sub>t</sub> = tanh( W<sub>h</sub>·h<sub>t−1</sub> + W<sub>x</sub>·x<sub>t</sub> + b )</div>
+      <div class="line">y<sub>t</sub> = W<sub>y</sub>·h<sub>t</sub>&nbsp;&nbsp;&nbsp;// h 는 '지금까지의 요약'</div>
+    </div>
+    <p>
+      우아한 구조다. 파라미터는 길이와 무관하게 고정이고(<code>W</code>를 매 스텝 재사용),
+      원리적으로는 <em>아무리 긴 시퀀스</em>도 처리할 수 있다. 은닉 상태 <code>h</code>가 기억 역할을 한다.
+    </p>
+    <p>
+      문제는 그 기억이 <strong>고정 크기 벡터 하나</strong>라는 데 있다. 문장이 길어져도 <code>h</code>의
+      크기는 그대로다. 새 토큰이 들어올 때마다 이전 내용에 덮어써야 하고,
+      100번째 토큰을 읽을 즈음이면 첫 토큰의 흔적은 거의 남지 않는다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>같은 행렬을 100번 곱하면</h2>
+    <p>
+      더 근본적인 문제는 학습에서 드러났다. RNN을 시간축으로 펼치면 <em>깊이 100짜리 신경망</em>과 같다.
+      역전파는 그 100개 스텝을 거슬러 올라가야 한다(BPTT).
+    </p>
+    <p>
+      여기서 결정적인 차이가 있다. 일반적인 깊은 신경망은 층마다 <em>다른</em> 가중치를 곱하지만,
+      RNN은 <strong>같은 <code>W<sub>h</sub></code>를 반복해서 곱한다</strong>.
+      곱셈이 사실상 거듭제곱이 되므로, 그래디언트 소실·폭발이 훨씬 극단적으로 나타난다.
+      <code>W</code>의 최대 특이값이 1보다 조금만 작아도 지수적으로 0에 수렴하고,
+      1보다 조금만 커도 발산한다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 250" role="img" aria-label="RNN을 시간축으로 펼친 도식과 LSTM의 셀 상태 경로 비교. RNN은 매 스텝 같은 가중치를 곱해 그래디언트가 지수적으로 줄어들고, LSTM은 셀 상태가 곱셈 없이 흐르는 고속도로를 제공한다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <defs>
+              <marker id="rnn-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--muted)"/>
+              </marker>
+              <marker id="rnn-ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-line)"/>
+              </marker>
+            </defs>
+
+            <text x="30" y="22" font-size="10.5" letter-spacing="1.4" fill="var(--muted)">RNN — 같은 W를 매 스텝 곱한다</text>
+
+            <g>
+              <rect x="30" y="36" width="58" height="34" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+              <text x="59" y="58" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">h₁</text>
+              <path d="M92 53 L124 53" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#rnn-ar)"/>
+              <text x="108" y="46" text-anchor="middle" font-size="8.5" fill="var(--warn)">×W</text>
+
+              <rect x="128" y="36" width="58" height="34" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+              <text x="157" y="58" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">h₂</text>
+              <path d="M190 53 L222 53" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#rnn-ar)"/>
+              <text x="206" y="46" text-anchor="middle" font-size="8.5" fill="var(--warn)">×W</text>
+
+              <rect x="226" y="36" width="58" height="34" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+              <text x="255" y="58" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">h₃</text>
+              <path d="M288 53 L320 53" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#rnn-ar)"/>
+              <text x="304" y="46" text-anchor="middle" font-size="8.5" fill="var(--warn)">×W</text>
+
+              <text x="330" y="58" font-size="12" fill="var(--ink-faint)">…</text>
+
+              <rect x="356" y="36" width="70" height="34" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+              <text x="391" y="58" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">h₁₀₀</text>
+            </g>
+
+            <text x="446" y="48" font-size="10" fill="var(--warn)">그래디언트 ∝ W¹⁰⁰</text>
+            <text x="446" y="64" font-size="9.5" fill="var(--ink-faint)">‖W‖&lt;1 → 소실 · &gt;1 → 폭발</text>
+
+            <line x1="30" y1="88" x2="670" y2="88" stroke="var(--rule)" stroke-width="1"/>
+
+            <text x="30" y="112" font-size="10.5" letter-spacing="1.4" fill="var(--accent)">LSTM — 셀 상태는 곱셈 없이 흐른다</text>
+
+            <!-- cell state highway -->
+            <line x1="30" y1="140" x2="600" y2="140" stroke="var(--accent-line)" stroke-width="3"/>
+            <text x="610" y="144" font-size="10" fill="var(--accent)">C (셀 상태)</text>
+
+            <g>
+              <circle cx="130" cy="140" r="9" fill="var(--paper)" stroke="var(--accent-line)" stroke-width="1.6"/>
+              <text x="130" y="144" text-anchor="middle" font-size="10" fill="var(--accent)">×</text>
+              <text x="130" y="122" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">망각</text>
+
+              <circle cx="250" cy="140" r="9" fill="var(--paper)" stroke="var(--accent-line)" stroke-width="1.6"/>
+              <text x="250" y="145" text-anchor="middle" font-size="11" fill="var(--accent)">+</text>
+              <text x="250" y="122" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">입력</text>
+
+              <circle cx="380" cy="140" r="9" fill="var(--paper)" stroke="var(--accent-line)" stroke-width="1.6"/>
+              <text x="380" y="144" text-anchor="middle" font-size="10" fill="var(--accent)">×</text>
+              <text x="380" y="122" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">망각</text>
+
+              <circle cx="500" cy="140" r="9" fill="var(--paper)" stroke="var(--accent-line)" stroke-width="1.6"/>
+              <text x="500" y="145" text-anchor="middle" font-size="11" fill="var(--accent)">+</text>
+              <text x="500" y="122" text-anchor="middle" font-size="8.5" fill="var(--ink-faint)">입력</text>
+            </g>
+
+            <rect x="30" y="166" width="640" height="62" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="46" y="188" font-size="10.5" fill="var(--accent)">셀 상태에 가해지는 것은 게이트 값의 곱과 덧셈뿐 — 가중치 행렬 W 를 반복해 곱하지 않는다.</text>
+            <text x="46" y="208" font-size="10.5" fill="var(--ink-soft)">망각 게이트가 1에 가까우면 정보가 그대로 흘러간다. 잔차 연결과 같은 발상이다.</text>
+            <text x="46" y="224" font-size="9.5" fill="var(--ink-faint)">단, 게이트 자체는 여전히 학습되므로 완전히 자유롭지는 않다.</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        LSTM의 핵심은 게이트가 아니라 <strong>셀 상태라는 경로</strong>다.
+        은닉 상태와 달리 셀 상태에는 가중치 행렬이 반복 곱해지지 않아, 그래디언트가 멀리까지 살아 흐른다.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>LSTM — 무엇을 잊을지 배우게 하다</h2>
+    <p>
+      1997년 Hochreiter와 Schmidhuber의 LSTM은 두 가지를 도입했다.
+      <strong>셀 상태</strong>(장기 기억용 별도 경로)와 <strong>게이트</strong>(정보 흐름을 조절하는 학습되는 밸브)다.
+    </p>
+    <ul>
+      <li><strong>망각 게이트</strong> — 셀 상태에서 무엇을 지울지. 0이면 완전히 잊고 1이면 그대로 유지.</li>
+      <li><strong>입력 게이트</strong> — 새 정보 중 무엇을 셀 상태에 쓸지.</li>
+      <li><strong>출력 게이트</strong> — 셀 상태 중 무엇을 지금 내보낼지.</li>
+    </ul>
+    <p>
+      결정적인 것은 셀 상태의 갱신이 <em>곱셈과 덧셈</em>으로만 이뤄진다는 점이다.
+      망각 게이트가 1에 가까우면 <code>C<sub>t</sub> ≈ C<sub>t−1</sub> + (새 정보)</code>가 되어
+      정보가 손실 없이 흘러간다. 역전파 때도 마찬가지로 그래디언트가 감쇠 없이 거슬러 올라간다.
+    </p>
+    <div class="note">
+      <b>같은 아이디어가 이름을 바꿔 반복된다.</b> "곱셈 연쇄를 우회하는 항등 경로"는
+      LSTM의 셀 상태(1997), ResNet의 잔차 연결(2015), 트랜스포머의 잔차 스트림에서
+      모두 같은 역할을 한다. 깊이를 늘리는 문제는 <em>층을 어떻게 쌓느냐</em>가 아니라
+      <strong>그래디언트가 지나갈 길을 어떻게 뚫느냐</strong>였다는 것을,
+      서로 다른 분야가 20년에 걸쳐 각자 재발견한 셈이다.
+    </div>
+    <p>
+      대가는 복잡도다. 게이트 세 개와 후보 셀 값까지 <strong>네 개의 가중치 집합</strong>이 필요하므로
+      파라미터가 단순 RNN의 4배다. 은닉 차원 1024 기준 209만 → 839만으로 늘어난다.
+      GRU는 게이트를 둘로 줄여 이 비용을 낮춘 변형이고, 많은 과제에서 LSTM과 대등하다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>진짜 병목은 기억이 아니라 순서였다</h2>
+    <p>
+      LSTM은 그래디언트 문제를 상당히 완화했고, 2014~2017년 기계번역·음성인식의 표준이 됐다.
+      그런데 <em>다른</em> 한계가 남아 있었다 — 그리고 이것이 결국 어텐션으로 넘어가게 만든 이유다.
+    </p>
+    <p>
+      <strong>순차성은 원리적으로 병렬화할 수 없다.</strong>
+      <code>h<sub>t</sub></code>를 계산하려면 <code>h<sub>t−1</sub></code>이 끝나야 한다.
+      길이 1000이면 1000번의 순차 스텝이고, GPU가 아무리 많아도 이 사슬은 줄지 않는다.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>길이 1000 시퀀스</th><th>순차 스텝</th><th>연산량</th><th>병목</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>RNN / LSTM</td><td class="hi">1000회</td><td>O(N·d²) — 적음</td><td>순차성 (병렬화 불가)</td></tr>
+          <tr><td>셀프 어텐션</td><td class="hi">1회</td><td>O(N²·d) — 100만 쌍</td><td>메모리·연산량</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      역설적이다. 어텐션은 <em>연산량이 훨씬 많다</em>. 100만 개의 토큰 쌍을 비교한다.
+      그런데 그 100만 개를 <strong>한꺼번에</strong> 계산할 수 있다. GPU는 정확히 이런 일에 최적화돼 있다.
+      RNN은 연산량이 적지만 1000번을 <em>차례로</em> 해야 한다.
+    </p>
+    <p>
+      결론은 <strong>"적게 계산하되 순서대로"보다 "많이 계산하되 한꺼번에"가 빠르다</strong>는 것이었다.
+      이 교환이 성립하는 이유는 하드웨어에 있다 — 병렬 연산 유닛은 넘쳐나고 시간은 부족하다.
+      Transformer 논문의 제목이 "Attention Is All You Need"였지만,
+      실질적 기여의 절반은 <em>순환을 제거해 병렬 학습을 가능하게 한 것</em>이었다.
+    </p>
+    <p>
+      두 번째 한계는 <strong>정보 병목</strong>이다. seq2seq 번역에서 인코더는 문장 전체를
+      벡터 하나로 압축해 디코더에 넘긴다. 문장이 길수록 손실이 커진다.
+      2014~2015년 Bahdanau와 Luong의 어텐션은 원래 <em>이 병목을 뚫으려고</em> RNN에 덧붙인 보조 장치였다.
+      디코더가 인코더의 모든 스텝을 직접 참조하게 한 것이다. 3년 뒤 트랜스포머는
+      <strong>보조 장치만 남기고 RNN을 버렸다</strong>.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>그런데 순환은 돌아오고 있다</h2>
+    <p>
+      RNN이 완전히 사라졌다고 보기는 어렵다. 어텐션의 제곱 비용이 긴 문맥에서 문제가 되면서,
+      순환의 장점이 다시 주목받고 있다.
+    </p>
+    <ul>
+      <li>
+        <strong>추론 비용이 상수다.</strong> RNN은 토큰 하나를 생성할 때 고정 크기 상태만 있으면 된다.
+        어텐션 기반 모델이 KV 캐시를 문맥 길이에 비례해 들고 다녀야 하는 것과 대조적이다.
+        긴 대화에서 이 차이는 크다.
+      </li>
+      <li>
+        <strong>상태 공간 모델(SSM).</strong> Mamba 계열은 순환 구조를 쓰되,
+        학습 시에는 병렬 스캔으로 계산할 수 있게 설계했다 —
+        <em>RNN의 추론 효율과 트랜스포머의 학습 병렬성을 함께 노린다</em>.
+        RNN이 병렬화 불가라는 전제 자체를 다시 검토한 결과다.
+      </li>
+      <li>
+        <strong>선형 어텐션과 하이브리드.</strong> 어텐션을 선형 형태로 바꾸면 순환식으로 쓸 수 있다는
+        관찰에서, 두 계보가 수학적으로 이어진다는 점이 드러났다.
+        최근 모델들은 어텐션 층과 순환 층을 섞어 쓰기도 한다.
+      </li>
+    </ul>
+    <div class="note">
+      <b>구조의 우열이 아니라 하드웨어와의 궁합이었다.</b> RNN이 밀려난 것은 표현력이 부족해서가 아니라
+      <em>당시 하드웨어가 병렬성을 보상했기</em> 때문이다. 지금 순환이 재검토되는 것도
+      마찬가지로 조건이 바뀌었기 때문이다 — 긴 문맥에서 메모리가 병목이 되자
+      상수 크기 상태의 가치가 다시 올라갔다. 어떤 구조가 이기는지는
+      <strong>그 시점의 병목이 어디인지</strong>에 달려 있다.
+    </div>
+    <p>
+      LSTM을 읽는 실용적 이유는 그것을 쓰기 위해서가 아니라, 지금 구조들이
+      <em>무엇을 해결하려고 그 모양이 됐는지</em>를 알기 위해서다.
+      잔차 연결이 왜 필요한지, 왜 병렬화가 그토록 중요한지, KV 캐시가 왜 부담인지 —
+      모두 이 계보에서 먼저 등장한 문제들이다.
+    </p>
+  </section>
+
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Hochreiter &amp; Schmidhuber, <em>Long Short-Term Memory</em> (Neural Computation, 1997) — 셀 상태와 게이트의 원 정의.</li>
+      <li>Bengio et al., <em>Learning Long-Term Dependencies with Gradient Descent is Difficult</em> (IEEE TNN, 1994) — 같은 행렬의 반복 곱이 왜 치명적인지의 분석.</li>
+      <li>Bahdanau et al., <em>Neural Machine Translation by Jointly Learning to Align and Translate</em> (arXiv:1409.0473) — 어텐션의 출발점. RNN의 보조 장치였다.</li>
+      <li>Cho et al., <em>Learning Phrase Representations using RNN Encoder-Decoder</em> (arXiv:1406.1078) — GRU와 seq2seq 구조.</li>
+      <li>Vaswani et al., <em>Attention Is All You Need</em> (arXiv:1706.03762) — 순환을 제거해 병렬 학습을 얻은 지점.</li>
+      <li>Katharopoulos et al., <em>Transformers are RNNs</em> (arXiv:2006.16236) — 선형 어텐션이 순환식과 같아지는 유도.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>

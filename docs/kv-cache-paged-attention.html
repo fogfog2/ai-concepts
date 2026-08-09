@@ -1,0 +1,521 @@
+<title>KV Cache & PagedAttention — 문맥을 페이지로 관리하다</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">KV Cache &amp; PagedAttention</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #eaedf1;
+    --panel: #dfe4ea;
+    --ink: #10151b;
+    --ink-soft: #4b555f;
+    --ink-faint: #7d8794;
+    --rule: #c7ced7;
+    --rule-strong: #a6b0bc;
+    --accent: #1c5f9e;
+    --accent-fill: #d3e3f2;
+    --accent-line: #3c81c4;
+    --muted: #8a8177;
+    --muted-fill: #d9d6d1;
+    --warn: #a8442a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0e1216;
+      --panel: #161c23;
+      --ink: #e4e9ef;
+      --ink-soft: #a3aeba;
+      --ink-faint: #6e7986;
+      --rule: #252d36;
+      --rule-strong: #3a444f;
+      --accent: #6cb2ea;
+      --accent-fill: #10283d;
+      --accent-line: #3c7db5;
+      --muted: #8d8478;
+      --muted-fill: #201e1c;
+      --warn: #e08163;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0e1216;
+    --panel: #161c23;
+    --ink: #e4e9ef;
+    --ink-soft: #a3aeba;
+    --ink-faint: #6e7986;
+    --rule: #252d36;
+    --rule-strong: #3a444f;
+    --accent: #6cb2ea;
+    --accent-fill: #10283d;
+    --accent-line: #3c7db5;
+    --muted: #8d8478;
+    --muted-fill: #201e1c;
+    --warn: #e08163;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Systems · LLM Serving · 2023–2024</p>
+    <h1>KV Cache &amp; PagedAttention</h1>
+    <p class="subtitle">문맥을 페이지로 관리하다 — 운영체제가 40년 전에 푼 문제를 다시 만나서</p>
+    <p class="dek">
+      LLM 서빙이 느린 이유를 흔히 "모델이 크기 때문"이라고 말한다. 배치 추론에서는 대체로 틀린 진단이다.
+      진짜 병목은 <em>KV 캐시가 GPU 메모리를 얼마나 낭비하며 차지하는가</em>에 있었고,
+      기존 구현은 그 메모리의 <strong>60~80%를 그냥 버리고</strong> 있었다.
+      PagedAttention은 새로운 어텐션 수식이 아니라, 가상 메모리라는 오래된 아이디어를
+      KV 캐시에 적용한 것이다. 처리량은 그것만으로 두 자릿수 배가 됐다.
+    </p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>병목</dt><dd>연산 아닌 메모리 단편화</dd></div>
+    <div><dt>핵심 기법</dt><dd>고정 크기 블록 + 매핑 테이블</dd></div>
+    <div><dt>낭비율</dt><dd>60–80% → 4% 미만</dd></div>
+    <div><dt>처리량</dt><dd>2–4× (vLLM 보고)</dd></div>
+    <div><dt>원조</dt><dd>OS 가상 메모리·페이징</dd></div>
+  </dl>
+
+  <section>
+    <h2><span class="n">01</span>같은 계산을 두 번 하지 않기 위해 치르는 값</h2>
+    <p>
+      자기회귀 생성은 토큰을 하나씩 뱉는다. <code>t</code>번째 토큰을 만들 때 어텐션은 앞선 모든 토큰의
+      <code>K</code>와 <code>V</code>를 필요로 한다. 매번 처음부터 다시 계산하면 <code>t</code>번째 스텝에서
+      <code>t</code>개 토큰을 재처리해야 하니, 문장 하나를 만드는 데 <code>O(N²)</code>번의 중복 계산이 쌓인다.
+    </p>
+    <p>
+      해법은 당연하다. 한 번 계산한 <code>K</code>, <code>V</code>를 <strong>들고 있으면</strong> 된다. 이것이 KV 캐시다.
+      새 토큰마다 자기 몫의 <code>K</code>, <code>V</code> 한 줄만 계산해 뒤에 붙이고, 어텐션은 캐시 전체를 읽는다.
+      계산량은 극적으로 준다. 대신 <em>메모리를 지불한다</em>.
+    </p>
+    <div class="eq">
+      <span class="cap">KV 캐시 크기</span>
+      bytes = 2 · L · H<sub>kv</sub> · d<sub>head</sub> · N · precision
+    </div>
+    <p>
+      <code>2</code>는 K와 V, <code>L</code>은 레이어 수, <code>H<sub>kv</sub></code>는 KV 헤드 수,
+      <code>N</code>은 시퀀스 길이다. 숫자를 넣어 보면 규모가 드러난다.
+      Llama 2 13B(<code>L=40</code>, <code>H=40</code>, <code>d=128</code>, fp16) 기준으로
+      토큰 하나가 약 <strong>800 KB</strong>를 먹는다. 문맥 4096 토큰이면 요청 하나에 <strong>3.2 GB</strong>다.
+      A100 80GB에서 모델 가중치 26GB를 빼고 남는 자리에, 이런 요청이 <em>겨우 십수 개</em> 들어간다.
+    </p>
+    <p>
+      여기서 성격이 바뀐다. 학습에서 어텐션은 연산 바운드였지만, 디코딩에서는 스텝마다
+      캐시 전체를 HBM에서 읽어 오는 <strong>메모리 바운드</strong> 작업이다. 처리량을 올리는 유일한 길은
+      배치를 키우는 것이고, 배치를 키우려면 캐시가 자리를 덜 차지해야 한다.
+      그래서 "메모리를 얼마나 알뜰하게 쓰는가"가 곧 처리량이 된다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>연속 할당이 만든 세 가지 낭비</h2>
+    <p>
+      2023년 이전의 구현들은 요청마다 KV 캐시를 <strong>하나의 연속된 메모리 덩어리</strong>로 잡았다.
+      텐서는 연속 배열이어야 한다는 통념 때문이다. 문제는 생성 길이를 미리 알 수 없다는 것이다.
+      그래서 <em>최대 길이만큼 미리 잡아 둔다</em>. 여기서 세 가지 낭비가 동시에 발생한다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 260" role="img" aria-label="연속 할당 방식의 KV 캐시 메모리 낭비 도식. 요청마다 최대 길이만큼 예약해 내부 단편화가 생기고, 요청 사이에는 외부 단편화가 남으며, 실제 사용 구간은 전체의 일부에 불과하다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <text x="30" y="24" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">연속 할당 — 요청당 최대 길이(2048)를 예약</text>
+
+            <!-- request A -->
+            <text x="30" y="56" font-size="11" fill="var(--ink-soft)">요청 A</text>
+            <rect x="96" y="40" width="120" height="26" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="156" y="58" text-anchor="middle" font-size="10.5" fill="var(--accent)">사용 312</text>
+            <rect x="216" y="40" width="330" height="26" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.1" stroke-dasharray="4 3"/>
+            <text x="381" y="58" text-anchor="middle" font-size="10.5" fill="var(--muted)">예약만 하고 안 씀 (내부 단편화)</text>
+
+            <!-- request B -->
+            <text x="30" y="98" font-size="11" fill="var(--ink-soft)">요청 B</text>
+            <rect x="96" y="82" width="210" height="26" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="201" y="100" text-anchor="middle" font-size="10.5" fill="var(--accent)">사용 640</text>
+            <rect x="306" y="82" width="240" height="26" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.1" stroke-dasharray="4 3"/>
+            <text x="426" y="100" text-anchor="middle" font-size="10.5" fill="var(--muted)">예약만 하고 안 씀</text>
+
+            <!-- leftover gap -->
+            <text x="30" y="140" font-size="11" fill="var(--ink-soft)">빈 자리</text>
+            <rect x="96" y="124" width="150" height="26" fill="none" stroke="var(--warn)" stroke-width="1.4" stroke-dasharray="3 3"/>
+            <text x="171" y="142" text-anchor="middle" font-size="10.5" fill="var(--warn)">460칸 — 2048짜리 요청은 못 들어감</text>
+            <text x="256" y="142" font-size="10.5" fill="var(--ink-faint)">← 외부 단편화</text>
+
+            <line x1="30" y1="166" x2="660" y2="166" stroke="var(--rule-strong)" stroke-width="1"/>
+
+            <!-- summary bar -->
+            <text x="30" y="192" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">GPU 메모리 실제 내역</text>
+            <rect x="30" y="204" width="126" height="28" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="93" y="222" text-anchor="middle" font-size="11" fill="var(--accent)">실사용 20%</text>
+            <rect x="156" y="204" width="315" height="28" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="313" y="222" text-anchor="middle" font-size="11" fill="var(--muted)">내부 단편화 (예약 후 미사용)</text>
+            <rect x="471" y="204" width="189" height="28" fill="var(--muted-fill)" stroke="var(--warn)" stroke-width="1.2"/>
+            <text x="565" y="222" text-anchor="middle" font-size="11" fill="var(--warn)">외부 단편화 + 예비</text>
+
+            <text x="30" y="252" font-size="10.5" fill="var(--ink-faint)">논문 측정: 기존 시스템의 KV 캐시 실사용률 20.4% ~ 38.2%</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        최대 길이를 예약하면 실제로 쓰는 구간 뒤가 통째로 놀고(<em>내부 단편화</em>), 요청 사이에 남은 자투리는
+        큰 요청을 받기엔 작아 방치된다(<em>외부 단편화</em>). vLLM 논문은 기존 시스템에서 KV 캐시의
+        실사용률이 <strong>20~38%</strong>에 그친다고 측정했다.
+      </figcaption>
+    </figure>
+
+    <div class="pair">
+      <div class="slow">
+        <span class="kicker">낭비 1·2 — 단편화</span>
+        <p>생성이 언제 끝날지 모르니 최대치를 잡는다. 짧게 끝나면 예약분 대부분이 버려지고, 요청 사이 자투리는 재사용되지 못한다.</p>
+      </div>
+      <div class="slow">
+        <span class="kicker">낭비 3 — 공유 불가</span>
+        <p>같은 시스템 프롬프트를 쓰는 요청 100개가 그 프롬프트의 KV를 각자 100벌 복사해 들고 있다. 내용이 같아도 덩어리가 분리돼 있으니 공유할 방법이 없다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>운영체제는 이 문제를 1960년대에 풀었다</h2>
+    <p>
+      프로세스마다 연속된 물리 메모리를 통째로 주던 시절, 운영체제도 똑같은 단편화를 겪었다.
+      해법이 <strong>페이징</strong>이었다. 메모리를 고정 크기 페이지로 쪼개고, 프로세스에는 연속된 것처럼 보이는
+      <em>가상 주소</em>를 주되, 실제 물리 페이지는 어디에 흩어져 있어도 상관없게 만든다.
+      둘 사이를 페이지 테이블이 잇는다.
+    </p>
+    <p>
+      PagedAttention은 이 구조를 그대로 KV 캐시에 옮긴다. 캐시를 고정 개수의 토큰(보통 16개)을 담는
+      <strong>KV 블록</strong>으로 쪼갠다. 한 시퀀스의 논리적 블록들은 연속이지만, 물리 블록은 GPU 메모리 어디에 있어도 된다.
+      블록 테이블이 <code>논리 블록 → 물리 블록</code> 매핑을 들고 있다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 290" role="img" aria-label="PagedAttention의 블록 테이블 매핑 도식. 두 시퀀스의 논리 블록이 블록 테이블을 통해 흩어진 물리 블록으로 연결되고, 공유 프리픽스는 같은 물리 블록을 참조 카운트와 함께 공유한다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <defs>
+              <marker id="kv-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-line)"/>
+              </marker>
+            </defs>
+
+            <text x="30" y="24" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">논리 블록 (시퀀스가 보는 모습)</text>
+
+            <!-- seq A logical -->
+            <text x="30" y="54" font-size="11" fill="var(--ink-soft)">시퀀스 A</text>
+            <rect x="100" y="38" width="52" height="24" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.2"/>
+            <text x="126" y="55" text-anchor="middle" font-size="10" fill="var(--accent)">L0</text>
+            <rect x="156" y="38" width="52" height="24" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.2"/>
+            <text x="182" y="55" text-anchor="middle" font-size="10" fill="var(--accent)">L1</text>
+            <rect x="212" y="38" width="52" height="24" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.2"/>
+            <text x="238" y="55" text-anchor="middle" font-size="10" fill="var(--accent)">L2</text>
+
+            <!-- seq B logical -->
+            <text x="30" y="94" font-size="11" fill="var(--ink-soft)">시퀀스 B</text>
+            <rect x="100" y="78" width="52" height="24" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.2"/>
+            <text x="126" y="95" text-anchor="middle" font-size="10" fill="var(--accent)">L0</text>
+            <rect x="156" y="78" width="52" height="24" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.2"/>
+            <text x="182" y="95" text-anchor="middle" font-size="10" fill="var(--accent)">L1</text>
+
+            <text x="100" y="122" font-size="10" fill="var(--ink-faint)">A와 B의 L0는 같은 시스템 프롬프트</text>
+
+            <!-- block table -->
+            <rect x="296" y="30" width="104" height="104" fill="var(--panel)" stroke="var(--rule-strong)" stroke-width="1.3"/>
+            <text x="348" y="52" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">블록 테이블</text>
+            <text x="348" y="72" text-anchor="middle" font-size="10" fill="var(--ink-faint)">A: [7, 2, 5]</text>
+            <text x="348" y="90" text-anchor="middle" font-size="10" fill="var(--ink-faint)">B: [7, 9]</text>
+            <text x="348" y="116" text-anchor="middle" font-size="9.5" fill="var(--accent)">논리 → 물리</text>
+
+            <path d="M268 62 L292 70" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#kv-ar)"/>
+            <path d="M212 90 L292 88" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#kv-ar)"/>
+
+            <!-- physical blocks -->
+            <text x="440" y="24" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">물리 블록 (GPU 메모리 · 순서 무관)</text>
+            <g>
+              <rect x="440" y="34" width="46" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="1"/>
+              <text x="463" y="53" text-anchor="middle" font-size="10" fill="var(--ink-faint)">P0</text>
+              <rect x="490" y="34" width="46" height="30" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.6"/>
+              <text x="513" y="53" text-anchor="middle" font-size="10" fill="var(--accent)">P2</text>
+              <rect x="540" y="34" width="46" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="1"/>
+              <text x="563" y="53" text-anchor="middle" font-size="10" fill="var(--ink-faint)">P3</text>
+              <rect x="590" y="34" width="46" height="30" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.6"/>
+              <text x="613" y="53" text-anchor="middle" font-size="10" fill="var(--accent)">P5</text>
+
+              <rect x="440" y="70" width="46" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="1"/>
+              <text x="463" y="89" text-anchor="middle" font-size="10" fill="var(--ink-faint)">P6</text>
+              <rect x="490" y="70" width="46" height="30" fill="var(--accent-fill)" stroke="var(--warn)" stroke-width="2"/>
+              <text x="513" y="84" text-anchor="middle" font-size="10" fill="var(--warn)">P7</text>
+              <text x="513" y="96" text-anchor="middle" font-size="8.5" fill="var(--warn)">ref=2</text>
+              <rect x="540" y="70" width="46" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="1"/>
+              <text x="563" y="89" text-anchor="middle" font-size="10" fill="var(--ink-faint)">P8</text>
+              <rect x="590" y="70" width="46" height="30" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.6"/>
+              <text x="613" y="89" text-anchor="middle" font-size="10" fill="var(--accent)">P9</text>
+            </g>
+
+            <line x1="30" y1="150" x2="660" y2="150" stroke="var(--rule)" stroke-width="1"/>
+
+            <text x="30" y="176" font-size="11" fill="var(--ink-soft)">P7은 A와 B가 <tspan fill="var(--warn)">함께 참조</tspan>한다 — 같은 프롬프트를 두 벌 저장하지 않는다.</text>
+            <text x="30" y="198" font-size="11" fill="var(--ink-soft)">둘 중 하나가 그 블록에 쓰려 하면 그때 복사한다 (copy-on-write).</text>
+
+            <rect x="30" y="214" width="630" height="52" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.3"/>
+            <text x="46" y="236" font-size="11" fill="var(--accent)">낭비되는 공간은 각 시퀀스의 마지막 블록 안쪽뿐이다.</text>
+            <text x="46" y="256" font-size="11" fill="var(--ink-soft)">블록이 16토큰이면 시퀀스당 평균 8토큰 — 전체의 4% 미만.</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 2</span>
+        블록 테이블이 페이지 테이블 역할을 한다. 물리 블록이 흩어져 있어도 어텐션 커널이 매핑을 따라가며 읽으므로
+        문제가 없다. 낭비는 <strong>마지막 블록의 남은 칸</strong>으로 한정되고, 이는 시퀀스 길이와 무관한 상수다.
+      </figcaption>
+    </figure>
+
+    <p>
+      대가는 커널에 있다. 표준 어텐션 커널은 <code>K</code>, <code>V</code>가 연속이라고 가정하고 주소를 계산한다.
+      블록이 흩어지면 그 가정이 깨지므로, <strong>블록 테이블을 읽어 가며 간접 참조하는 전용 커널</strong>을 새로 써야 한다.
+      PagedAttention이 논문이 된 이유의 절반은 이 커널이다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>블록이 되자 따라온 것들</h2>
+    <p>
+      메모리를 블록으로 다루기 시작하면, 원래 목적이 아니었던 능력이 딸려 온다.
+      운영체제가 페이징을 도입한 뒤 공유 라이브러리와 <code>fork</code>가 자연스러워진 것과 같다.
+    </p>
+    <ul>
+      <li>
+        <strong>프리픽스 공유.</strong> 같은 시스템 프롬프트를 쓰는 요청들이 그 구간의 물리 블록을 공유한다.
+        참조 카운트를 두고, 쓰기가 발생하는 순간에만 복사한다(copy-on-write). 긴 공통 프롬프트를 쓰는
+        서비스에서 특히 크게 절약된다.
+      </li>
+      <li>
+        <strong>병렬 샘플링과 빔 서치.</strong> 한 프롬프트에서 후보 <code>n</code>개를 뽑을 때 프롬프트 KV는 한 벌이면 된다.
+        빔 서치는 후보가 갈라지고 합쳐지는데, 블록 단위 공유·해제가 이 구조와 잘 맞는다.
+      </li>
+      <li>
+        <strong>스와핑과 재계산.</strong> 메모리가 부족하면 낮은 우선순위 시퀀스의 블록을 CPU 메모리로 내보냈다가
+        다시 불러온다. 역시 OS가 하던 일이다. 블록을 버리고 나중에 다시 계산하는 선택지도 있다.
+      </li>
+      <li>
+        <strong>연속 배칭과의 결합.</strong> 끝난 요청 자리에 새 요청을 바로 끼워 넣는 continuous batching은
+        블록 단위 할당·해제가 있어야 매끄럽다. vLLM의 처리량 이득은 이 둘의 조합에서 나온다.
+      </li>
+    </ul>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>구분</th><th>연속 할당</th><th>PagedAttention</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>할당 단위</td><td>요청당 최대 길이</td><td class="hi">16토큰 블록</td></tr>
+          <tr><td>낭비</td><td>60–80%</td><td class="hi">4% 미만</td></tr>
+          <tr><td>프리픽스 공유</td><td>불가</td><td class="hi">참조 카운트 + CoW</td></tr>
+          <tr><td>어텐션 커널</td><td>표준</td><td>블록 인지 전용 커널 필요</td></tr>
+          <tr><td>메모리 부족 시</td><td>요청 거절</td><td class="hi">스왑 또는 재계산</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <b>줄인 것은 연산이 아니다.</b> PagedAttention은 어텐션을 더 빠르게 계산하지 않는다.
+      계산식도, 결과값도 그대로다. 바뀐 것은 <em>같은 GPU에 몇 개의 요청을 동시에 올릴 수 있는가</em>뿐이다.
+      그런데 디코딩이 메모리 바운드이므로, 배치가 커지면 읽어 온 가중치를 더 많은 요청이 나눠 쓰게 되어
+      토큰당 비용이 떨어진다. <strong>지연 시간은 그대로인데 처리량만 오르는</strong> 개선이고,
+      비용이 처리량으로 결정되는 서빙에서는 이쪽이 더 중요하다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>캐시를 줄이는 다른 축, 그리고 남은 문제</h2>
+    <p>
+      PagedAttention은 <em>주어진 캐시를 알뜰하게 배치</em>한다. 캐시 자체를 작게 만드는 접근은 따로 있고,
+      둘은 곱셈으로 함께 쓰인다.
+    </p>
+    <ul>
+      <li>
+        <strong>GQA·MQA.</strong> 1절 공식의 <code>H<sub>kv</sub></code>를 직접 줄인다. 쿼리 헤드는 그대로 두고
+        KV 헤드만 여러 쿼리 헤드가 공유한다. MQA는 KV 헤드를 하나로, GQA는 그룹당 하나로 둔다.
+        Llama 2 70B는 GQA로 KV 캐시를 8분의 1로 줄였다.
+      </li>
+      <li>
+        <strong>KV 캐시 양자화.</strong> 공식의 <code>precision</code>을 줄인다. fp16 대신 int8이면 절반이다.
+        가중치 양자화보다 품질 영향이 민감한 편이라 보수적으로 적용된다.
+      </li>
+      <li>
+        <strong>MLA.</strong> DeepSeek-V2가 쓴 방식으로, KV를 저차원 잠재 벡터로 압축해 저장하고
+        쓸 때 복원한다. 캐시를 구조적으로 줄이는 쪽에 가깝다.
+      </li>
+      <li>
+        <strong>캐시 축출.</strong> 오래된 토큰의 KV를 버리는 접근(H2O, StreamingLLM 등)도 있다.
+        다만 이쪽은 앞의 방법들과 달리 <strong>출력이 달라질 수 있는 근사</strong>다.
+      </li>
+    </ul>
+    <p>
+      쓰는 쪽에서는 대부분 직접 구현하지 않는다. vLLM, TensorRT-LLM, SGLang 같은 서빙 엔진이 이미 내장하고 있고,
+      노출되는 손잡이는 <code>gpu_memory_utilization</code>(캐시에 쓸 메모리 비율),
+      <code>block_size</code>, 프리픽스 캐싱 켜기 정도다. 그래도 원리를 알아 두면
+      "왜 동시 요청 수가 어느 지점에서 급격히 꺾이는가", "왜 시스템 프롬프트를 길게 써도 생각보다 싼가" 같은
+      현상이 설명된다.
+    </p>
+    <p>
+      한 걸음 물러나 보면 이 이야기의 교훈은 어텐션에 대한 것이 아니다.
+      <strong>새로운 계층에서 자원 관리 문제를 만나면, 그 문제는 대개 이미 풀린 적이 있다.</strong>
+      vLLM 저자들이 한 일은 새 알고리즘을 발명한 게 아니라,
+      운영체제 교과서 한 챕터가 GPU 메모리에도 그대로 적용된다는 것을 알아본 것이다.
+      딥러닝 시스템에서 이런 종류의 이식은 앞으로도 계속 나올 것이다.
+    </p>
+  </section>
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Kwon et al., <em>Efficient Memory Management for Large Language Model Serving with PagedAttention</em> (arXiv:2309.06180) — vLLM 원 논문. 단편화 측정치와 블록 테이블 설계가 핵심.</li>
+      <li>Pope et al., <em>Efficiently Scaling Transformer Inference</em> (arXiv:2211.05102) — 디코딩이 왜 메모리 바운드인지, 배치와 지연의 관계를 정리한 글.</li>
+      <li>Ainslie et al., <em>GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints</em> (arXiv:2305.13245) — KV 헤드를 줄이는 축.</li>
+      <li>Shazeer, <em>Fast Transformer Decoding: One Write-Head is All You Need</em> (arXiv:1911.02150) — MQA의 출발점.</li>
+      <li>Yu et al., <em>Orca: A Distributed Serving System for Transformer-Based Generative Models</em> (OSDI 2022) — 연속 배칭(iteration-level scheduling)의 원조.</li>
+      <li>vLLM 문서와 저장소 — 실제 설정값과 프리픽스 캐싱 동작을 확인할 수 있다.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>

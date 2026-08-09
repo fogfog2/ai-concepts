@@ -1,0 +1,477 @@
+<title>RAG — 모델 밖에 기억을 두다</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">RAG</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #eceef2;
+    --panel: #e0e4ea;
+    --ink: #111620;
+    --ink-soft: #4a5566;
+    --ink-faint: #7b8798;
+    --rule: #c8cfda;
+    --rule-strong: #a5aebd;
+    --accent: #0f6f72;
+    --accent-fill: #d0e6e6;
+    --accent-line: #2c9095;
+    --muted: #8a7f96;
+    --muted-fill: #d9d5de;
+    --warn: #a4442f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #0d1117;
+    --panel: #151b24;
+    --ink: #e3e8ef;
+    --ink-soft: #a0acbb;
+    --ink-faint: #6b7788;
+    --rule: #232b36;
+    --rule-strong: #38424f;
+    --accent: #48c9c2;
+    --accent-fill: #0e2e2e;
+    --accent-line: #2b8a86;
+    --muted: #9188a0;
+    --muted-fill: #1d1a22;
+    --warn: #df7a5e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0d1117;
+    --panel: #151b24;
+    --ink: #e3e8ef;
+    --ink-soft: #a0acbb;
+    --ink-faint: #6b7788;
+    --rule: #232b36;
+    --rule-strong: #38424f;
+    --accent: #48c9c2;
+    --accent-fill: #0e2e2e;
+    --accent-line: #2b8a86;
+    --muted: #9188a0;
+    --muted-fill: #1d1a22;
+    --warn: #df7a5e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Applied · Retrieval-Augmented Generation · 2020–2026</p>
+    <h1>RAG</h1>
+    <p class="subtitle">모델 밖에 기억을 두다 — 지식과 추론을 분리한다는 선택</p>
+    <p class="dek">RAG를 "문서를 찾아 프롬프트에 붙이는 것"이라고 요약하면 구현은 맞고 이유는 빠진다. 핵심은 <em>지식을 파라미터에서 꺼내 외부로 옮긴다</em>는 결정이고, 그 대가로 얻는 것은 성능이 아니라 <strong>갱신 가능성·출처 추적·접근 제어</strong>다. 긴 문맥 모델이 등장한 뒤에도 이 패턴이 사라지지 않은 이유가 여기 있다.</p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>핵심</dt><dd>지식을 가중치 밖으로</dd></div>
+    <div><dt>검색</dt><dd>벡터 + 키워드 혼합</dd></div>
+    <div><dt>병목</dt><dd>대개 생성 아닌 검색</dd></div>
+    <div><dt>평가</dt><dd>재현율 · 충실도 분리</dd></div>
+    <div><dt>긴 문맥</dt><dd>대체 아닌 요구 완화</dd></div>
+  </dl>
+
+
+  <section>
+    <h2><span class="n">01</span>가중치에 넣은 지식은 고치기 어렵다</h2>
+    <p>
+      언어모델은 학습 데이터에서 본 사실을 파라미터 안에 흩어 놓는다. 이 방식에는 구조적인 문제가 넷 있다.
+      <strong>학습 시점 이후의 일을 모르고</strong>(지식 컷오프), <strong>사내 문서처럼 학습에 없던 것은 아예 모르며</strong>,
+      <strong>틀린 것을 고치려면 재학습해야 하고</strong>, <strong>어디서 온 정보인지 출처를 댈 수 없다</strong>.
+    </p>
+    <p>
+      파인튜닝이 답처럼 보이지만 대체로 아니다. 파인튜닝이 잘 가르치는 것은 <em>형식과 말투, 작업 수행 방식</em>이지
+      사실 자체가 아니다. 새 사실을 주입하려 하면 기존 지식을 덮어쓰는 부작용(catastrophic forgetting)이 따라오고,
+      문서가 하나 바뀔 때마다 다시 학습할 수도 없다.
+    </p>
+    <p>
+      RAG의 발상은 방향을 뒤집는다. <strong>지식을 모델 안에 넣지 말고 밖에 두고, 필요할 때 찾아서 프롬프트에 넣어 준다.</strong>
+      모델은 사실의 저장소가 아니라 <em>주어진 근거를 읽고 답을 구성하는 엔진</em>이 된다.
+      2020년 Lewis 등의 논문이 이 구조에 이름을 붙였고, 지금은 LLM 실무에서 가장 흔한 패턴이 됐다.
+    </p>
+    <div class="pair">
+      <div class="slow">
+        <span class="kicker">파라미터 지식 (parametric)</span>
+        <p>가중치에 압축돼 있다. 빠르고 유창하지만 갱신 불가, 출처 불명, 없는 사실을 지어낼 수 있다.</p>
+      </div>
+      <div class="fast">
+        <span class="kicker">비파라미터 지식 (non-parametric)</span>
+        <p>외부 인덱스에 있다. 문서를 바꾸면 즉시 반영되고 출처를 그대로 인용할 수 있다. 대신 검색이 실패하면 답도 실패한다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>의미로 찾는다는 것 — 임베딩과 벡터 검색</h2>
+    <p>
+      키워드 검색은 글자가 겹쳐야 찾는다. "연차 며칠 남았나요"라는 질문으로 "휴가 잔여일수 조회" 문서를 찾지 못한다.
+      임베딩은 이 간극을 메운다. 문장을 수백~수천 차원의 벡터로 바꾸되,
+      <strong>뜻이 비슷하면 벡터도 가까이</strong> 놓이도록 학습된 인코더를 쓴다.
+    </p>
+    <div class="eq">
+      <span class="cap">코사인 유사도 — 방향이 얼마나 같은가</span>
+      sim(q, d) = (q · d) / (‖q‖ ‖d‖)&nbsp;&nbsp;&nbsp;// 크기 무시, 각도만 본다
+    </div>
+    <p>
+      문서 수가 수백만이면 전수 비교가 부담이므로 <em>근사 최근접 이웃</em>(ANN) 색인을 쓴다.
+      HNSW는 계층적 그래프를 타고 내려가며 후보를 좁히고, IVF는 공간을 미리 군집으로 나눠 일부만 뒤진다.
+      둘 다 <strong>정확도를 조금 내주고 속도를 크게 얻는</strong> 거래다.
+    </p>
+    <p>
+      중요한 함정이 하나 있다. 임베딩 검색은 <em>의미가 비슷한 것</em>을 찾지 <em>정답인 것</em>을 찾지 않는다.
+      "2024년 매출"과 "2023년 매출"은 벡터 공간에서 매우 가깝다. 숫자나 고유명사, 코드 식별자처럼
+      <strong>정확히 일치해야 하는 대상</strong>에는 오히려 키워드 검색이 강하다. 그래서 실무에서는 둘을 함께 쓴다.
+    </p>
+    <div class="eq">
+      <span class="cap">하이브리드 검색 — 순위를 합친다 (Reciprocal Rank Fusion)</span>
+      RRF(d) = Σ<sub>r ∈ 검색기들</sub> 1 / (k + rank<sub>r</sub>(d))&nbsp;&nbsp;&nbsp;(k ≈ 60)
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>파이프라인 — 그리고 각 단계가 망가지는 방식</h2>
+    <p>
+      RAG는 하나의 알고리즘이 아니라 여러 단계의 연결이다. 각 단계에 고유한 실패 양상이 있고,
+      전체 품질은 대체로 <strong>가장 약한 단계</strong>가 결정한다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 300" role="img" aria-label="RAG 파이프라인 도식. 색인 단계에서 문서를 청크로 나눠 임베딩해 벡터 DB에 저장하고, 질의 단계에서 질문을 임베딩해 검색한 뒤 재순위화하고 프롬프트에 넣어 생성한다. 각 단계마다 대표적인 실패 유형이 표시돼 있다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <defs>
+              <marker id="rag-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-line)"/>
+              </marker>
+            </defs>
+
+            <!-- indexing row -->
+            <text x="30" y="22" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">색인 (오프라인 · 한 번)</text>
+
+            <rect x="30" y="34" width="112" height="40" fill="var(--muted-fill)" stroke="var(--rule-strong)" stroke-width="1.2"/>
+            <text x="86" y="52" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">문서</text>
+            <text x="86" y="66" text-anchor="middle" font-size="9" fill="var(--ink-faint)">PDF · 위키 · DB</text>
+            <path d="M146 54 L172 54" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#rag-ar)"/>
+
+            <rect x="176" y="34" width="112" height="40" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="232" y="52" text-anchor="middle" font-size="10.5" fill="var(--accent)">청킹</text>
+            <text x="232" y="66" text-anchor="middle" font-size="9" fill="var(--ink-soft)">의미 단위로 절단</text>
+            <path d="M292 54 L318 54" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#rag-ar)"/>
+
+            <rect x="322" y="34" width="112" height="40" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="378" y="52" text-anchor="middle" font-size="10.5" fill="var(--accent)">임베딩</text>
+            <text x="378" y="66" text-anchor="middle" font-size="9" fill="var(--ink-soft)">벡터로 변환</text>
+            <path d="M438 54 L464 54" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#rag-ar)"/>
+
+            <rect x="468" y="34" width="112" height="40" fill="var(--panel)" stroke="var(--rule-strong)" stroke-width="1.4"/>
+            <text x="524" y="52" text-anchor="middle" font-size="10.5" fill="var(--ink)">벡터 색인</text>
+            <text x="524" y="66" text-anchor="middle" font-size="9" fill="var(--ink-faint)">HNSW · IVF</text>
+
+            <line x1="30" y1="96" x2="660" y2="96" stroke="var(--rule)" stroke-width="1"/>
+
+            <!-- query row -->
+            <text x="30" y="120" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">질의 (온라인 · 매 요청)</text>
+
+            <rect x="30" y="132" width="100" height="40" fill="var(--muted-fill)" stroke="var(--rule-strong)" stroke-width="1.2"/>
+            <text x="80" y="156" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">질문</text>
+            <path d="M134 152 L158 152" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#rag-ar)"/>
+
+            <rect x="162" y="132" width="104" height="40" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="214" y="150" text-anchor="middle" font-size="10.5" fill="var(--accent)">검색</text>
+            <text x="214" y="164" text-anchor="middle" font-size="9" fill="var(--ink-soft)">벡터 + 키워드</text>
+            <path d="M270 152 L294 152" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#rag-ar)"/>
+
+            <rect x="298" y="132" width="104" height="40" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="350" y="150" text-anchor="middle" font-size="10.5" fill="var(--accent)">재순위화</text>
+            <text x="350" y="164" text-anchor="middle" font-size="9" fill="var(--ink-soft)">교차 인코더</text>
+            <path d="M406 152 L430 152" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#rag-ar)"/>
+
+            <rect x="434" y="132" width="104" height="40" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="486" y="150" text-anchor="middle" font-size="10.5" fill="var(--accent)">프롬프트 조립</text>
+            <text x="486" y="164" text-anchor="middle" font-size="9" fill="var(--ink-soft)">근거 + 질문</text>
+            <path d="M542 152 L566 152" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#rag-ar)"/>
+
+            <rect x="570" y="132" width="90" height="40" fill="var(--panel)" stroke="var(--rule-strong)" stroke-width="1.4"/>
+            <text x="615" y="156" text-anchor="middle" font-size="10.5" fill="var(--ink)">생성</text>
+
+            <!-- failure annotations -->
+            <text x="30" y="204" font-size="10.5" letter-spacing="1.4" fill="var(--warn)">각 단계의 대표적 실패</text>
+
+            <rect x="30" y="216" width="152" height="62" fill="var(--panel)" stroke="var(--warn)" stroke-width="1.2"/>
+            <text x="42" y="234" font-size="10" fill="var(--warn)">청킹</text>
+            <text x="42" y="250" font-size="9.5" fill="var(--ink-soft)">표를 가운데서 자름.</text>
+            <text x="42" y="264" font-size="9.5" fill="var(--ink-soft)">앞뒤 맥락 유실.</text>
+
+            <rect x="190" y="216" width="152" height="62" fill="var(--panel)" stroke="var(--warn)" stroke-width="1.2"/>
+            <text x="202" y="234" font-size="10" fill="var(--warn)">검색</text>
+            <text x="202" y="250" font-size="9.5" fill="var(--ink-soft)">비슷하지만 틀린 문서.</text>
+            <text x="202" y="264" font-size="9.5" fill="var(--ink-soft)">2023 vs 2024 혼동.</text>
+
+            <rect x="350" y="216" width="152" height="62" fill="var(--panel)" stroke="var(--warn)" stroke-width="1.2"/>
+            <text x="362" y="234" font-size="10" fill="var(--warn)">순서</text>
+            <text x="362" y="250" font-size="9.5" fill="var(--ink-soft)">근거가 가운데 묻힘</text>
+            <text x="362" y="264" font-size="9.5" fill="var(--ink-soft)">(lost in the middle).</text>
+
+            <rect x="510" y="216" width="150" height="62" fill="var(--panel)" stroke="var(--warn)" stroke-width="1.2"/>
+            <text x="522" y="234" font-size="10" fill="var(--warn)">생성</text>
+            <text x="522" y="250" font-size="9.5" fill="var(--ink-soft)">근거 무시하고</text>
+            <text x="522" y="264" font-size="9.5" fill="var(--ink-soft)">기억으로 답함.</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        RAG의 품질을 진단할 때는 <strong>검색 실패와 생성 실패를 반드시 분리</strong>해야 한다.
+        답이 틀렸을 때 근거 문서가 애초에 검색되지 않은 것인지, 검색은 됐는데 모델이 무시한 것인지에 따라
+        고쳐야 할 곳이 완전히 다르다.
+      </figcaption>
+    </figure>
+
+    <p>
+      단계별로 손볼 수 있는 지점은 이렇다.
+    </p>
+    <ul>
+      <li>
+        <strong>청킹.</strong> 고정 길이로 자르는 것은 가장 나쁜 기본값에 가깝다. 문단·제목 구조를 따라 자르고,
+        경계에서 문맥이 끊기지 않도록 <em>겹침</em>을 준다. 청크에 문서 제목과 섹션 경로를 덧붙여 두면
+        조각만 봐도 무엇에 대한 내용인지 알 수 있어 검색 품질이 오른다.
+      </li>
+      <li>
+        <strong>재순위화.</strong> 임베딩 검색은 질문과 문서를 <em>따로</em> 벡터로 만들어 비교한다(bi-encoder).
+        빠르지만 거칠다. 상위 50개를 뽑은 뒤, 질문과 문서를 <em>함께</em> 넣어 관련도를 매기는
+        교차 인코더(cross-encoder)로 다시 줄 세우면 정확도가 눈에 띄게 오른다. 느리지만 후보가 적어 감당된다.
+      </li>
+      <li>
+        <strong>질의 변환.</strong> 사용자의 질문은 검색어로 쓰기에 부적합할 때가 많다. 대화 맥락에 의존하는
+        "그건 언제부터야?" 같은 질문은 독립적인 문장으로 다시 쓰고, 복합 질문은 쪼갠다.
+      </li>
+      <li>
+        <strong>배치 순서.</strong> 모델은 긴 프롬프트의 <em>처음과 끝</em>을 잘 보고 가운데를 흘린다.
+        가장 관련 높은 근거를 양 끝에 두는 편이 낫다.
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>검색이 성공해도 답이 틀릴 때</h2>
+    <p>
+      근거를 넣어 줬는데도 모델이 자기 기억으로 답하는 일이 있다. 특히 <strong>근거가 모델의 사전 지식과 충돌할 때</strong>
+      그렇다. 사규가 바뀌었는데 일반적인 관행대로 답하는 식이다. 프롬프트에서
+      "주어진 근거만 사용하고, 근거에 없으면 없다고 답하라"고 명시하는 것이 기본 방어선이고,
+      문장마다 출처 번호를 달게 하면 검증이 쉬워진다.
+    </p>
+    <p>
+      반대 방향의 실패도 있다. 근거를 <em>지나치게</em> 신뢰해, 검색된 문서가 틀렸을 때 그대로 따라간다.
+      RAG는 검색 품질에 상한이 걸린 구조라 <strong>쓰레기를 넣으면 인용까지 붙은 쓰레기가 나온다</strong>.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>증상</th><th>원인 위치</th><th>확인 방법</th><th>대응</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>답에 없는 사실이 등장</td><td>생성</td><td>근거에 그 문장이 있는지 대조</td><td class="hi">근거 한정 지시 · 인용 강제</td></tr>
+          <tr><td>"모른다"만 반복</td><td>검색</td><td>정답 문서가 상위 k에 있나</td><td class="hi">k 확대 · 하이브리드 · 재순위화</td></tr>
+          <tr><td>비슷한 다른 연도·부서 답변</td><td>검색</td><td>메타데이터 확인</td><td>필터링(연도·부서) 병행</td></tr>
+          <tr><td>표·수치가 깨져서 인용</td><td>청킹</td><td>원본 청크 육안 확인</td><td>구조 인지 파서</td></tr>
+          <tr><td>긴 문서에서만 품질 저하</td><td>배치 순서</td><td>근거 위치 바꿔 재실험</td><td>중요 근거를 앞뒤로</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <b>평가를 나눠서 하라.</b> RAG를 한 덩어리로 평가하면 어디를 고쳐야 할지 알 수 없다.
+      최소한 두 지표를 따로 본다 — <em>검색 재현율</em>(정답 근거가 상위 k에 포함되는 비율)과
+      <em>충실도</em>(생성된 문장이 주어진 근거로 뒷받침되는 비율). 앞의 것이 낮으면 검색을,
+      뒤의 것이 낮으면 프롬프트와 모델을 손대야 한다. 이 분리 없이 프롬프트만 반복해 고치는 것이
+      RAG 개선에서 가장 흔한 시간 낭비다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>문맥이 길어져도 RAG는 남는다</h2>
+    <p>
+      100만 토큰 문맥이 등장하면서 "이제 다 넣으면 되지 않나"는 이야기가 나왔다. 부분적으로는 맞다.
+      문서가 수십 개 수준이면 전부 넣는 편이 간단하고 품질도 낫다. 그러나 규모가 커지면 세 가지가 걸린다.
+      <strong>비용</strong>(토큰당 과금은 선형, 어텐션 연산은 제곱), <strong>지연</strong>,
+      그리고 <strong>정확도</strong> — 문맥이 길수록 가운데 정보를 놓치는 경향이 강해진다.
+      기업 문서 수십만 건은 어떤 문맥 창에도 들어가지 않는다.
+    </p>
+    <p>
+      그래서 실제 흐름은 대체로 <em>검색으로 후보를 좁히고, 넓어진 문맥 창에 넉넉히 넣는</em> 쪽으로 수렴했다.
+      긴 문맥은 RAG를 대체한 것이 아니라 <strong>RAG의 검색 정밀도 요구를 낮춰</strong> 줬다.
+      상위 3개를 정확히 맞혀야 했던 것이 상위 50개 안에만 있으면 되는 문제로 바뀐 셈이다.
+    </p>
+    <ul>
+      <li>
+        <strong>에이전트형 검색.</strong> 한 번 검색해 끝내지 않고, 모델이 결과를 보고 다시 질의를 만들어
+        여러 번 도는 방식. 도구 호출과 결합되며 최근의 기본형이 되고 있다.
+      </li>
+      <li>
+        <strong>그래프 RAG.</strong> 문서를 개체와 관계로 정리해 두고 그래프를 타고 검색한다.
+        "A와 B의 관계"처럼 여러 문서를 종합해야 하는 질문에서 단순 청크 검색보다 낫다.
+      </li>
+      <li>
+        <strong>프롬프트 캐싱과의 조합.</strong> 공통 근거를 앞쪽에 고정 배치하면 캐시가 적중해
+        긴 문맥의 비용 부담이 줄어든다.
+      </li>
+    </ul>
+    <p>
+      결국 RAG가 오래 남는 이유는 성능이 아니라 <strong>운영 특성</strong>에 있다.
+      문서를 지우면 그 지식이 즉시 사라지고, 접근 권한을 검색 단계에서 걸 수 있고,
+      답의 근거를 사람이 클릭해 확인할 수 있다. 가중치 안에 넣은 지식으로는 이 중 어느 것도 하기 어렵다.
+      <em>기억하는 시스템</em>과 <em>찾아보는 시스템</em>은 성능의 우열이 아니라 통제 가능성의 차이다.
+    </p>
+  </section>
+
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Lewis et al., <em>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks</em> (arXiv:2005.11401) — RAG라는 이름이 붙은 원 논문.</li>
+      <li>Karpukhin et al., <em>Dense Passage Retrieval for Open-Domain Question Answering</em> (arXiv:2004.04906) — 밀집 검색이 키워드 검색을 넘어선 지점.</li>
+      <li>Liu et al., <em>Lost in the Middle: How Language Models Use Long Contexts</em> (arXiv:2307.03172) — 근거 배치 순서가 왜 중요한지의 근거.</li>
+      <li>Gao et al., <em>Retrieval-Augmented Generation for Large Language Models: A Survey</em> (arXiv:2312.10997) — 파이프라인 변형들의 지도.</li>
+      <li>Malkov &amp; Yashunin, <em>Efficient and robust approximate nearest neighbor search using HNSW graphs</em> (arXiv:1603.09320) — 벡터 색인의 표준.</li>
+      <li>Es et al., <em>RAGAS: Automated Evaluation of Retrieval Augmented Generation</em> (arXiv:2309.15217) — 검색과 생성을 나눠 재는 평가 지표.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>
