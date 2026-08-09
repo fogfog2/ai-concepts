@@ -1,0 +1,438 @@
+<title>Mixture of Experts — 필요한 전문가만 깨우는 신경망</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">Mixture of Experts</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #eff0ec;
+    --panel: #e5e6e0;
+    --ink: #191a12;
+    --ink-soft: #545647;
+    --ink-faint: #888a77;
+    --rule: #d0d2c8;
+    --rule-strong: #adafa1;
+    --accent: #7a6410;
+    --accent-fill: #eee5c2;
+    --accent-line: #a68a24;
+    --muted: #7d8590;
+    --muted-fill: #dcdfe3;
+    --warn: #a04c22;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #12130c;
+    --panel: #1b1c14;
+    --ink: #eaebe0;
+    --ink-soft: #aaac98;
+    --ink-faint: #777963;
+    --rule: #27281c;
+    --rule-strong: #3f412d;
+    --accent: #d8c15c;
+    --accent-fill: #2e2810;
+    --accent-line: #9b8730;
+    --muted: #8b939e;
+    --muted-fill: #1c2024;
+    --warn: #dd8352;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #12130c;
+    --panel: #1b1c14;
+    --ink: #eaebe0;
+    --ink-soft: #aaac98;
+    --ink-faint: #777963;
+    --rule: #27281c;
+    --rule-strong: #3f412d;
+    --accent: #d8c15c;
+    --accent-fill: #2e2810;
+    --accent-line: #9b8730;
+    --muted: #8b939e;
+    --muted-fill: #1c2024;
+    --warn: #dd8352;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Architecture · Conditional Computation · 1991–2025</p>
+    <h1>Mixture of Experts</h1>
+    <p class="subtitle">필요한 전문가만 깨우는 신경망 — 크기와 연산량을 떼어놓기</p>
+    <p class="dek">dense 모델에서 파라미터를 두 배로 늘리면 연산도 두 배가 된다. 모델 용량의 가격표가 곧 연산 비용인 셈이다. MoE는 이 등식을 깬다 — 전문가를 8개에서 64개로 늘려도 토큰당 FLOPs는 거의 그대로다. 다만 흔한 오해가 하나 있다. <strong>MoE가 아끼는 것은 연산이지 메모리가 아니다.</strong></p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>대상</dt><dd>FFN 층 (어텐션 아님)</dd></div>
+    <div><dt>라우팅</dt><dd>top-k · 토큰마다 독립</dd></div>
+    <div><dt>Mixtral</dt><dd>46.7B 중 12.9B 활성</dd></div>
+    <div><dt>고질병</dt><dd>부익부 붕괴</dd></div>
+    <div><dt>아끼는 것</dt><dd>연산 O · 메모리 X</dd></div>
+  </dl>
+
+
+  <section>
+    <h2><span class="n">01</span>파라미터를 늘리면 연산도 늘어난다는 전제</h2>
+    <p>
+      스케일링 법칙이 말하는 바는 단순하다 — 파라미터와 데이터를 키우면 손실이 내려간다.
+      문제는 dense 모델에서 파라미터를 두 배로 늘리면 <strong>학습 FLOPs도 추론 FLOPs도 대략 두 배</strong>가 된다는 점이다.
+      모델 용량의 가격표가 곧 연산 비용이 된다.
+    </p>
+    <p>
+      그런데 정말 모든 토큰이 모든 파라미터를 거쳐야 할까.
+      "고양이"를 처리할 때 화학식 표기에 특화된 가중치까지 통과시킬 이유가 있을까.
+      <strong>조건부 연산</strong>(conditional computation)의 발상은 여기서 나온다 —
+      입력에 따라 필요한 부분만 켜자는 것이다.
+    </p>
+    <p>
+      MoE는 이 발상을 트랜스포머의 FFN 자리에 적용한다.
+      파라미터의 대부분(보통 3분의 2 정도)이 FFN에 있고,
+      FFN은 토큰마다 독립적으로 적용되므로 쪼개기에 적합하다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>FFN을 쪼개고 문지기를 세운다</h2>
+    <p>
+      하나의 큰 FFN을 <code>N</code>개의 작은 FFN(전문가)으로 쪼갠다.
+      토큰마다 <strong>라우터</strong>가 상위 <code>k</code>개를 골라 그것만 통과시키고, 출력을 게이트 가중치로 합친다.
+      보통 <code>N</code>은 8~256, <code>k</code>는 1~8이다.
+    </p>
+    <div class="eq">
+      <span class="cap">라우팅 — 학습되는 행렬 하나가 전부다</span>
+      <div class="line">logits = x · W<sub>r</sub>&nbsp;&nbsp;&nbsp;// W<sub>r</sub> ∈ ℝ<sup>d×N</sup></div>
+      <div class="line">idx, val = topk(logits, k)</div>
+      <div class="line">g = softmax(val)&nbsp;&nbsp;// 선택된 k개에 대해서만 정규화</div>
+      <div class="line">y = Σ<sub>i</sub> g<sub>i</sub> · E<sub>idx[i]</sub>(x)</div>
+    </div>
+    <p>
+      소프트맥스를 <em>top-k 이후에</em> 적용한다는 점이 중요하다.
+      선택되지 않은 전문가는 그래디언트를 받지 않으므로 이 연산은 미분 가능하지 않은 이산 선택을 품고 있다.
+      그럼에도 학습이 되는 이유는 <strong>선택된 전문가의 게이트 값 <code>g</code>를 통해</strong> 라우터로 그래디언트가 흐르기 때문이다.
+      "좋은 결과를 낸 전문가에게 준 가중치를 키운다"는 형태의 신호다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 250" role="img" aria-label="Dense FFN과 MoE 층의 비교 도식. Dense는 모든 토큰이 하나의 큰 FFN을 통과하고, MoE는 라우터가 8개 전문가 중 2개만 선택해 통과시킨 뒤 가중합한다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <defs>
+              <marker id="moe-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-line)"/>
+              </marker>
+            </defs>
+
+            <text x="30" y="22" font-size="10.5" letter-spacing="1.4" fill="var(--muted)">Dense — 전부 통과</text>
+
+            <rect x="30" y="36" width="70" height="28" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.2"/>
+            <text x="65" y="55" text-anchor="middle" font-size="10" fill="var(--ink-soft)">토큰 x</text>
+            <path d="M104 50 L128 50" stroke="var(--muted)" stroke-width="1.2"/>
+            <rect x="132" y="30" width="110" height="40" fill="var(--muted-fill)" stroke="var(--muted)" stroke-width="1.4"/>
+            <text x="187" y="47" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">FFN 전체</text>
+            <text x="187" y="61" text-anchor="middle" font-size="9" fill="var(--warn)">활성 100%</text>
+
+            <line x1="270" y1="26" x2="270" y2="230" stroke="var(--rule)" stroke-width="1"/>
+
+            <text x="300" y="22" font-size="10.5" letter-spacing="1.4" fill="var(--accent)">MoE — top-2 of 8</text>
+
+            <rect x="300" y="36" width="66" height="28" fill="var(--muted-fill)" stroke="var(--rule-strong)" stroke-width="1.2"/>
+            <text x="333" y="55" text-anchor="middle" font-size="10" fill="var(--ink-soft)">토큰 x</text>
+            <path d="M370 50 L392 50" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#moe-ar)"/>
+            <rect x="396" y="34" width="86" height="32" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.5"/>
+            <text x="439" y="54" text-anchor="middle" font-size="10.5" fill="var(--accent)">라우터</text>
+
+            <!-- experts row -->
+            <g>
+              <rect x="300" y="96" width="38" height="46" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <text x="319" y="123" text-anchor="middle" font-size="9.5" fill="var(--ink-faint)">E1</text>
+              <rect x="342" y="96" width="38" height="46" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <text x="361" y="123" text-anchor="middle" font-size="9.5" fill="var(--ink-faint)">E2</text>
+              <rect x="384" y="96" width="38" height="46" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.8"/>
+              <text x="403" y="118" text-anchor="middle" font-size="9.5" fill="var(--accent)">E3</text>
+              <text x="403" y="132" text-anchor="middle" font-size="8.5" fill="var(--accent)">.62</text>
+              <rect x="426" y="96" width="38" height="46" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <text x="445" y="123" text-anchor="middle" font-size="9.5" fill="var(--ink-faint)">E4</text>
+              <rect x="468" y="96" width="38" height="46" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <text x="487" y="123" text-anchor="middle" font-size="9.5" fill="var(--ink-faint)">E5</text>
+              <rect x="510" y="96" width="38" height="46" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.8"/>
+              <text x="529" y="118" text-anchor="middle" font-size="9.5" fill="var(--accent)">E6</text>
+              <text x="529" y="132" text-anchor="middle" font-size="8.5" fill="var(--accent)">.38</text>
+              <rect x="552" y="96" width="38" height="46" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <text x="571" y="123" text-anchor="middle" font-size="9.5" fill="var(--ink-faint)">E7</text>
+              <rect x="594" y="96" width="38" height="46" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <text x="613" y="123" text-anchor="middle" font-size="9.5" fill="var(--ink-faint)">E8</text>
+            </g>
+
+            <path d="M430 68 L406 92" stroke="var(--accent-line)" stroke-width="1.5" marker-end="url(#moe-ar)"/>
+            <path d="M452 68 L526 92" stroke="var(--accent-line)" stroke-width="1.5" marker-end="url(#moe-ar)"/>
+
+            <path d="M403 146 L455 168" stroke="var(--accent-line)" stroke-width="1.4" marker-end="url(#moe-ar)"/>
+            <path d="M529 146 L481 168" stroke="var(--accent-line)" stroke-width="1.4" marker-end="url(#moe-ar)"/>
+            <circle cx="468" cy="180" r="13" fill="none" stroke="var(--accent-line)" stroke-width="1.5"/>
+            <text x="468" y="185" text-anchor="middle" font-size="12" fill="var(--accent)">Σ</text>
+            <text x="500" y="185" font-size="9.5" fill="var(--ink-faint)">가중합</text>
+
+            <text x="300" y="216" font-size="10" fill="var(--accent)">회색 6개는 이 토큰에 대해 곱셈을 한 번도 하지 않는다 (0 FLOPs)</text>
+            <text x="300" y="234" font-size="10" fill="var(--ink-faint)">라우팅은 토큰마다, 그리고 층마다 독립적으로 결정된다</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        MoE 층은 FFN 자리를 그대로 대체하고 어텐션은 건드리지 않는다.
+        달라지는 것은 하나 — 토큰이 <strong>고른 전문가만</strong> 통과한다는 것이다.
+        결과적으로 <em>보유한 파라미터</em>와 <em>토큰당 쓰는 파라미터</em>가 분리된다.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>부익부 붕괴, 그리고 그것을 막는 손실</h2>
+    <p>
+      여기서 MoE의 고질병이 나온다. 학습 초기에 우연히 조금 나은 전문가가 생기면
+      라우터가 그쪽으로 토큰을 더 보내고, 더 받은 전문가는 더 빨리 학습돼 더 나아지고, 그래서 더 받는다.
+      <strong>승자독식</strong>이다. 방치하면 대부분의 전문가가 죽은 파라미터가 된다.
+    </p>
+    <p>
+      표준 처방은 <strong>보조 손실</strong>이다. 각 전문가로 간 토큰 비율 <code>f<sub>i</sub></code>와
+      라우터가 준 평균 확률 <code>P<sub>i</sub></code>를 곱해 합산하고, 작은 계수로 메인 손실에 더한다.
+    </p>
+    <div class="eq">
+      <span class="cap">로드 밸런싱 손실</span>
+      <div class="line">L<sub>aux</sub> = α · N · Σ<sub>i</sub> ( f<sub>i</sub> · P<sub>i</sub> )&nbsp;&nbsp;&nbsp;(α ≈ 0.01)</div>
+      <div class="line">// f<sub>i</sub> = 전문가 i가 받은 토큰 비율 (이산, 미분 불가)</div>
+      <div class="line">// P<sub>i</sub> = 전문가 i에 대한 평균 라우터 확률 (미분 가능)</div>
+    </div>
+    <div class="note">
+      <b>이 식의 요령은 곱셈에 있다.</b> <code>f</code>는 미분 불가능하고 <code>P</code>는 미분 가능하다.
+      둘을 곱해 놓으면 <em>그래디언트는 <code>P</code>를 타고 흐르되, 크기는 실제 쏠림 <code>f</code>가 결정</em>한다.
+      쏠린 전문가일수록 큰 벌을 받는 구조다. 최근에는 손실 대신 라우터 logits에 학습되는 bias를 더해
+      균형을 맞추는 방식(DeepSeek-V3의 loss-free balancing)도 쓰인다.
+    </div>
+    <p>
+      실행 측면에서는 <strong>용량 계수</strong>가 하나 더 붙는다. GPU는 정적 크기를 좋아하므로
+      전문가당 버퍼를 고정해야 하고, 상한을 넘겨 도착한 토큰은 그 층에서 <em>버려진다</em>(token dropping).
+      잔차 연결을 타고 FFN을 건너뛴 채 다음 층으로 간다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>손익계산서 — 아끼는 것은 연산이지 메모리가 아니다</h2>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>모델</th><th>총 파라미터</th><th>활성 파라미터</th><th>활성 비율</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Mixtral 8x7B</td><td>46.7B</td><td class="hi">12.9B</td><td>27.6%</td></tr>
+          <tr><td>DeepSeek-V3</td><td>671B</td><td class="hi">37B</td><td>5.5%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Mixtral의 8×7B가 56B가 아닌 46.7B인 이유는 <strong>어텐션 층과 임베딩을 전문가들이 공유</strong>하기 때문이다.
+      쪼개진 것은 FFN뿐이다.
+    </p>
+    <p>
+      결정적인 점은 <strong>GPU에는 46.7B 전부를 올려야 한다</strong>는 것이다.
+      어느 토큰이 어느 전문가로 갈지 미리 알 수 없으므로 전부 상주시켜야 한다.
+      MoE가 줄이는 것은 <em>곱셈 횟수</em>지 <em>메모리</em>가 아니다.
+    </p>
+    <p>
+      이 비대칭이 MoE의 실전 성격을 정한다. 요청이 몰리는 서버라면
+      메모리는 어차피 상주 비용이고 병목은 처리량이므로 큰 이득이다.
+      반면 노트북에 모델 하나 올려 쓰려는 쪽에는 반갑지 않은 거래다 —
+      13B급 속도를 얻자고 47B급 메모리를 내야 한다.
+    </p>
+    <div class="note">
+      <b>통신 비용이 이론적 이득을 깎는다.</b> 전문가들은 보통 서로 다른 GPU에 흩어져 있어,
+      MoE 층을 통과할 때마다 토큰을 담당 GPU로 보냈다 받는 <strong>all-to-all 통신</strong>이 두 번 일어난다.
+      그래서 FLOPs 절감이 그대로 속도 향상으로 이어지지 않는다.
+      라우팅을 몇 개 노드로 제한하는 node-limited routing 같은 기법이 여기서 나온다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>"전문가"는 분야 전문가가 아니다</h2>
+    <p>
+      이름 때문에 생기는 가장 흔한 오해다. E1은 의학, E2는 코딩, E3는 법률 —
+      이런 식의 분업은 <strong>일어나지 않는다</strong>.
+    </p>
+    <p>
+      학습된 라우팅을 분석해 보면 전문가들은 훨씬 저수준의 패턴에 특화된다.
+      들여쓰기 토큰, 숫자, 특정 품사, 문장 부호 같은 것들이다.
+      Mixtral 논문의 분석도 도메인별 특화 증거는 약한 반면
+      <em>구문·위치 수준의 특화</em>는 뚜렷하다고 보고한다.
+      "전문가"는 결과에 대한 서술이 아니라 설계 당시의 은유에 가깝다.
+    </p>
+    <p>
+      남은 문제도 몇 가지 분명하다.
+    </p>
+    <ul>
+      <li><strong>파인튜닝이 불안정하다.</strong> 좁은 도메인 데이터로 미세조정하면 라우팅이 소수 전문가로 쏠려 과적합하기 쉽다.</li>
+      <li><strong>배치 효율이 떨어진다.</strong> 배치 안 토큰이 여러 전문가로 흩어지면 전문가당 처리량이 작아져 행렬곱 효율이 낮아진다.</li>
+      <li><strong>재현성 문제.</strong> 용량 상한이 있는 구현에서는 <em>함께 배치된 다른 요청</em>에 따라 내 토큰이 드롭될 수 있어, 같은 입력의 출력이 미세하게 달라질 수 있다.</li>
+    </ul>
+    <p>
+      MoE는 새로운 아이디어가 아니다. 조건부 연산은 1991년 Jacobs 등까지 거슬러 올라가고,
+      2017년 Shazeer 등이 LSTM에 얹어 137B짜리 층을 만들었다.
+      달라진 것은 이 구조를 <strong>실제로 학습시킬 수 있게 만든 공학</strong>이었다 —
+      로드 밸런싱, 용량 관리, 통신 최적화.
+      한 문장으로 줄이면, MoE는 <em>"모델을 얼마나 크게 만들 것인가"와 "토큰 하나에 얼마를 쓸 것인가"를
+      별개의 손잡이로 분리한 구조</em>다.
+    </p>
+  </section>
+
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Shazeer et al., <em>Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer</em> (arXiv:1701.06538) — 현대 MoE의 출발점. 게이팅과 로드 밸런싱 손실이 여기서 정립된다.</li>
+      <li>Fedus et al., <em>Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity</em> (arXiv:2101.03961) — k=1까지 단순화하고 용량 계수·토큰 드롭을 정리.</li>
+      <li>Jiang et al., <em>Mixtral of Experts</em> (arXiv:2401.04088) — 실제 배포된 MoE의 구조와 라우팅 분석. 전문가 특화에 대한 실증.</li>
+      <li>DeepSeek-AI, <em>DeepSeek-V3 Technical Report</em> (arXiv:2412.19437) — fine-grained/shared expert와 보조 손실 없는 균형 조절.</li>
+      <li>Lepikhin et al., <em>GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding</em> (arXiv:2006.16668) — 분산 학습과 all-to-all 통신 설계.</li>
+      <li>Zoph et al., <em>ST-MoE: Designing Stable and Transferable Sparse Expert Models</em> (arXiv:2202.08906) — 파인튜닝 불안정성의 원인과 대응.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>

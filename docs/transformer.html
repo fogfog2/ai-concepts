@@ -1,0 +1,428 @@
+<title>Transformer — 모든 단어가 서로를 바라보다</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">Transformer</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #f2eef4;
+    --panel: #e8e2ec;
+    --ink: #1a1420;
+    --ink-soft: #584c62;
+    --ink-faint: #8c7f96;
+    --rule: #d8cede;
+    --rule-strong: #b5a8bd;
+    --accent: #8f2b6b;
+    --accent-fill: #f4d9ea;
+    --accent-line: #b8558f;
+    --muted: #7b8290;
+    --muted-fill: #dcdee4;
+    --warn: #a35120;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #140f18;
+    --panel: #1d1722;
+    --ink: #ede6f0;
+    --ink-soft: #b2a5ba;
+    --ink-faint: #7d7086;
+    --rule: #2c2434;
+    --rule-strong: #453a4f;
+    --accent: #f177bd;
+    --accent-fill: #3c1330;
+    --accent-line: #b05490;
+    --muted: #8d94a2;
+    --muted-fill: #1e2128;
+    --warn: #dd8a52;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #140f18;
+    --panel: #1d1722;
+    --ink: #ede6f0;
+    --ink-soft: #b2a5ba;
+    --ink-faint: #7d7086;
+    --rule: #2c2434;
+    --rule-strong: #453a4f;
+    --accent: #f177bd;
+    --accent-fill: #3c1330;
+    --accent-line: #b05490;
+    --muted: #8d94a2;
+    --muted-fill: #1e2128;
+    --warn: #dd8a52;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Architecture · Self-Attention · 2017</p>
+    <h1>Transformer</h1>
+    <p class="subtitle">모든 단어가 서로를 바라보다 — 순차성을 버려서 얻은 것</p>
+    <p class="dek">"Attention Is All You Need"라는 제목 때문에 어텐션이 주인공처럼 보이지만, 어텐션은 2014년부터 RNN의 <em>보조 장치</em>로 쓰이고 있었다. 2017년에 실제로 달라진 것은 <strong>순환을 버린 것</strong>이다 — 그 결과 문장 전체를 한 번에 계산할 수 있게 됐고, GPU 병렬 학습이 열렸다. 지금의 스케일링 시대는 이 결정 위에 서 있다.</p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>핵심</dt><dd>Q·K·V 내적 어텐션</dd></div>
+    <div><dt>스케일</dt><dd>1/√d_k · 포화 방지</dd></div>
+    <div><dt>멀티헤드</dt><dd>차원 분할 · 연산량 동일</dd></div>
+    <div><dt>위치</dt><dd>별도 주입 필요</dd></div>
+    <div><dt>비용</dt><dd>길이의 제곱</dd></div>
+  </dl>
+
+
+  <section>
+    <h2><span class="n">01</span>순서대로 읽는 것이 왜 문제였나</h2>
+    <p>
+      2017년 이전, 문장을 다루는 신경망은 <strong>한 단어씩 순서대로</strong> 읽었다.
+      RNN과 LSTM이 그랬다. 열 번째 단어를 처리하려면 앞의 아홉 단어를 거친 은닉 상태가 있어야 했다.
+    </p>
+    <p>
+      이 구조에는 두 가지 비용이 붙는다. 하나는 <em>정보 희석</em>이다 —
+      고정 크기 벡터 하나에 지금까지의 문맥을 계속 덮어쓰므로, 멀리 떨어진 단어의 흔적이 옅어진다.
+      LSTM의 셀 상태가 이 문제를 상당히 완화했지만 없애지는 못했다.
+    </p>
+    <p>
+      다른 하나가 결정적이었다. <strong>순차성은 병렬화할 수 없다.</strong>
+      길이 1000이면 1000번의 스텝을 차례로 밟아야 하고, GPU를 아무리 많이 붙여도 이 사슬은 짧아지지 않는다.
+      학습 데이터를 늘려도 학습 시간이 그만큼 늘어난다는 뜻이다.
+    </p>
+    <p>
+      "Attention Is All You Need"의 제목은 해법을 그대로 요약한다.
+      순환을 <em>보조</em>하던 어텐션만 남기고 순환 자체를 버린다. 그러면 문장 속 모든 단어 쌍의 관계를
+      <strong>한 번에</strong> 계산할 수 있다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>Q·K·V — 세 개의 역할을 동시에</h2>
+    <p>
+      셀프 어텐션에서 각 토큰은 세 개의 벡터로 투영된다.
+      같은 입력에서 세 개의 가중치 행렬로 뽑아낸 것이고, 역할이 각각 다르다.
+    </p>
+    <ul>
+      <li><strong>Query</strong> — "나는 어떤 정보가 필요한가". 내가 던지는 질문.</li>
+      <li><strong>Key</strong> — "나는 어떤 정보를 갖고 있는가". 다른 토큰들이 붙여 놓은 색인.</li>
+      <li><strong>Value</strong> — 실제로 전달될 내용.</li>
+    </ul>
+    <p>
+      각 Query를 모든 Key와 내적해 점수를 내고, 소프트맥스로 정규화한 뒤, 그 가중치만큼 Value를 섞는다.
+      전체가 행렬 연산 세 번으로 끝나므로 <em>모든 토큰에 대해 동시에</em> 계산된다.
+    </p>
+    <div class="eq">
+      <span class="cap">Scaled Dot-Product Attention</span>
+      <div class="line">Attention(Q, K, V) = softmax( QKᵀ / √d<sub>k</sub> ) V</div>
+    </div>
+    <p>
+      분모의 <code>√d<sub>k</sub></code>가 눈에 띄지 않지만 중요하다.
+      <code>d<sub>k</sub></code>차원 벡터 두 개의 내적은 차원이 커질수록 분산이 커진다.
+      스케일 없이 그대로 소프트맥스에 넣으면 값이 극단으로 벌어져 <strong>거의 원-핫에 가까운 분포</strong>가 되고,
+      그 구간에서는 그래디언트가 사실상 0이 되어 학습이 멈춘다.
+      <code>d<sub>k</sub>=64</code>면 <code>1/8</code>로 눌러 주는 것인데, 이 한 항이 없으면 깊은 모델이 학습되지 않는다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 250" role="img" aria-label="셀프 어텐션 계산 흐름 도식. 입력이 Q K V 로 투영되고, Q와 K의 내적으로 점수 행렬을 만든 뒤 스케일과 소프트맥스를 거쳐 V와 곱해 출력이 된다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <defs>
+              <marker id="tf-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-line)"/>
+              </marker>
+            </defs>
+
+            <text x="30" y="22" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">한 번의 행렬 연산으로 모든 토큰을 동시에</text>
+
+            <rect x="30" y="94" width="70" height="40" fill="var(--muted-fill)" stroke="var(--rule-strong)" stroke-width="1.3"/>
+            <text x="65" y="118" text-anchor="middle" font-size="11" fill="var(--ink-soft)">입력 X</text>
+
+            <path d="M104 106 L136 74" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#tf-ar)"/>
+            <path d="M104 114 L136 114" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#tf-ar)"/>
+            <path d="M104 122 L136 154" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#tf-ar)"/>
+
+            <rect x="140" y="56" width="54" height="34" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="167" y="78" text-anchor="middle" font-size="12" fill="var(--accent)">Q</text>
+            <rect x="140" y="97" width="54" height="34" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="167" y="119" text-anchor="middle" font-size="12" fill="var(--accent)">K</text>
+            <rect x="140" y="138" width="54" height="34" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="167" y="160" text-anchor="middle" font-size="12" fill="var(--accent)">V</text>
+
+            <path d="M198 73 L236 92" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#tf-ar)"/>
+            <path d="M198 114 L236 100" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#tf-ar)"/>
+
+            <rect x="240" y="78" width="94" height="40" fill="var(--panel)" stroke="var(--rule-strong)" stroke-width="1.3"/>
+            <text x="287" y="95" text-anchor="middle" font-size="10.5" fill="var(--ink)">QKᵀ</text>
+            <text x="287" y="110" text-anchor="middle" font-size="9" fill="var(--ink-faint)">N×N 점수</text>
+
+            <path d="M338 98 L372 98" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#tf-ar)"/>
+
+            <rect x="376" y="78" width="80" height="40" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.6"/>
+            <text x="416" y="95" text-anchor="middle" font-size="10.5" fill="var(--accent)">÷ √d<tspan font-size="8">k</tspan></text>
+            <text x="416" y="110" text-anchor="middle" font-size="9" fill="var(--ink-soft)">포화 방지</text>
+
+            <path d="M460 98 L494 98" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#tf-ar)"/>
+
+            <rect x="498" y="78" width="86" height="40" fill="var(--panel)" stroke="var(--rule-strong)" stroke-width="1.3"/>
+            <text x="541" y="103" text-anchor="middle" font-size="10.5" fill="var(--ink)">softmax</text>
+
+            <path d="M541 122 L541 150" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#tf-ar)"/>
+            <path d="M198 155 L494 155" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#tf-ar)"/>
+
+            <rect x="498" y="140" width="86" height="34" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.4"/>
+            <text x="541" y="162" text-anchor="middle" font-size="11" fill="var(--accent)">× V</text>
+
+            <path d="M588 157 L620 157" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#tf-ar)"/>
+            <text x="640" y="161" font-size="12" fill="var(--ink)">출력</text>
+
+            <line x1="30" y1="196" x2="670" y2="196" stroke="var(--rule)" stroke-width="1"/>
+            <text x="30" y="218" font-size="10.5" fill="var(--ink-soft)">순환이 없으므로 이 전체가 <tspan fill="var(--accent)">한 번의 통과</tspan>로 끝난다 — GPU 병렬화가 가능해진 지점.</text>
+            <text x="30" y="238" font-size="10.5" fill="var(--warn)">대신 N×N 점수 행렬이 생긴다. 길이가 2배면 메모리는 4배.</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        RNN이 <em>N번의 순차 스텝</em>을 밟는 자리를, 트랜스포머는 <strong>세 번의 행렬 곱</strong>으로 대체한다.
+        연산량은 늘지만 전부 병렬이라 실제 시간은 크게 줄어든다.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>멀티헤드 — 한 번에 여러 종류의 관계를</h2>
+    <p>
+      어텐션을 한 벌만 쓰면 문제가 있다. 소프트맥스는 확률 분포 하나를 만들므로,
+      한 토큰이 <em>한 가지 기준</em>으로만 다른 토큰을 볼 수 있다.
+      그런데 언어에는 여러 층위의 관계가 동시에 존재한다 — 문법적 주어-동사 관계, 의미적 수식 관계, 대명사의 지시 대상.
+    </p>
+    <p>
+      멀티헤드 어텐션은 <code>d<sub>model</sub></code>을 <code>h</code>개로 쪼개
+      <strong>각 부분 공간에서 독립적으로 어텐션을 계산</strong>한 뒤 결과를 이어 붙인다.
+      <code>d<sub>model</sub>=512</code>, <code>h=8</code>이면 헤드당 64차원이다.
+    </p>
+    <div class="eq">
+      <span class="cap">멀티헤드 — 쪼개고, 각자 계산하고, 다시 합친다</span>
+      <div class="line">head<sub>i</sub> = Attention(QW<sub>i</sub><sup>Q</sup>, KW<sub>i</sub><sup>K</sup>, VW<sub>i</sub><sup>V</sup>)</div>
+      <div class="line">MultiHead = Concat(head₁, …, head<sub>h</sub>) W<sup>O</sup></div>
+    </div>
+    <div class="note">
+      <b>헤드를 늘려도 연산량은 거의 그대로다.</b> 차원을 <code>h</code>로 나눠서 쓰기 때문이다 —
+      512차원 어텐션 하나와 64차원 어텐션 여덟 개의 총 계산량은 대략 같다.
+      <em>공짜로 표현력을 얻는</em> 드문 설계이고, 그래서 멀티헤드는 사실상 모든 후속 모델에 그대로 남았다.
+      다만 나중에 밝혀졌듯 <strong>모든 헤드가 유용하지는 않다</strong> — 상당수 헤드를 잘라내도 성능이 거의 떨어지지 않는다는 연구가 이어졌다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>순서를 모르는 구조에 순서를 넣기</h2>
+    <p>
+      어텐션 수식을 다시 보면 <em>위치가 등장하지 않는다</em>. 토큰을 뒤섞어도 각 토큰의 출력이 따라 섞일 뿐 값은 변하지 않는다.
+      "개가 사람을 물었다"와 "사람이 개를 물었다"가 구분되지 않는다는 뜻이다.
+      순환을 버린 대가로 <strong>공짜로 얻던 순서 정보</strong>를 잃은 것이다.
+    </p>
+    <p>
+      원 논문의 해법은 <strong>위치 인코딩</strong>이다. 차원마다 다른 주파수의 sin·cos 값을 위치에 따라 계산해
+      입력 임베딩에 <em>더한다</em>. 학습 파라미터가 없고, 이론적으로는 학습에서 본 적 없는 긴 위치도 계산할 수 있다.
+    </p>
+    <div class="eq">
+      <span class="cap">정현파 위치 인코딩</span>
+      <div class="line">PE(pos, 2i)&nbsp;&nbsp;= sin( pos / 10000<sup>2i/d</sup> )</div>
+      <div class="line">PE(pos, 2i+1) = cos( pos / 10000<sup>2i/d</sup> )</div>
+    </div>
+    <p>
+      실제로는 학습 길이를 넘어서면 성능이 무너져, 이후 상대 위치 방식과 RoPE로 대체됐다.
+      다만 "위치를 별도로 주입해야 한다"는 제약 자체는 지금도 유효하다.
+    </p>
+    <p>
+      나머지 구성요소도 각각 이유가 있다. <strong>잔차 연결</strong>은 그래디언트가 층을 건너뛰어 흐르는 경로를 뚫고,
+      <strong>층 정규화</strong>는 분포를 붙잡아 학습을 안정시키며,
+      <strong>FFN</strong>은 토큰마다 독립적으로 적용되는 두 번의 선형 변환으로 표현력을 보탠다.
+      어텐션이 토큰 <em>사이</em>를 섞는다면, FFN은 각 토큰 <em>안</em>에서 정보를 가공한다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>제곱 비용 — 그리고 이후 10년의 과제</h2>
+    <p>
+      모든 토큰 쌍을 비교하므로 어텐션의 비용은 시퀀스 길이의 <strong>제곱</strong>에 비례한다.
+    </p>
+
+    <div class="scroller">
+      <table class="data">
+        <thead>
+          <tr><th>시퀀스 길이</th><th>토큰 쌍 수</th><th>상대 비용</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>512</td><td>262,144</td><td>1×</td></tr>
+          <tr><td>1,024</td><td>1,048,576</td><td>4×</td></tr>
+          <tr><td>2,048</td><td>4,194,304</td><td>16×</td></tr>
+          <tr><td>4,096</td><td class="hi">16,777,216</td><td class="hi">64×</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      이 제약이 이후 연구의 상당 부분을 규정했다. 근사 어텐션(희소·선형), 상태 공간 모델,
+      그리고 <em>수식을 바꾸지 않고 메모리 접근만 재배치한</em> FlashAttention이 모두 여기서 나왔다.
+      마지막 것이 특히 시사적인데, 실제 병목이 연산량이 아니라 <strong>메모리 왕복</strong>이었음을 드러냈기 때문이다.
+    </p>
+    <p>
+      트랜스포머가 남긴 진짜 유산은 어텐션 메커니즘 자체보다 <strong>순차성을 버렸다는 결정</strong>에 가깝다.
+      병렬 학습이 가능해지자 데이터와 모델을 함께 키우는 것이 현실적인 선택지가 됐고,
+      그 위에서 스케일링 법칙이 성립했다. 오늘날 언어 모델이 이 구조 위에 서 있는 이유는
+      어텐션이 합성곱이나 순환보다 본질적으로 우수해서가 아니라,
+      <em>당시 하드웨어가 보상하는 형태로 계산을 재배치했기 때문</em>이다.
+    </p>
+  </section>
+
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Vaswani et al., <em>Attention Is All You Need</em> (arXiv:1706.03762) — 원 논문. 3.2절의 스케일링 근거와 3.5절 위치 인코딩이 핵심.</li>
+      <li>Bahdanau et al., <em>Neural Machine Translation by Jointly Learning to Align and Translate</em> (arXiv:1409.0473) — 어텐션의 출발점. 원래 RNN의 보조 장치였다.</li>
+      <li>Xiong et al., <em>On Layer Normalization in the Transformer Architecture</em> (arXiv:2002.04745) — Pre-LN이 워밍업을 없애는 이유.</li>
+      <li>Michel et al., <em>Are Sixteen Heads Really Better than One?</em> (arXiv:1905.10650) — 상당수 헤드를 잘라내도 성능이 유지된다는 분석.</li>
+      <li>Su et al., <em>RoFormer: Enhanced Transformer with Rotary Position Embedding</em> (arXiv:2104.09864) — 정현파를 대체한 현재 표준.</li>
+      <li>Dao et al., <em>FlashAttention</em> (arXiv:2205.14135) — 제곱 비용의 실제 병목이 메모리 왕복이었다는 관찰.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>

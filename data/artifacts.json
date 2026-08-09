@@ -99,8 +99,8 @@
       "summary": "셀프 어텐션이 문장 속 모든 단어를 동시에 저울질하는 방식. 현대 LLM의 뼈대.",
       "updated": "2026-08-06",
       "slug": "transformer",
-      "url": "https://claude.ai/code/artifact/6011e936-624f-4f83-8ab1-1b0a4120d784",
-      "local": false
+      "url": "docs/transformer.html",
+      "local": true
     },
     {
       "title": "Vision Transformer",
@@ -119,8 +119,8 @@
       "summary": "top-k 라우팅으로 파라미터 수와 토큰당 연산량을 분리하는 구조.",
       "updated": "2026-08-06",
       "slug": "mixture-of-experts",
-      "url": "https://claude.ai/code/artifact/5dfd51ef-514f-4c49-b849-4d131cbd2552",
-      "local": false
+      "url": "docs/mixture-of-experts.html",
+      "local": true
     },
     {
       "title": "RNN &amp; LSTM",
@@ -159,8 +159,8 @@
       "summary": "이미지와 텍스트를 하나의 임베딩 공간에 놓아 제로샷 분류를 가능하게 한 학습.",
       "updated": "2026-07-30",
       "slug": "clip",
-      "url": "https://claude.ai/code/artifact/9fe5e678-28e3-4240-a0b1-d2dbcd7ade9d",
-      "local": false
+      "url": "docs/clip.html",
+      "local": true
     },
     {
       "title": "Scaling Laws",

@@ -1,0 +1,443 @@
+<title>CLIP — 그림과 말을 같은 공간에 놓다</title>
+
+<style>
+  .site-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem 1rem;
+    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .04em;
+    background: rgba(20,20,22,.82);
+    backdrop-filter: saturate(1.4) blur(8px);
+    -webkit-backdrop-filter: saturate(1.4) blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,.14);
+  }
+  .site-nav a { color: #cfd6e4; text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
+  .site-nav .sep { color: #6b7590; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">CLIP</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #eef1f0;
+    --panel: #e3e7e6;
+    --ink: #111a19;
+    --ink-soft: #485654;
+    --ink-faint: #7b8a87;
+    --rule: #c9d2d0;
+    --rule-strong: #a7b1af;
+    --accent: #0d7268;
+    --accent-fill: #cfe8e4;
+    --accent-line: #2f978c;
+    --muted: #8a7f8e;
+    --muted-fill: #ded8e0;
+    --warn: #a0562a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #0d1211;
+    --panel: #151b1a;
+    --ink: #e3e9e8;
+    --ink-soft: #a0aeab;
+    --ink-faint: #6b7b78;
+    --rule: #222b29;
+    --rule-strong: #374341;
+    --accent: #43cfbe;
+    --accent-fill: #0c2f2b;
+    --accent-line: #2a8a80;
+    --muted: #948a99;
+    --muted-fill: #211d24;
+    --warn: #dd8a5a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0d1211;
+    --panel: #151b1a;
+    --ink: #e3e9e8;
+    --ink-soft: #a0aeab;
+    --ink-faint: #6b7b78;
+    --rule: #222b29;
+    --rule-strong: #374341;
+    --accent: #43cfbe;
+    --accent-fill: #0c2f2b;
+    --accent-line: #2a8a80;
+    --muted: #948a99;
+    --muted-fill: #211d24;
+    --warn: #dd8a5a;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Training · Contrastive Vision-Language · 2021</p>
+    <h1>CLIP</h1>
+    <p class="subtitle">그림과 말을 같은 공간에 놓다 — 라벨 대신 캡션으로 배우기</p>
+    <p class="dek">전통적 분류기는 학습 전에 정답 목록을 정해야 하고, 목록에 없는 것은 <em>구조적으로</em> 답할 수 없다. 더 근본적인 문제는 라벨이 의미를 담지 못한다는 것이다 — 클래스 37번은 그냥 37번이다. CLIP은 라벨 대신 <strong>인터넷에 이미 널려 있는 캡션</strong>을 감독 신호로 썼다. 그러자 고정 목록도, 별도 라벨링도 필요 없어졌다.</p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>학습 데이터</dt><dd>웹 4억 (이미지,텍스트) 쌍</dd></div>
+    <div><dt>방식</dt><dd>대칭 대조 학습</dd></div>
+    <div><dt>정답</dt><dd>N×N 중 대각선 N개</dd></div>
+    <div><dt>배치</dt><dd>32,768 — 클수록 유리</dd></div>
+    <div><dt>제로샷</dt><dd>문장이 곧 분류기</dd></div>
+  </dl>
+
+
+  <section>
+    <h2><span class="n">01</span>고정된 목록이라는 제약</h2>
+    <p>
+      전통적인 이미지 분류기는 학습 전에 <strong>정답 목록을 미리 정한다</strong>.
+      ImageNet이면 1000개 클래스다. 마지막 층의 출력 차원이 곧 그 개수이고,
+      목록에 없는 대상은 <em>구조적으로 답할 수 없다</em>.
+    </p>
+    <p>
+      새 범주를 추가하려면 그 범주의 라벨링된 이미지를 모아 다시 학습해야 한다.
+      "이 사진에 냉장고가 있나?"를 묻고 싶으면 냉장고 데이터셋이 필요하다.
+      라벨링 비용이 능력의 상한을 정하는 구조다.
+    </p>
+    <p>
+      더 근본적인 문제는 <strong>라벨이 의미를 담지 못한다는 것</strong>이다.
+      모델에게 클래스 37번은 그냥 37번이다. "치와와"와 "웰시코기"가 둘 다 개라는 사실,
+      "고양이"와 더 가깝고 "트럭"과는 멀다는 사실이 라벨 자체에는 없다.
+      정수 인덱스로 바꾸는 순간 그 정보가 버려진다.
+    </p>
+    <p>
+      CLIP의 출발점은 이것이다. <em>인터넷에는 이미 이미지와 그 설명이 함께 널려 있다.</em>
+      캡션, alt 텍스트, 사진 제목. 이 자연어 설명을 라벨 대신 쓰면
+      고정 목록도, 별도 라벨링도 필요 없어진다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>대조 학습 — 정답은 대각선에 있다</h2>
+    <p>
+      CLIP은 두 개의 인코더를 함께 학습시킨다. 이미지 인코더(ViT 또는 ResNet)와
+      텍스트 인코더(트랜스포머)가 각각 벡터를 내놓고, 두 벡터가 <strong>같은 공간</strong>에 놓이도록 훈련한다.
+    </p>
+    <p>
+      학습 방식이 요점이다. 배치에 <code>N</code>개의 (이미지, 텍스트) 쌍을 넣으면
+      가능한 조합은 <code>N×N</code>개다. 그중 <strong>대각선의 <code>N</code>개만 실제 쌍</strong>이고
+      나머지는 전부 잘못된 조합이다. 목표는 대각선의 유사도를 높이고 나머지를 낮추는 것 —
+      이것이 대조 학습(contrastive learning)이다.
+    </p>
+    <div class="eq">
+      <span class="cap">대칭 대조 손실 — 이미지→텍스트, 텍스트→이미지 양방향</span>
+      <div class="line">logits = (I<sub>e</sub> · T<sub>e</sub><sup>T</sup>) · exp(τ)&nbsp;&nbsp;// τ = 학습되는 온도</div>
+      <div class="line">L = ( CE(logits, labels) + CE(logits<sup>T</sup>, labels) ) / 2</div>
+      <div class="line">// labels = [0, 1, 2, …, N−1] — 즉 "정답은 대각선"</div>
+    </div>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 260" role="img" aria-label="CLIP 대조 학습 도식. 배치 안의 이미지와 텍스트가 각각 인코딩되어 N×N 유사도 행렬을 만들고, 대각선만 정답으로 학습된다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <defs>
+              <marker id="cl-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-line)"/>
+              </marker>
+            </defs>
+
+            <text x="30" y="22" font-size="10.5" letter-spacing="1.4" fill="var(--ink-faint)">배치 N개의 (이미지, 텍스트) 쌍</text>
+
+            <!-- image encoder -->
+            <rect x="30" y="38" width="96" height="34" fill="var(--muted-fill)" stroke="var(--rule-strong)" stroke-width="1.2"/>
+            <text x="78" y="60" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">이미지 인코더</text>
+            <path d="M130 55 L164 76" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#cl-ar)"/>
+
+            <rect x="30" y="150" width="96" height="34" fill="var(--muted-fill)" stroke="var(--rule-strong)" stroke-width="1.2"/>
+            <text x="78" y="172" text-anchor="middle" font-size="10.5" fill="var(--ink-soft)">텍스트 인코더</text>
+            <path d="M130 167 L164 148" stroke="var(--accent-line)" stroke-width="1.3" marker-end="url(#cl-ar)"/>
+
+            <!-- matrix -->
+            <text x="240" y="66" text-anchor="middle" font-size="10" fill="var(--ink-faint)">텍스트 →</text>
+            <text x="160" y="118" font-size="10" fill="var(--ink-faint)">이미지</text>
+            <text x="160" y="130" font-size="10" fill="var(--ink-faint)">↓</text>
+
+            <g>
+              <rect x="180" y="76" width="42" height="30" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.8"/>
+              <text x="201" y="96" text-anchor="middle" font-size="9.5" fill="var(--accent)">✓</text>
+              <rect x="224" y="76" width="42" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <rect x="268" y="76" width="42" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <rect x="312" y="76" width="42" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+
+              <rect x="180" y="108" width="42" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <rect x="224" y="108" width="42" height="30" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.8"/>
+              <text x="245" y="128" text-anchor="middle" font-size="9.5" fill="var(--accent)">✓</text>
+              <rect x="268" y="108" width="42" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <rect x="312" y="108" width="42" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+
+              <rect x="180" y="140" width="42" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <rect x="224" y="140" width="42" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <rect x="268" y="140" width="42" height="30" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.8"/>
+              <text x="289" y="160" text-anchor="middle" font-size="9.5" fill="var(--accent)">✓</text>
+              <rect x="312" y="140" width="42" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+
+              <rect x="180" y="172" width="42" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <rect x="224" y="172" width="42" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <rect x="268" y="172" width="42" height="30" fill="var(--muted-fill)" stroke="var(--rule)" stroke-width="0.9"/>
+              <rect x="312" y="172" width="42" height="30" fill="var(--accent-fill)" stroke="var(--accent-line)" stroke-width="1.8"/>
+              <text x="333" y="192" text-anchor="middle" font-size="9.5" fill="var(--accent)">✓</text>
+            </g>
+
+            <text x="180" y="222" font-size="10" fill="var(--accent)">대각선 N개 = 정답 (유사도 ↑)</text>
+            <text x="180" y="238" font-size="10" fill="var(--ink-faint)">나머지 N²−N개 = 오답 (유사도 ↓)</text>
+
+            <!-- scale note -->
+            <line x1="392" y1="60" x2="392" y2="210" stroke="var(--rule)" stroke-width="1"/>
+            <text x="414" y="82" font-size="10.5" letter-spacing="1.2" fill="var(--accent)">배치가 클수록 유리하다</text>
+            <text x="414" y="106" font-size="10.5" fill="var(--ink-soft)">N = 32,768 일 때</text>
+            <text x="414" y="126" font-size="10.5" fill="var(--ink)">비교 쌍 10.7억 개</text>
+            <text x="414" y="146" font-size="10.5" fill="var(--ink-soft)">그중 정답은 32,768개</text>
+            <text x="414" y="166" font-size="10.5" fill="var(--warn)">양성 비율 0.003%</text>
+            <text x="414" y="192" font-size="10" fill="var(--ink-faint)">난도 높은 음성이 많을수록</text>
+            <text x="414" y="206" font-size="10" fill="var(--ink-faint)">표현이 정교해진다</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        대조 학습에서 <strong>배치 크기가 곧 문제의 난도</strong>다.
+        배치가 크면 헷갈리는 오답이 많아지고, 그것을 구분하려면 표현이 정교해져야 한다.
+        CLIP이 32,768이라는 큰 배치를 쓴 이유이고, 대조 학습이 대체로 큰 배치를 요구하는 이유이기도 하다.
+      </figcaption>
+    </figure>
+
+    <div class="note">
+      <b>온도 τ가 학습된다는 점이 사소하지 않다.</b> 대조 손실에서 온도는 분포의 날카로움을 정한다 —
+      너무 낮으면 어려운 음성 하나에 과하게 반응하고, 너무 높으면 양성과 음성의 구분이 흐려진다.
+      CLIP은 이 값을 하이퍼파라미터로 두지 않고 <em>로그 공간에서 함께 학습</em>시켰다.
+      튜닝해야 할 손잡이 하나를 학습으로 넘긴 것이고, 이후 대조 학습 구현들이 대부분 이 방식을 따랐다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>제로샷 — 분류기를 문장으로 만든다</h2>
+    <p>
+      학습이 끝나면 흥미로운 일이 가능해진다. 분류하고 싶은 범주를 <strong>문장으로 쓰기만 하면</strong>
+      그 자리에서 분류기가 만들어진다. 학습도, 라벨링도 없다.
+    </p>
+    <ol style="margin:0; padding-left:1.3rem; max-width:66ch; display:flex; flex-direction:column; gap:0.5rem;">
+      <li>후보 범주를 문장으로 쓴다 — "a photo of a dog", "a photo of a cat", …</li>
+      <li>각 문장을 텍스트 인코더에 넣어 벡터를 얻는다. (범주 수만큼 한 번씩)</li>
+      <li>분류할 이미지를 이미지 인코더에 넣어 벡터를 얻는다.</li>
+      <li>이미지 벡터와 가장 가까운 텍스트 벡터를 고른다.</li>
+    </ol>
+    <p>
+      2단계의 텍스트 벡터들이 사실상 <em>분류기의 가중치 행렬</em> 역할을 한다.
+      전통적 분류기라면 학습으로 얻어야 했을 것을, 문장을 인코딩해서 즉석에서 만드는 셈이다.
+    </p>
+    <p>
+      <strong>프롬프트가 성능을 바꾼다</strong>는 점도 이 구조의 직접적 귀결이다.
+      단순히 "dog"보다 "a photo of a dog"가 낫다 — 학습 데이터의 캡션이 대체로 문장 형태였기 때문이다.
+      도메인을 명시하면("a satellite photo of …") 더 오른다.
+      여러 템플릿의 텍스트 벡터를 평균 내는 <em>프롬프트 앙상블</em>도 표준 기법이 됐다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>강점과 한계가 같은 곳에서 나온다</h2>
+    <p>
+      CLIP의 인상적인 성질은 <strong>분포 변화에 강하다</strong>는 것이다.
+      ImageNet으로 지도학습한 모델은 스케치나 만화체 이미지에서 크게 무너지는데,
+      CLIP은 상대적으로 잘 버틴다. 웹의 잡다한 이미지-텍스트 쌍으로 배웠으니
+      특정 데이터셋의 편향에 덜 물든 것이다.
+    </p>
+    <p>
+      그런데 같은 이유가 약점도 만든다.
+    </p>
+    <ul>
+      <li>
+        <strong>세밀한 구분에 약하다.</strong> 개와 고양이는 잘 나누지만
+        비슷한 새 품종을 가르는 일에는 전용 지도학습 모델이 낫다.
+        웹 캡션에 그런 세밀한 구분이 잘 등장하지 않기 때문이다.
+      </li>
+      <li>
+        <strong>세는 것, 위치 관계에 약하다.</strong> "고양이 세 마리"나 "왼쪽에 있는 컵" 같은 표현은
+        대조 학습으로 얻기 어렵다. 캡션 전체와 이미지 전체를 하나의 벡터로 맞추는 방식이라
+        <em>구성적 구조</em>가 표현에 남지 않는다.
+      </li>
+      <li>
+        <strong>데이터의 편향을 그대로 흡수한다.</strong> 웹에서 긁어온 4억 쌍에는
+        사회적 편향이 그대로 들어 있고, 모델이 그것을 학습한다. 원 논문도 이 위험을 명시했다.
+      </li>
+      <li>
+        <strong>추상적·기술적 개념에 약하다.</strong> 학습 분포에서 먼 도표, 의료 영상, 위성 이미지 등은
+        제로샷 성능이 크게 떨어진다.
+      </li>
+    </ul>
+    <div class="note">
+      <b>"제로샷"이라는 말의 범위에 주의해야 한다.</b> 학습 데이터에 그 개념이 <em>전혀</em> 없었다는 뜻이 아니라,
+      <strong>해당 벤치마크의 라벨링된 학습셋을 쓰지 않았다</strong>는 뜻이다.
+      4억 쌍 안에 이미 그 범주의 이미지와 설명이 들어 있었을 가능성이 높다.
+      웹 규모 사전학습 모델의 평가에서 반복되는 주제이고, 벤치마크 오염 문제와도 맞닿아 있다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>남긴 것 — 형식을 잇는 방법</h2>
+    <p>
+      CLIP의 실질적 영향은 제로샷 분류 성능보다 <strong>두 양식을 잇는 방법을 정립한 것</strong>에 있다.
+      이미지와 텍스트를 같은 공간에 놓는다는 발상은 이후 여러 곳에서 재사용됐다.
+    </p>
+    <ul>
+      <li>
+        <strong>텍스트-이미지 생성.</strong> Stable Diffusion은 텍스트 조건을 CLIP 텍스트 인코더로 처리한다.
+        "무엇을 그릴지"를 이미지 공간과 맞물린 벡터로 바꾸는 일을 CLIP이 맡는 셈이다.
+      </li>
+      <li>
+        <strong>시각 언어 모델.</strong> 오늘날 VLM은 대체로 이미지 인코더의 출력을
+        언어 모델의 입력 토큰으로 이어 붙인다. 두 인코더를 정렬하는 사전 단계에 CLIP 계열 학습이 쓰인다.
+      </li>
+      <li>
+        <strong>검색과 필터링.</strong> 이미지 검색, 중복 제거, 데이터셋 정제에 광범위하게 쓰인다.
+        LAION 같은 대규모 데이터셋 자체가 CLIP 점수로 걸러 만들어졌다.
+      </li>
+    </ul>
+    <p>
+      한 걸음 물러나 보면 CLIP이 보여 준 것은 <em>감독 신호를 어디서 얻을 것인가</em>에 대한 답이다.
+      사람이 붙인 라벨 대신 <strong>이미 세상에 존재하는 짝지어진 데이터</strong>를 쓰면,
+      라벨링 비용이라는 상한이 사라진다. 자기지도 학습이 언어에서 한 일을
+      멀티모달에서 반복한 셈이고, 그 뒤로 "웹에 이미 있는 쌍을 찾아라"가
+      데이터 설계의 기본 전략이 됐다.
+    </p>
+  </section>
+
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Radford et al., <em>Learning Transferable Visual Models From Natural Language Supervision</em> (arXiv:2103.00020) — CLIP 원 논문. 프롬프트 엔지니어링과 제로샷 평가 방법론이 상세하다.</li>
+      <li>Jia et al., <em>Scaling Up Visual and Vision-Language Representation Learning With Noisy Text Supervision</em> (arXiv:2102.05918) — ALIGN. 같은 시기 독립적으로 나온 대규모 대조 학습.</li>
+      <li>Chen et al., <em>A Simple Framework for Contrastive Learning of Visual Representations</em> (arXiv:2002.05709) — SimCLR. 대조 학습의 기본형과 배치 크기 의존성.</li>
+      <li>Zhai et al., <em>Sigmoid Loss for Language Image Pre-Training</em> (arXiv:2303.15343) — SigLIP. 소프트맥스 대신 시그모이드로 큰 배치 의존을 완화.</li>
+      <li>Thrush et al., <em>Winoground: Probing Vision and Language Models for Visio-Linguistic Compositionality</em> (arXiv:2204.03162) — 구성적 이해의 취약성을 드러낸 벤치마크.</li>
+      <li>Rombach et al., <em>High-Resolution Image Synthesis with Latent Diffusion Models</em> (arXiv:2112.10752) — CLIP 텍스트 인코더를 조건으로 쓰는 대표 사례.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-09</p>
+  </footer>
+
+</div>
