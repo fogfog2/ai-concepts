@@ -1,0 +1,139 @@
+/* ai/style.css - 허브(index.html)의 어두운 톤을 그대로 따른다 */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0; min-height: 100%;
+  background:
+    radial-gradient(900px 700px at 20% -10%, #1f2c52 0%, transparent 60%),
+    radial-gradient(800px 600px at 85% 8%, #3a2452 0%, transparent 55%),
+    #0b0f1a;
+  color: #eef2ff;
+  font-family: "Segoe UI", Roboto, "Noto Sans KR", system-ui, sans-serif;
+  line-height: 1.6;
+}
+.wrap { max-width: 680px; margin: 0 auto; padding: 20px 16px 60px; }
+
+header { margin-bottom: 16px; }
+.back {
+  display: inline-block; margin-bottom: 10px; padding: 6px 12px;
+  border-radius: 999px; text-decoration: none; font-size: 12px;
+  color: #c3cbe2; background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+h1 {
+  margin: 0 0 4px; font-size: clamp(24px, 7vw, 32px);
+  letter-spacing: 3px; font-weight: 900;
+  background: linear-gradient(90deg, #6ee7a8, #31c7ef, #ad4d9c);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.sub { color: #8b93a7; font-size: 12px; }
+
+/* 날짜 탭 */
+.tabs {
+  display: flex; gap: 7px; overflow-x: auto; padding-bottom: 10px;
+  margin-bottom: 14px; scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: 0 0 auto; padding: 7px 14px; border-radius: 999px; cursor: pointer;
+  font-size: 12px; font-weight: 700; color: #9aa4bf;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.tab.on {
+  color: #0b0f1a; border-color: transparent;
+  background: linear-gradient(135deg, #6ee7a8, #31c7ef);
+}
+
+/* 항목 카드 */
+.item {
+  padding: 16px; margin-bottom: 12px; border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: linear-gradient(160deg, rgba(255,255,255,0.11), rgba(255,255,255,0.04));
+  box-shadow: 0 8px 26px rgba(0,0,0,0.4);
+}
+.item h2 { margin: 0 0 8px; font-size: 16px; line-height: 1.45; }
+.meta { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+.tag {
+  font-size: 10px; padding: 2px 8px; border-radius: 999px;
+  background: rgba(255,255,255,0.1); color: #c3cbe2;
+}
+.tag.cat-모델 { background: rgba(49,199,239,0.22); color: #9fe4f7; }
+.tag.cat-연구 { background: rgba(173,77,156,0.24); color: #e9b6dd; }
+.tag.cat-도구 { background: rgba(110,231,168,0.2); color: #9df0c4; }
+.tag.cat-산업 { background: rgba(255,216,115,0.2); color: #ffe6a4; }
+.tag.cat-정책 { background: rgba(255,143,143,0.2); color: #ffc0c0; }
+.src { font-size: 11px; color: #8b93a7; text-decoration: none; }
+.src:hover { color: #31c7ef; text-decoration: underline; }
+
+.item ul { margin: 0; padding-left: 18px; }
+.item li { margin: 5px 0; font-size: 13.5px; color: #d6dcf0; }
+
+.takeaway {
+  margin-top: 12px; padding: 10px 12px; border-radius: 0 10px 10px 0;
+  border-left: 3px solid #6ee7a8; background: rgba(110,231,168,0.09);
+  font-size: 13px; color: #cfead9;
+}
+.takeaway b { color: #6ee7a8; }
+
+/* ---------- 기술문서: 단계별 묶음 ---------- */
+.stage { margin-bottom: 26px; }
+.stage-head {
+  display: grid; grid-template-columns: auto 1fr auto;
+  gap: 12px; align-items: start;
+  padding-bottom: 10px; margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.14);
+}
+.stage-no {
+  font-size: 11px; font-weight: 800; letter-spacing: 1px;
+  color: #0b0f1a; background: linear-gradient(135deg, #6ee7a8, #31c7ef);
+  padding: 3px 8px; border-radius: 6px; margin-top: 2px;
+}
+.stage-head h2 { margin: 0; font-size: 15px; font-weight: 800; color: #eef2ff; }
+.stage-head h2 em {
+  font-style: normal; font-weight: 600; font-size: 12px;
+  color: #8b93a7; margin-left: 6px;
+}
+.stage-head p { margin: 4px 0 0; font-size: 11.5px; color: #8b93a7; line-height: 1.55; }
+.stage-count {
+  font-size: 11px; color: #9aa4bf; background: rgba(255,255,255,0.08);
+  border-radius: 999px; padding: 2px 9px; margin-top: 2px;
+}
+
+.doc-list { display: flex; flex-direction: column; gap: 8px; }
+.doc {
+  display: grid; grid-template-columns: 1fr auto; gap: 4px 10px;
+  align-items: center;
+  padding: 12px 14px; border-radius: 12px; text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.035));
+  transition: border-color .15s, transform .15s, background .15s;
+}
+.doc:hover, .doc:focus-visible {
+  border-color: rgba(110,231,168,0.55);
+  background: linear-gradient(160deg, rgba(110,231,168,0.13), rgba(255,255,255,0.04));
+  transform: translateX(2px);
+  outline: none;
+}
+.doc-head { grid-column: 1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.doc-head b { font-size: 14px; font-weight: 700; color: #eef2ff; }
+.doc-head i { font-style: normal; font-size: 11.5px; color: #8b93a7; }
+.doc-sum {
+  grid-column: 1; font-size: 11.5px; color: #9aa4bf;
+  line-height: 1.55; margin-top: 2px;
+}
+.doc-go { grid-column: 2; grid-row: 1 / span 2; font-size: 15px; color: #6b7590; }
+.doc:hover .doc-go { color: #6ee7a8; }
+
+@media (max-width: 420px) {
+  .stage-head { grid-template-columns: auto 1fr; }
+  .stage-count { grid-column: 2; justify-self: end; margin-top: 6px; }
+}
+
+.loading, .empty {
+  text-align: center; color: #6b7590; font-size: 13px; padding: 40px 0;
+}
+.empty code {
+  background: rgba(255,255,255,0.1); padding: 2px 6px;
+  border-radius: 4px; font-size: 12px;
+}
+footer { text-align: center; color: #6b7590; font-size: 11px; margin-top: 20px; }
