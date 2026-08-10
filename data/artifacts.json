@@ -37,15 +37,29 @@
       "desc": "품질을 내주지 않고 비용과 지연을 줄이는 기법들. 대부분 병목이 연산이 아니라 메모리라는 관찰에서 출발한다."
     },
     {
-      "id": "apply",
+      "id": "infra",
       "no": "06",
+      "name": "학습 인프라",
+      "tagline": "어떻게 굴리는가",
+      "desc": "한 장의 GPU에 담기지 않는 모델을 실제로 학습시키는 공학. 무엇을 쪼개고 무엇을 다시 계산할지의 선택."
+    },
+    {
+      "id": "apply",
+      "no": "07",
       "name": "응용·시스템",
       "tagline": "실제로 쓰이는 형태",
-      "desc": "모델을 바깥 세계에 연결하는 패턴."
+      "desc": "모델을 바깥 세계에 연결하는 패턴. 지식을 밖에 두고, 도구를 쥐여 주고, 여러 요청을 한 장비에 태운다."
+    },
+    {
+      "id": "eval",
+      "no": "08",
+      "name": "평가·안전",
+      "tagline": "잘 됐는지 어떻게 아는가",
+      "desc": "만드는 이야기가 끝나면 남는 질문. 무엇을 재고 있는지, 왜 틀리는지, 어디가 뚫리는지, 안을 들여다볼 수 있는지."
     },
     {
       "id": "detect",
-      "no": "07",
+      "no": "09",
       "name": "특집 — 객체 검출",
       "tagline": "손으로 정하던 것을 하나씩 학습으로",
       "desc": "검출기 계보를 순서대로 읽는 특집. 영역 제안 → 앵커 → 라벨 할당 → NMS가 차례로 학습에 흡수되는 과정이고, 마지막이 현재 도달점인 RF-DETR이다. 위에서부터 읽도록 배열했다."
@@ -133,6 +147,36 @@
       "local": true
     },
     {
+      "title": "Mamba &amp; State Space Models",
+      "subtitle": "다시 순서대로, 그러나 빠르게",
+      "stage": "arch",
+      "summary": "입력에 따라 변하는 상태공간 모델. 선형 스케일링을 얻고 무엇을 내주었는가.",
+      "updated": "2026-08-10",
+      "slug": "mamba-ssm",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/mamba-ssm.html",
+      "local": false
+    },
+    {
+      "title": "Autoencoders &amp; VAE",
+      "subtitle": "압축이 만들어낸 잠재공간",
+      "stage": "arch",
+      "summary": "재구성만 시켰더니 의미가 생긴 이유, 그리고 확산 모델이 올라탄 그 공간.",
+      "updated": "2026-08-10",
+      "slug": "autoencoders-vae",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/autoencoders-vae.html",
+      "local": false
+    },
+    {
+      "title": "Graph Neural Networks",
+      "subtitle": "격자도 수열도 아닌 데이터",
+      "stage": "arch",
+      "summary": "이웃에게 메시지를 받아 자신을 갱신하는 구조. 층을 쌓을수록 뭉개지는 문제까지.",
+      "updated": "2026-08-10",
+      "slug": "graph-neural-networks",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/graph-neural-networks.html",
+      "local": false
+    },
+    {
       "title": "BERT &amp; Masked LM",
       "subtitle": "빈칸을 메우며 언어를 익히다",
       "stage": "train",
@@ -149,8 +193,8 @@
       "summary": "노이즈를 더하는 과정을 거꾸로 되돌리는 법을 배워 이미지를 꺼내는 원리.",
       "updated": "2026-08-06",
       "slug": "diffusion-models",
-      "url": "https://claude.ai/code/artifact/f69ce0e7-cf74-4588-b066-1ce2e7b6be53",
-      "local": false
+      "url": "docs/diffusion-models.html",
+      "local": true
     },
     {
       "title": "CLIP",
@@ -173,14 +217,44 @@
       "local": true
     },
     {
+      "title": "Self-Supervised Learning",
+      "subtitle": "라벨 없이 배우는 법",
+      "stage": "train",
+      "summary": "데이터 자신이 정답이 되는 과제 설계. 대조학습과 붕괴를 피하는 장치들.",
+      "updated": "2026-08-10",
+      "slug": "self-supervised-learning",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/self-supervised-learning.html",
+      "local": false
+    },
+    {
+      "title": "GAN",
+      "subtitle": "두 신경망을 맞붙이다",
+      "stage": "train",
+      "summary": "판별자를 손실 함수로 쓴 발상, 그리고 확산 모델에 자리를 내준 이유.",
+      "updated": "2026-08-10",
+      "slug": "gan",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/gan.html",
+      "local": false
+    },
+    {
+      "title": "데이터 품질과 커리큘럼",
+      "subtitle": "무엇을 먹이느냐가 정한다",
+      "stage": "train",
+      "summary": "중복 제거와 필터링이 파라미터를 늘리는 것보다 싸게 먹히는 구간.",
+      "updated": "2026-08-10",
+      "slug": "curriculum-data-quality",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/curriculum-data-quality.html",
+      "local": false
+    },
+    {
       "title": "LoRA",
       "subtitle": "얼린 가중치 옆에 샛길을 내다",
       "stage": "align",
       "summary": "ΔW를 저랭크로 쪼개 학습 파라미터를 0.06%로 줄이는 법.",
       "updated": "2026-08-07",
       "slug": "lora",
-      "url": "https://claude.ai/code/artifact/dfdb6442-a674-4514-8fd7-9347669eca80",
-      "local": false
+      "url": "docs/lora.html",
+      "local": true
     },
     {
       "title": "RLHF",
@@ -189,7 +263,47 @@
       "summary": "선호 쌍을 보상으로 바꾸고, 끝내 보상 모델을 소거해 버린 DPO의 유도까지.",
       "updated": "2026-08-08",
       "slug": "rlhf",
-      "url": "https://claude.ai/code/artifact/8cbf3343-09a7-4c84-a2eb-cdb53ee864b2",
+      "url": "docs/rlhf.html",
+      "local": true
+    },
+    {
+      "title": "Instruction Tuning",
+      "subtitle": "지시를 따르게 만들기",
+      "stage": "align",
+      "summary": "다음 단어를 맞추던 모델이 부탁을 알아듣게 되는 단계. 정렬의 첫 관문.",
+      "updated": "2026-08-10",
+      "slug": "instruction-tuning",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/instruction-tuning.html",
+      "local": false
+    },
+    {
+      "title": "DPO",
+      "subtitle": "보상 모델을 지워버린 정렬",
+      "stage": "align",
+      "summary": "RLHF의 최적해를 역산해 강화학습 없이 같은 목표에 도달하는 유도.",
+      "updated": "2026-08-10",
+      "slug": "dpo-alignment",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/dpo-alignment.html",
+      "local": false
+    },
+    {
+      "title": "PEFT — Adapter·Prefix·IA³",
+      "subtitle": "LoRA 말고도 있는 길",
+      "stage": "align",
+      "summary": "어디에 무엇을 끼워넣을지의 선택지 비교. 추론 지연이 갈리는 지점.",
+      "updated": "2026-08-10",
+      "slug": "peft-adapters",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/peft-adapters.html",
+      "local": false
+    },
+    {
+      "title": "Constitutional AI",
+      "subtitle": "사람 라벨 대신 원칙",
+      "stage": "align",
+      "summary": "모델이 자기 답을 원칙에 비춰 고치게 하는 방식. RLAIF의 실체.",
+      "updated": "2026-08-10",
+      "slug": "constitutional-ai",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/constitutional-ai.html",
       "local": false
     },
     {
@@ -199,8 +313,8 @@
       "summary": "병목이 FLOPs가 아니라 HBM 왕복이었다는 것. 타일링과 온라인 소프트맥스.",
       "updated": "2026-08-09",
       "slug": "flash-attention",
-      "url": "https://claude.ai/code/artifact/bb1a09e1-70e1-43ec-b223-07bbec025750",
-      "local": false
+      "url": "docs/flash-attention.html",
+      "local": true
     },
     {
       "title": "KV Cache &amp; PagedAttention",
@@ -233,6 +347,56 @@
       "local": true
     },
     {
+      "title": "Knowledge Distillation",
+      "subtitle": "큰 모델의 판단을 옮겨 담다",
+      "stage": "infer",
+      "summary": "정답 대신 큰 모델의 확률 분포를 배우게 하는 것이 왜 더 나은가.",
+      "updated": "2026-08-10",
+      "slug": "knowledge-distillation",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/knowledge-distillation.html",
+      "local": false
+    },
+    {
+      "title": "Pruning &amp; Sparsity",
+      "subtitle": "쓰지 않는 연결을 잘라내다",
+      "stage": "infer",
+      "summary": "비정형 희소성이 이론상 이득을 실제 속도로 바꾸지 못하는 이유. 2:4 구조적 희소성.",
+      "updated": "2026-08-10",
+      "slug": "pruning-sparsity",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/pruning-sparsity.html",
+      "local": false
+    },
+    {
+      "title": "분산 학습 — DP·TP·PP",
+      "subtitle": "한 장에 담기지 않을 때",
+      "stage": "infra",
+      "summary": "데이터·텐서·파이프라인 병렬의 분담과 통신량. ZeRO가 줄인 중복.",
+      "updated": "2026-08-10",
+      "slug": "distributed-training",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/distributed-training.html",
+      "local": false
+    },
+    {
+      "title": "Mixed Precision",
+      "subtitle": "16비트로 학습하기",
+      "stage": "infra",
+      "summary": "fp16이 언더플로로 무너지는 지점과 loss scaling, 그리고 bf16이 이긴 이유.",
+      "updated": "2026-08-10",
+      "slug": "mixed-precision",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/mixed-precision.html",
+      "local": false
+    },
+    {
+      "title": "Gradient Checkpointing",
+      "subtitle": "메모리를 연산으로 사다",
+      "stage": "infra",
+      "summary": "활성값을 버리고 필요할 때 다시 계산하는 거래. √n 지점의 유래.",
+      "updated": "2026-08-10",
+      "slug": "gradient-checkpointing",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/gradient-checkpointing.html",
+      "local": false
+    },
+    {
       "title": "RAG",
       "subtitle": "모델 밖에 기억을 두다",
       "stage": "apply",
@@ -251,6 +415,86 @@
       "slug": "model-context-protocol",
       "url": "docs/model-context-protocol.html",
       "local": true
+    },
+    {
+      "title": "In-Context Learning",
+      "subtitle": "가중치를 건드리지 않는 학습",
+      "stage": "apply",
+      "summary": "예시 몇 개로 새 과제를 하는 현상. 무엇을 배우는 게 아니라 무엇을 고르는가.",
+      "updated": "2026-08-10",
+      "slug": "in-context-learning",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/in-context-learning.html",
+      "local": false
+    },
+    {
+      "title": "Chain-of-Thought",
+      "subtitle": "생각할 시간을 주다",
+      "stage": "apply",
+      "summary": "중간 과정을 쓰게 했더니 정답률이 오른 이유, 그리고 추론 시간 스케일링.",
+      "updated": "2026-08-10",
+      "slug": "chain-of-thought",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/chain-of-thought.html",
+      "local": false
+    },
+    {
+      "title": "AI Agents &amp; Tool Use",
+      "subtitle": "모델에 손을 달아주다",
+      "stage": "apply",
+      "summary": "관측·결정·행동의 순환. 언제 에이전트가 필요하고 언제 과한가.",
+      "updated": "2026-08-10",
+      "slug": "ai-agents-tool-use",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/ai-agents-tool-use.html",
+      "local": false
+    },
+    {
+      "title": "LLM 서빙 — 배칭과 스케줄링",
+      "subtitle": "한 장비에 여러 요청을 태우다",
+      "stage": "apply",
+      "summary": "연속 배칭이 처리량을 끌어올리는 원리와 지연·처리량의 맞바꿈.",
+      "updated": "2026-08-10",
+      "slug": "llm-serving",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/llm-serving.html",
+      "local": false
+    },
+    {
+      "title": "평가와 벤치마크",
+      "subtitle": "무엇을 재고 있는가",
+      "stage": "eval",
+      "summary": "점수가 오르는 것과 능력이 오르는 것의 차이. 오염과 포화, 그리고 대안.",
+      "updated": "2026-08-10",
+      "slug": "evaluation-benchmarks",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/evaluation-benchmarks.html",
+      "local": false
+    },
+    {
+      "title": "환각",
+      "subtitle": "왜 그럴듯하게 틀리는가",
+      "stage": "eval",
+      "summary": "구조에서 비롯된 원인과, 완화가 제거를 뜻하지 않는 이유.",
+      "updated": "2026-08-10",
+      "slug": "hallucination",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/hallucination.html",
+      "local": false
+    },
+    {
+      "title": "Prompt Injection",
+      "subtitle": "데이터가 명령이 되는 순간",
+      "stage": "eval",
+      "summary": "지시와 데이터를 구분하지 못하는 구조적 취약점. 에이전트에서 커지는 위험.",
+      "updated": "2026-08-10",
+      "slug": "prompt-injection",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/prompt-injection.html",
+      "local": false
+    },
+    {
+      "title": "해석가능성",
+      "subtitle": "안을 들여다볼 수 있는가",
+      "stage": "eval",
+      "summary": "중첩 때문에 뉴런 하나가 여러 뜻을 갖는 문제와, 희소 오토인코더의 접근.",
+      "updated": "2026-08-10",
+      "slug": "interpretability",
+      "url": "https://fogfog2.github.io/ai-concepts/docs/interpretability.html",
+      "local": false
     },
     {
       "title": "① Object Detection 계보",
@@ -299,8 +543,8 @@
       "summary": "앵커 디코딩 공식, 이웃 칸까지 쓰는 정적 라벨 할당, 그리고 모델 스케일링.",
       "updated": "2026-08-06",
       "slug": "yolov5",
-      "url": "https://claude.ai/code/artifact/e3fde2cf-aa7d-4998-9403-e20e893e89bd",
-      "local": false
+      "url": "docs/yolov5.html",
+      "local": true
     },
     {
       "title": "＋ YOLOX (심화)",
@@ -309,8 +553,8 @@
       "summary": "성능을 끌어올린 것이 왜 백본이 아니라 라벨 할당이었는지.",
       "updated": "2026-08-06",
       "slug": "yolox",
-      "url": "https://claude.ai/code/artifact/8cbd9ed8-0e68-4ee9-aa7f-83b014652264",
-      "local": false
+      "url": "docs/yolox.html",
+      "local": true
     }
   ]
 }
