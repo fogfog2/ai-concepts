@@ -273,8 +273,8 @@
       "summary": "다음 단어를 맞추던 모델이 부탁을 알아듣게 되는 단계. 정렬의 첫 관문.",
       "updated": "2026-08-10",
       "slug": "instruction-tuning",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/instruction-tuning.html",
-      "local": false
+      "url": "docs/instruction-tuning.html",
+      "local": true
     },
     {
       "title": "DPO",
@@ -283,8 +283,8 @@
       "summary": "RLHF의 최적해를 역산해 강화학습 없이 같은 목표에 도달하는 유도.",
       "updated": "2026-08-10",
       "slug": "dpo-alignment",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/dpo-alignment.html",
-      "local": false
+      "url": "docs/dpo-alignment.html",
+      "local": true
     },
     {
       "title": "PEFT — Adapter·Prefix·IA³",
@@ -293,8 +293,8 @@
       "summary": "어디에 무엇을 끼워넣을지의 선택지 비교. 추론 지연이 갈리는 지점.",
       "updated": "2026-08-10",
       "slug": "peft-adapters",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/peft-adapters.html",
-      "local": false
+      "url": "docs/peft-adapters.html",
+      "local": true
     },
     {
       "title": "Constitutional AI",
@@ -303,8 +303,8 @@
       "summary": "모델이 자기 답을 원칙에 비춰 고치게 하는 방식. RLAIF의 실체.",
       "updated": "2026-08-10",
       "slug": "constitutional-ai",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/constitutional-ai.html",
-      "local": false
+      "url": "docs/constitutional-ai.html",
+      "local": true
     },
     {
       "title": "FlashAttention",
@@ -353,8 +353,8 @@
       "summary": "정답 대신 큰 모델의 확률 분포를 배우게 하는 것이 왜 더 나은가.",
       "updated": "2026-08-10",
       "slug": "knowledge-distillation",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/knowledge-distillation.html",
-      "local": false
+      "url": "docs/knowledge-distillation.html",
+      "local": true
     },
     {
       "title": "Pruning &amp; Sparsity",
@@ -363,8 +363,8 @@
       "summary": "비정형 희소성이 이론상 이득을 실제 속도로 바꾸지 못하는 이유. 2:4 구조적 희소성.",
       "updated": "2026-08-10",
       "slug": "pruning-sparsity",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/pruning-sparsity.html",
-      "local": false
+      "url": "docs/pruning-sparsity.html",
+      "local": true
     },
     {
       "title": "분산 학습 — DP·TP·PP",
