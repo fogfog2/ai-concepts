@@ -77,7 +77,7 @@ html, body {
 .wrap { max-width: 46rem; margin: 0 auto; padding: 3.5rem 1.4rem 5rem; }
 
 /* ---------- 머리말 ---------- */
-header { padding-bottom: 1.4rem; border-bottom: 1px solid var(--rule-strong); }
+.masthead { padding-bottom: 1.4rem; border-bottom: 1px solid var(--rule-strong); }
 
 h1 {
   margin: 0;
@@ -96,39 +96,77 @@ h1 {
 }
 .lede strong { color: var(--ink); font-weight: 600; }
 
-.sub {
-  margin-top: 1rem;
+
+/* ---------- 두 구역의 머리 ----------
+   소식은 날짜가 붙어 사라지는 것, 문서는 순서가 있어 쌓이는 것.
+   같은 페이지에 있지만 성격이 다르므로 머리 모양으로 그 차이를 드러낸다. */
+.sec-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 2px solid var(--ink);
+}
+.sec-head h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.35rem;
+  letter-spacing: -0.012em;
+}
+.sec-meta {
   font-family: var(--mono);
   font-size: 0.72rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   color: var(--ink-faint);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sec-lede {
+  margin: 0.9rem 0 0;
+  max-width: 54ch;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
 }
 
-/* ---------- 탭 ---------- */
-.tabs {
-  display: flex; flex-wrap: wrap; gap: 0.4rem;
-  margin: 1.3rem 0 0;
+/* ---------- 상단: 오늘의 소식 ---------- */
+.news { margin-top: 2.6rem; }
+
+/* 지난 날짜 — 소식 아래에 작게. 문서 쪽과 섞이지 않게 얇은 괘선으로 닫는다 */
+.days {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem;
+  margin-top: 1.4rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--rule);
 }
-.tab {
-  flex: 0 0 auto;
-  padding: 0.32rem 0.7rem;
+.days-label {
   font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.04em;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
   color: var(--ink-faint);
+  margin-right: 0.35rem;
+}
+.day {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  padding: 0.22rem 0.5rem;
+  color: var(--ink-faint);
+  background: transparent;
   border: 1px solid var(--rule);
   border-radius: 2px;
   cursor: pointer;
-  background: transparent;
-  transition: color .15s, border-color .15s, background .15s;
+  font-variant-numeric: tabular-nums;
+  transition: color .14s, border-color .14s;
 }
-.tab:hover { color: var(--accent); border-color: var(--accent); }
-.tab.on {
+.day:hover { color: var(--accent); border-color: var(--accent); }
+.day.on {
   color: var(--paper);
   background: var(--ink);
   border-color: var(--ink);
 }
+.day:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* ---------- 하단: 기술 문서 ---------- */
+.docs { margin-top: 4.5rem; }
 
 /* ---------- 단계 ---------- */
 .stage { margin-top: 3rem; }
@@ -148,7 +186,7 @@ h1 {
   color: var(--accent);
   font-variant-numeric: tabular-nums;
 }
-.stage-head h2 {
+.stage-head h3 {
   margin: 0;
   font-family: var(--serif);
   font-weight: 600;
@@ -156,7 +194,7 @@ h1 {
   letter-spacing: -0.01em;
   color: var(--ink);
 }
-.stage-head h2 em {
+.stage-head h3 em {
   font-style: normal;
   font-family: var(--sans);
   font-size: 0.8rem;
@@ -238,19 +276,38 @@ h1 {
 }
 .doc:hover .doc-go { color: var(--accent); transform: translateX(2px); }
 
-/* ---------- 뉴스 항목 (구조 유지) ---------- */
+/* ---------- 소식 항목 ----------
+   문서 행이 '괘선으로 나뉜 목록'이라면, 소식은 '읽는 단락'이다.
+   같은 목록처럼 보이지 않도록 여백과 글자 크기를 다르게 잡는다. */
 .item {
-  padding: 1.1rem 0;
+  padding: 1.3rem 0;
   border-bottom: 1px solid var(--rule);
 }
-.item h2 {
-  margin: 0 0 0.45rem;
+.item:last-child { border-bottom: none; padding-bottom: 0.4rem; }
+
+.item h3 {
+  margin: 0 0 0.5rem;
   font-family: var(--serif);
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   font-weight: 600;
-  line-height: 1.45;
+  line-height: 1.4;
+  letter-spacing: -0.008em;
 }
-.meta { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.55rem; }
+.item h3 a { color: inherit; text-decoration: none; }
+.item h3 a:hover { color: var(--accent); }
+.item h3 a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.item h3 .ext {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--rule-strong);
+  margin-left: 0.35rem;
+}
+.item h3 a:hover .ext { color: var(--accent); }
+
+.item-meta {
+  display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
+  margin-bottom: 0.6rem;
+}
 .tag {
   font-family: var(--mono);
   font-size: 0.68rem;
@@ -259,19 +316,37 @@ h1 {
   border-radius: 2px;
   color: var(--ink-faint);
 }
-.src { font-size: 0.74rem; color: var(--ink-faint); text-decoration: none; }
-.src:hover { color: var(--accent); text-decoration: underline; }
-.item ul { margin: 0; padding-left: 1.1rem; }
-.item li { margin: 0.3rem 0; font-size: 0.88rem; color: var(--ink-soft); }
+.src {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--ink-faint);
+}
+
+.facts { margin: 0; padding-left: 1.05rem; }
+.facts li {
+  margin: 0.28rem 0;
+  font-size: 0.89rem;
+  color: var(--ink-soft);
+  max-width: 60ch;
+}
+
+/* 사실과 해석을 시각적으로 가른다 — 섞여 읽히면 안 된다 */
 .takeaway {
-  margin-top: 0.7rem;
-  padding: 0.6rem 0.85rem;
+  margin: 0.8rem 0 0;
+  padding: 0.55rem 0.8rem;
   border-left: 2px solid var(--accent);
   background: var(--panel);
   font-size: 0.86rem;
   color: var(--ink-soft);
+  max-width: 60ch;
 }
-.takeaway b { color: var(--accent); }
+.takeaway b {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  margin-right: 0.5rem;
+}
 
 /* ---------- 상태 ---------- */
 .loading, .empty {
@@ -302,6 +377,13 @@ footer {
 /* ---------- 반응형 ---------- */
 @media (max-width: 30rem) {
   .wrap { padding-top: 2.5rem; }
+
+  /* 좁은 화면에서는 제목과 메타가 한 줄에 안 들어간다 */
+  .sec-head { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+  .sec-meta { white-space: normal; }
+
+  .docs { margin-top: 3.4rem; }
+
   .stage-head { grid-template-columns: 2.2rem 1fr; }
   .stage-count { grid-column: 2; justify-self: start; margin-top: 0.2rem; }
   .doc { grid-template-columns: 1.9rem 1fr auto; }

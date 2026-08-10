@@ -1,31 +1,18 @@
-/* ai/ai.js - 데일리 AI 뉴스 + 내가 만든 AI 기술 문서(artifact) 뷰어
+/* ai.js — 상단 오늘의 소식 + 하단 기술 문서
  *
- * 데이터는 두 곳에서 읽는다. 둘 다 없어도 페이지는 안내문을 띄우고 살아 있는다.
- *   data/index.json      날짜 목록  -> data/YYYY-MM-DD.json  하루치 뉴스
- *   data/artifacts.json  claude.ai 에 만들어 둔 기술 문서 링크
- *
- * 서버(public/)와 앱 내장 사본 어느 쪽에서 열려도 같은 상대경로로 동작한다.
+ * 데이터는 두 곳에서 읽는다. 한쪽이 없어도 다른 쪽은 그대로 보인다.
+ *   data/news.json       archive/*.md 에서 생성된 날짜별 뉴스
+ *   data/artifacts.json  catalog.py 에서 생성된 기술 문서 목록
  */
 (function () {
   'use strict';
 
-  var feed = document.getElementById('feed');
-  var tabs = document.getElementById('tabs');
-  var sub = document.getElementById('sub');
-  var foot = document.getElementById('foot');
-
-  var state = { dates: [], artifacts: [], stages: [], view: null };
+  var state = { days: [], cur: 0, artifacts: [], stages: [] };
 
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
-  }
-
-  /* 링크는 외부(claude.ai)로 나가므로 안전 속성을 붙인다.
-     앱 WebView 에서도 새 창 없이 그대로 열린다. */
-  function link(url, text, cls) {
-    return '<a class="' + cls + '" href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(text) + '</a>';
   }
 
   function getJson(url) {
@@ -35,58 +22,90 @@
     });
   }
 
-  /* ---------- 렌더 ---------- */
+  function host(url) {
+    try { return new URL(url).hostname.replace(/^www\./, ''); } catch (e) { return ''; }
+  }
 
-  function renderNews(day) {
-    if (!day || !day.items || !day.items.length) {
-      feed.innerHTML = '<div class="empty">이 날짜의 항목이 없습니다.</div>';
+  /* ---------- 뉴스 ---------- */
+
+  function renderNews() {
+    var body = document.getElementById('news-body');
+    var meta = document.getElementById('news-date');
+
+    if (!state.days.length) {
+      meta.textContent = '';
+      body.innerHTML = '<div class="empty">아직 수집된 소식이 없습니다.</div>';
       return;
     }
-    feed.innerHTML = day.items.map(function (it) {
+
+    var day = state.days[state.cur];
+    /* 가장 최근 날짜면 '오늘', 아니면 날짜를 그대로 보여준다 */
+    meta.textContent = day.date + (state.cur === 0 ? '' : ' · 지난 소식');
+
+    body.innerHTML = day.items.map(function (it) {
+      var h = it.url ? host(it.url) : '';
       var facts = (it.facts || []).map(function (f) {
         return '<li>' + esc(f) + '</li>';
       }).join('');
-      var host = '';
-      try { host = it.url ? new URL(it.url).hostname.replace(/^www\./, '') : ''; } catch (e) { host = it.source || ''; }
 
       return '<article class="item">' +
-        '<h2>' + esc(it.title) + '</h2>' +
-        '<div class="meta">' +
-          (it.category ? '<span class="tag cat-' + esc(it.category) + '">' + esc(it.category) + '</span>' : '') +
-          (it.url ? link(it.url, host || '원문', 'src') : '') +
-          (it.unverified ? '<span class="tag">미확인</span>' : '') +
+        '<h3>' +
+          (it.url
+            ? '<a href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">' +
+                esc(it.title) + '<span class="ext" aria-hidden="true">↗</span></a>'
+            : esc(it.title)) +
+        '</h3>' +
+        '<div class="item-meta">' +
+          (it.category ? '<span class="tag">' + esc(it.category) + '</span>' : '') +
+          (h ? '<span class="src">' + esc(h) + '</span>' : '') +
         '</div>' +
-        (facts ? '<ul>' + facts + '</ul>' : '') +
-        (it.takeaway ? '<div class="takeaway"><b>그래서</b> · ' + esc(it.takeaway) + '</div>' : '') +
+        (facts ? '<ul class="facts">' + facts + '</ul>' : '') +
+        (it.takeaway
+          ? '<p class="takeaway"><b>그래서</b>' + esc(it.takeaway) + '</p>'
+          : '') +
       '</article>';
     }).join('');
   }
 
-  /* 기술문서는 '파이프라인 단계'로 묶어 보여준다.
-     모델이 만들어져 서비스되기까지의 순서라, 목록 순서 자체가 읽는 순서가 된다. */
-  function renderArtifacts() {
+  function renderDays() {
+    var nav = document.getElementById('days');
+    if (state.days.length < 2) { nav.innerHTML = ''; return; }
+
+    nav.innerHTML = '<span class="days-label">지난 날짜</span>' +
+      state.days.slice(0, 14).map(function (d, i) {
+        return '<button class="day' + (i === state.cur ? ' on' : '') +
+          '" data-i="' + i + '">' + esc(d.date.slice(5)) + '</button>';
+      }).join('');
+
+    Array.prototype.forEach.call(nav.querySelectorAll('.day'), function (el) {
+      el.addEventListener('click', function () {
+        state.cur = +el.dataset.i;
+        renderNews();
+        renderDays();
+      });
+    });
+  }
+
+  /* ---------- 기술 문서 ---------- */
+
+  function renderDocs() {
+    var body = document.getElementById('docs-body');
     var list = state.artifacts;
+
     if (!list.length) {
-      feed.innerHTML = '<div class="empty">등록된 기술 문서가 없습니다.<br>' +
-        '<code>data/artifacts.json</code> 에 추가하세요.</div>';
+      body.innerHTML = '<div class="empty">등록된 기술 문서가 없습니다.</div>';
       return;
     }
 
-    /* 단계 정의가 없으면(구버전 데이터) 한 덩어리로 떨어뜨린다 */
-    var stages = state.stages.length
-      ? state.stages
-      : [{ id: null, no: '', name: '기술 문서', tagline: '', desc: '' }];
+    document.getElementById('docs-meta').textContent =
+      list.length + '편 · ' + state.stages.length + '단계';
 
-    feed.innerHTML = stages.map(function (st) {
-      var items = list.filter(function (a) {
-        return st.id === null || a.stage === st.id;
-      });
+    body.innerHTML = state.stages.map(function (st) {
+      var items = list.filter(function (a) { return a.stage === st.id; });
       if (!items.length) return '';
 
-      var cards = items.map(function (a, i) {
-        /* 내부 문서는 같은 탭에서, 외부 링크만 새 탭으로 연다. */
+      var rows = items.map(function (a, i) {
         var ext = !a.local;
-        /* 단계 안에서의 일련번호 — 읽는 순서를 드러낸다 (01, 02, …) */
         var idx = ('0' + (i + 1)).slice(-2);
         return '<a class="doc" href="' + esc(a.url) + '"' +
             (ext ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' +
@@ -103,74 +122,33 @@
       return '<section class="stage">' +
         '<div class="stage-head">' +
           '<span class="stage-no">' + esc(st.no) + '</span>' +
-          '<h2>' + esc(st.name) +
+          '<h3>' + esc(st.name) +
             (st.tagline ? ' <em>' + esc(st.tagline) + '</em>' : '') +
-          '</h2>' +
+          '</h3>' +
           '<span class="stage-count">' + items.length + '편</span>' +
           (st.desc ? '<p>' + esc(st.desc) + '</p>' : '') +
         '</div>' +
-        '<div class="doc-list">' + cards + '</div>' +
+        '<div class="doc-list">' + rows + '</div>' +
       '</section>';
     }).join('');
   }
 
-  function show(view) {
-    state.view = view;
-    Array.prototype.forEach.call(tabs.children, function (el) {
-      el.classList.toggle('on', el.dataset.view === view);
-    });
-
-    if (view === 'artifacts') {
-      sub.textContent = state.artifacts.length + ' ENTRIES · ' +
-        state.stages.length + ' STAGES';
-      renderArtifacts();
-      return;
-    }
-    sub.textContent = view + ' 뉴스';
-    feed.innerHTML = '<div class="loading">불러오는 중…</div>';
-    getJson('data/' + view + '.json')
-      .then(renderNews)
-      .catch(function () {
-        feed.innerHTML = '<div class="empty">' + esc(view) + ' 리포트를 불러오지 못했습니다.</div>';
-      });
-  }
-
-  function buildTabs() {
-    var html = state.dates.slice(0, 14).map(function (d) {
-      return '<div class="tab" data-view="' + esc(d) + '">' + esc(d.slice(5)) + '</div>';
-    }).join('');
-    if (state.artifacts.length) {
-      html += '<div class="tab" data-view="artifacts">🧩 기술문서</div>';
-    }
-    tabs.innerHTML = html;
-    Array.prototype.forEach.call(tabs.children, function (el) {
-      el.addEventListener('click', function () { show(el.dataset.view); });
-    });
-  }
-
   /* ---------- 시작 ---------- */
-  /* 뉴스와 기술문서는 서로 독립이다. 한쪽이 없어도 다른 쪽은 보여야 한다. */
   Promise.all([
-    getJson('data/index.json').catch(function () { return { dates: [] }; }),
+    getJson('data/news.json').catch(function () { return { days: [] }; }),
     getJson('data/artifacts.json').catch(function () { return { items: [] }; })
   ]).then(function (res) {
-    state.dates = (res[0] && res[0].dates) || [];
+    state.days = (res[0] && res[0].days) || [];
     state.artifacts = (res[1] && res[1].items) || [];
     state.stages = (res[1] && res[1].stages) || [];
 
-    if (!state.dates.length && !state.artifacts.length) {
-      tabs.innerHTML = '';
-      sub.textContent = '데이터 없음';
-      feed.innerHTML = '<div class="empty">문서를 불러오지 못했습니다.<br>' +
-        '잠시 후 다시 시도해 주세요.</div>';
-      return;
-    }
+    renderNews();
+    renderDays();
+    renderDocs();
 
-    buildTabs();
-    /* 공개 사이트에서는 기술문서가 본체다. 뉴스가 있어도 문서를 먼저 보여준다. */
-    show(state.artifacts.length ? 'artifacts' : state.dates[0]);
-    foot.textContent = state.dates.length
-      ? 'AI CONCEPTS · ' + state.artifacts.length + ' ENTRIES · NEWS ' + state.dates.length + 'D'
+    var foot = document.getElementById('foot');
+    foot.textContent = state.days.length
+      ? 'AI CONCEPTS · ' + state.artifacts.length + ' ENTRIES · NEWS ' + state.days.length + 'D'
       : 'AI CONCEPTS · ' + state.artifacts.length + ' ENTRIES';
   });
 })();

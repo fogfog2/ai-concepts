@@ -3,14 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0b0f1a">
-<title>AI Concepts — 기술 문서 아카이브</title>
-<meta name="description" content="AI 개념을 모델이 만들어져 서비스되기까지의 순서로 정리한 기술 문서 모음. 기초·아키텍처·학습·정렬·추론 최적화·응용, 그리고 객체 검출 특집.">
+<title>AI Concepts — 오늘의 소식과 기술 문서</title>
+<meta name="description" content="매일의 AI 소식과, 모델이 만들어져 서비스되기까지의 순서로 정리한 기술 문서 49편.">
 
-<!-- 링크 공유 시 미리보기 -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="AI Concepts — 기술 문서 아카이브">
-<meta property="og:description" content="모델이 만들어져 서비스되기까지의 순서로 정리한 AI 기술 문서 모음.">
+<meta property="og:title" content="AI Concepts">
+<meta property="og:description" content="매일의 AI 소식과 기술 문서 49편.">
 <meta name="twitter:card" content="summary">
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🧩</text></svg>">
@@ -18,20 +16,40 @@
 </head>
 <body>
 <div class="wrap">
-  <header>
+
+  <header class="masthead">
     <h1>AI Concepts</h1>
     <p class="lede">
-      AI 개념을 <strong>모델이 만들어져 서비스되기까지의 순서</strong>로 정리한 기술 문서 모음.
-      위에서부터 읽으면 하나의 흐름이 되고, 필요한 단계만 골라 봐도 됩니다.
+      매일의 소식은 <strong>위에서</strong>, 쌓아 읽는 기술 문서는 <strong>아래에서</strong>.
     </p>
-    <div class="sub" id="sub">불러오는 중…</div>
   </header>
 
-  <div class="tabs" id="tabs"></div>
+  <!-- ── 상단: 오늘의 소식 ─────────────────────────── -->
+  <section class="news" id="news" aria-labelledby="news-h">
+    <div class="sec-head">
+      <h2 id="news-h">오늘의 소식</h2>
+      <span class="sec-meta" id="news-date"></span>
+    </div>
+    <div id="news-body">
+      <div class="loading">불러오는 중…</div>
+    </div>
+    <nav class="days" id="days" aria-label="지난 날짜"></nav>
+  </section>
 
-  <main id="feed">
-    <div class="loading">불러오는 중…</div>
-  </main>
+  <!-- ── 하단: 기술 문서 ──────────────────────────── -->
+  <section class="docs" id="docs" aria-labelledby="docs-h">
+    <div class="sec-head">
+      <h2 id="docs-h">기술 문서</h2>
+      <span class="sec-meta" id="docs-meta"></span>
+    </div>
+    <p class="sec-lede">
+      모델이 만들어져 서비스되기까지의 순서로 묶었습니다.
+      위에서부터 읽으면 하나의 흐름이 되고, 필요한 단계만 골라 봐도 됩니다.
+    </p>
+    <div id="docs-body">
+      <div class="loading">불러오는 중…</div>
+    </div>
+  </section>
 
   <footer id="foot"></footer>
 </div>
