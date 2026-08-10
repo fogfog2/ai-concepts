@@ -87,7 +87,7 @@
       "local": true
     },
     {
-      "title": "Embeddings &amp; Positional Encoding",
+      "title": "Embeddings & Positional Encoding",
       "subtitle": "토큰이 벡터가 되고 순서를 얻기까지",
       "stage": "basics",
       "summary": "어텐션은 순서를 모른다. 위치를 더할 것인가 회전시킬 것인가 — 정현파에서 RoPE까지.",
@@ -97,7 +97,7 @@
       "local": true
     },
     {
-      "title": "Backpropagation &amp; Optimizers",
+      "title": "Backpropagation & Optimizers",
       "subtitle": "학습이 실제로 도는 방식",
       "stage": "basics",
       "summary": "연쇄 법칙의 계산 순서가 만든 역전파, 그리고 Adam에서 AdamW로 옮겨간 한 줄.",
@@ -137,7 +137,7 @@
       "local": true
     },
     {
-      "title": "RNN &amp; LSTM",
+      "title": "RNN & LSTM",
       "subtitle": "순서대로 읽던 시절",
       "stage": "arch",
       "summary": "셀 상태가 그래디언트를 살린 방식과, 어텐션이 이긴 진짜 이유인 순차성 병목.",
@@ -147,7 +147,7 @@
       "local": true
     },
     {
-      "title": "Mamba &amp; State Space Models",
+      "title": "Mamba & State Space Models",
       "subtitle": "다시 순서대로, 그러나 빠르게",
       "stage": "arch",
       "summary": "입력에 따라 변하는 상태공간 모델. 선형 스케일링을 얻고 무엇을 내주었는가.",
@@ -157,7 +157,7 @@
       "local": true
     },
     {
-      "title": "Autoencoders &amp; VAE",
+      "title": "Autoencoders & VAE",
       "subtitle": "압축이 만들어낸 잠재공간",
       "stage": "arch",
       "summary": "재구성만 시켰더니 의미가 생긴 이유, 그리고 확산 모델이 올라탄 그 공간.",
@@ -177,7 +177,7 @@
       "local": true
     },
     {
-      "title": "BERT &amp; Masked LM",
+      "title": "BERT & Masked LM",
       "subtitle": "빈칸을 메우며 언어를 익히다",
       "stage": "train",
       "summary": "양방향 학습을 막던 제약을 구조가 아니라 과제 교체로 푼 방법.",
@@ -317,7 +317,7 @@
       "local": true
     },
     {
-      "title": "KV Cache &amp; PagedAttention",
+      "title": "KV Cache & PagedAttention",
       "subtitle": "문맥을 페이지로 관리하다",
       "stage": "infer",
       "summary": "GPU 메모리의 60~80%를 낭비하던 구조를, OS의 페이징을 빌려 4% 미만으로.",
@@ -357,7 +357,7 @@
       "local": true
     },
     {
-      "title": "Pruning &amp; Sparsity",
+      "title": "Pruning & Sparsity",
       "subtitle": "쓰지 않는 연결을 잘라내다",
       "stage": "infer",
       "summary": "비정형 희소성이 이론상 이득을 실제 속도로 바꾸지 못하는 이유. 2:4 구조적 희소성.",
@@ -437,7 +437,7 @@
       "local": true
     },
     {
-      "title": "AI Agents &amp; Tool Use",
+      "title": "AI Agents & Tool Use",
       "subtitle": "모델에 손을 달아주다",
       "stage": "apply",
       "summary": "관측·결정·행동의 순환. 언제 에이전트가 필요하고 언제 과한가.",
