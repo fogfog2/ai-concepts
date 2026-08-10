@@ -153,8 +153,8 @@
       "summary": "입력에 따라 변하는 상태공간 모델. 선형 스케일링을 얻고 무엇을 내주었는가.",
       "updated": "2026-08-10",
       "slug": "mamba-ssm",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/mamba-ssm.html",
-      "local": false
+      "url": "docs/mamba-ssm.html",
+      "local": true
     },
     {
       "title": "Autoencoders &amp; VAE",
@@ -163,8 +163,8 @@
       "summary": "재구성만 시켰더니 의미가 생긴 이유, 그리고 확산 모델이 올라탄 그 공간.",
       "updated": "2026-08-10",
       "slug": "autoencoders-vae",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/autoencoders-vae.html",
-      "local": false
+      "url": "docs/autoencoders-vae.html",
+      "local": true
     },
     {
       "title": "Graph Neural Networks",
@@ -173,8 +173,8 @@
       "summary": "이웃에게 메시지를 받아 자신을 갱신하는 구조. 층을 쌓을수록 뭉개지는 문제까지.",
       "updated": "2026-08-10",
       "slug": "graph-neural-networks",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/graph-neural-networks.html",
-      "local": false
+      "url": "docs/graph-neural-networks.html",
+      "local": true
     },
     {
       "title": "BERT &amp; Masked LM",
@@ -223,8 +223,8 @@
       "summary": "데이터 자신이 정답이 되는 과제 설계. 대조학습과 붕괴를 피하는 장치들.",
       "updated": "2026-08-10",
       "slug": "self-supervised-learning",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/self-supervised-learning.html",
-      "local": false
+      "url": "docs/self-supervised-learning.html",
+      "local": true
     },
     {
       "title": "GAN",
@@ -233,8 +233,8 @@
       "summary": "판별자를 손실 함수로 쓴 발상, 그리고 확산 모델에 자리를 내준 이유.",
       "updated": "2026-08-10",
       "slug": "gan",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/gan.html",
-      "local": false
+      "url": "docs/gan.html",
+      "local": true
     },
     {
       "title": "데이터 품질과 커리큘럼",
@@ -243,8 +243,8 @@
       "summary": "중복 제거와 필터링이 파라미터를 늘리는 것보다 싸게 먹히는 구간.",
       "updated": "2026-08-10",
       "slug": "curriculum-data-quality",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/curriculum-data-quality.html",
-      "local": false
+      "url": "docs/curriculum-data-quality.html",
+      "local": true
     },
     {
       "title": "LoRA",
