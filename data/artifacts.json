@@ -463,8 +463,8 @@
       "summary": "점수가 오르는 것과 능력이 오르는 것의 차이. 오염과 포화, 그리고 대안.",
       "updated": "2026-08-10",
       "slug": "evaluation-benchmarks",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/evaluation-benchmarks.html",
-      "local": false
+      "url": "docs/evaluation-benchmarks.html",
+      "local": true
     },
     {
       "title": "환각",
@@ -473,8 +473,8 @@
       "summary": "구조에서 비롯된 원인과, 완화가 제거를 뜻하지 않는 이유.",
       "updated": "2026-08-10",
       "slug": "hallucination",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/hallucination.html",
-      "local": false
+      "url": "docs/hallucination.html",
+      "local": true
     },
     {
       "title": "Prompt Injection",
@@ -483,8 +483,8 @@
       "summary": "지시와 데이터를 구분하지 못하는 구조적 취약점. 에이전트에서 커지는 위험.",
       "updated": "2026-08-10",
       "slug": "prompt-injection",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/prompt-injection.html",
-      "local": false
+      "url": "docs/prompt-injection.html",
+      "local": true
     },
     {
       "title": "해석가능성",
@@ -493,8 +493,8 @@
       "summary": "중첩 때문에 뉴런 하나가 여러 뜻을 갖는 문제와, 희소 오토인코더의 접근.",
       "updated": "2026-08-10",
       "slug": "interpretability",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/interpretability.html",
-      "local": false
+      "url": "docs/interpretability.html",
+      "local": true
     },
     {
       "title": "① Object Detection 계보",
