@@ -373,8 +373,8 @@
       "summary": "데이터·텐서·파이프라인 병렬의 분담과 통신량. ZeRO가 줄인 중복.",
       "updated": "2026-08-10",
       "slug": "distributed-training",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/distributed-training.html",
-      "local": false
+      "url": "docs/distributed-training.html",
+      "local": true
     },
     {
       "title": "Mixed Precision",
@@ -383,8 +383,8 @@
       "summary": "fp16이 언더플로로 무너지는 지점과 loss scaling, 그리고 bf16이 이긴 이유.",
       "updated": "2026-08-10",
       "slug": "mixed-precision",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/mixed-precision.html",
-      "local": false
+      "url": "docs/mixed-precision.html",
+      "local": true
     },
     {
       "title": "Gradient Checkpointing",
@@ -393,8 +393,8 @@
       "summary": "활성값을 버리고 필요할 때 다시 계산하는 거래. √n 지점의 유래.",
       "updated": "2026-08-10",
       "slug": "gradient-checkpointing",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/gradient-checkpointing.html",
-      "local": false
+      "url": "docs/gradient-checkpointing.html",
+      "local": true
     },
     {
       "title": "RAG",
@@ -423,8 +423,8 @@
       "summary": "예시 몇 개로 새 과제를 하는 현상. 무엇을 배우는 게 아니라 무엇을 고르는가.",
       "updated": "2026-08-10",
       "slug": "in-context-learning",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/in-context-learning.html",
-      "local": false
+      "url": "docs/in-context-learning.html",
+      "local": true
     },
     {
       "title": "Chain-of-Thought",
@@ -433,8 +433,8 @@
       "summary": "중간 과정을 쓰게 했더니 정답률이 오른 이유, 그리고 추론 시간 스케일링.",
       "updated": "2026-08-10",
       "slug": "chain-of-thought",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/chain-of-thought.html",
-      "local": false
+      "url": "docs/chain-of-thought.html",
+      "local": true
     },
     {
       "title": "AI Agents &amp; Tool Use",
@@ -443,8 +443,8 @@
       "summary": "관측·결정·행동의 순환. 언제 에이전트가 필요하고 언제 과한가.",
       "updated": "2026-08-10",
       "slug": "ai-agents-tool-use",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/ai-agents-tool-use.html",
-      "local": false
+      "url": "docs/ai-agents-tool-use.html",
+      "local": true
     },
     {
       "title": "LLM 서빙 — 배칭과 스케줄링",
@@ -453,8 +453,8 @@
       "summary": "연속 배칭이 처리량을 끌어올리는 원리와 지연·처리량의 맞바꿈.",
       "updated": "2026-08-10",
       "slug": "llm-serving",
-      "url": "https://fogfog2.github.io/ai-concepts/docs/llm-serving.html",
-      "local": false
+      "url": "docs/llm-serving.html",
+      "local": true
     },
     {
       "title": "평가와 벤치마크",
