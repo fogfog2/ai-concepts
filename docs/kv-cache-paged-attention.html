@@ -1,23 +1,33 @@
 <title>KV Cache & PagedAttention — 문맥을 페이지로 관리하다</title>
 
+
+
 <style>
+  /* 목록 페이지와 같은 톤. 문서 자체의 팔레트를 건드리지 않도록
+     currentColor 대신 자체 변수를 쓰고, 라이트/다크 양쪽을 정의한다. */
   .site-nav {
+    --nav-bg: #f4f4f2; --nav-fg: #4d5654; --nav-line: #d5d7d3; --nav-hi: #0f6f63;
     position: sticky; top: 0; z-index: 50;
-    display: flex; align-items: center; gap: .6rem;
-    padding: .55rem 1rem;
-    font: 600 .78rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    letter-spacing: .04em;
-    background: rgba(20,20,22,.82);
-    backdrop-filter: saturate(1.4) blur(8px);
-    -webkit-backdrop-filter: saturate(1.4) blur(8px);
-    border-bottom: 1px solid rgba(255,255,255,.14);
+    display: flex; align-items: center; gap: .55rem;
+    padding: .5rem 1.1rem;
+    font: 500 .74rem/1 ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: .06em;
+    background: var(--nav-bg);
+    color: var(--nav-fg);
+    border-bottom: 1px solid var(--nav-line);
   }
-  .site-nav a { color: #cfd6e4; text-decoration: none; }
-  .site-nav a:hover, .site-nav a:focus-visible { color: #6ee7a8; outline: none; }
-  .site-nav .sep { color: #6b7590; }
+  @media (prefers-color-scheme: dark) {
+    .site-nav { --nav-bg: #101211; --nav-fg: #9fa9a6; --nav-line: #242927; --nav-hi: #3fc9b4; }
+  }
+  :root[data-theme="dark"] .site-nav { --nav-bg: #101211; --nav-fg: #9fa9a6; --nav-line: #242927; --nav-hi: #3fc9b4; }
+  :root[data-theme="light"] .site-nav { --nav-bg: #f4f4f2; --nav-fg: #4d5654; --nav-line: #d5d7d3; --nav-hi: #0f6f63; }
+  .site-nav a { color: var(--nav-fg); text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: var(--nav-hi); outline: none; }
+  .site-nav .sep { opacity: .45; }
+  .site-nav .cur { opacity: .7; }
   @media print { .site-nav { display: none; } }
 </style>
-<nav class="site-nav"><a href="../index.html">← 문서 목록</a><span class="sep">/</span><span style="color:#8b93a7;font-weight:500">KV Cache &amp; PagedAttention</span></nav>
+<nav class="site-nav"><a href="../index.html">← AI CONCEPTS</a><span class="sep">/</span><span class="cur">KV Cache &amp; PagedAttention</span></nav>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
   :root {

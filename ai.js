@@ -83,11 +83,14 @@
       });
       if (!items.length) return '';
 
-      var cards = items.map(function (a) {
+      var cards = items.map(function (a, i) {
         /* 내부 문서는 같은 탭에서, 외부 링크만 새 탭으로 연다. */
         var ext = !a.local;
+        /* 단계 안에서의 일련번호 — 읽는 순서를 드러낸다 (01, 02, …) */
+        var idx = ('0' + (i + 1)).slice(-2);
         return '<a class="doc" href="' + esc(a.url) + '"' +
             (ext ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' +
+          '<span class="doc-idx" aria-hidden="true">' + idx + '</span>' +
           '<span class="doc-head">' +
             '<b>' + esc(a.title) + '</b>' +
             (a.subtitle ? '<i>' + esc(a.subtitle) + '</i>' : '') +
@@ -100,13 +103,11 @@
       return '<section class="stage">' +
         '<div class="stage-head">' +
           '<span class="stage-no">' + esc(st.no) + '</span>' +
-          '<div>' +
-            '<h2>' + esc(st.name) +
-              (st.tagline ? ' <em>' + esc(st.tagline) + '</em>' : '') +
-            '</h2>' +
-            (st.desc ? '<p>' + esc(st.desc) + '</p>' : '') +
-          '</div>' +
-          '<span class="stage-count">' + items.length + '</span>' +
+          '<h2>' + esc(st.name) +
+            (st.tagline ? ' <em>' + esc(st.tagline) + '</em>' : '') +
+          '</h2>' +
+          '<span class="stage-count">' + items.length + '편</span>' +
+          (st.desc ? '<p>' + esc(st.desc) + '</p>' : '') +
         '</div>' +
         '<div class="doc-list">' + cards + '</div>' +
       '</section>';
@@ -120,8 +121,8 @@
     });
 
     if (view === 'artifacts') {
-      sub.textContent = 'AI 기술 문서 ' + state.artifacts.length + '편 · ' +
-        state.stages.length + '단계로 정리';
+      sub.textContent = state.artifacts.length + ' ENTRIES · ' +
+        state.stages.length + ' STAGES';
       renderArtifacts();
       return;
     }
@@ -169,7 +170,7 @@
     /* 공개 사이트에서는 기술문서가 본체다. 뉴스가 있어도 문서를 먼저 보여준다. */
     show(state.artifacts.length ? 'artifacts' : state.dates[0]);
     foot.textContent = state.dates.length
-      ? '기술문서 ' + state.artifacts.length + '편 · 뉴스 ' + state.dates.length + '일치'
-      : '기술문서 ' + state.artifacts.length + '편';
+      ? 'AI CONCEPTS · ' + state.artifacts.length + ' ENTRIES · NEWS ' + state.dates.length + 'D'
+      : 'AI CONCEPTS · ' + state.artifacts.length + ' ENTRIES';
   });
 })();
