@@ -458,6 +458,21 @@
       "local": true
     },
     {
+      "title": "노이즈 제거",
+      "subtitle": "무작위인 것을 가려내기",
+      "stage": "train",
+      "summary": "노이즈와 세부가 둘 다 고주파라는 난점. 깨끗한 정답 없이 학습하는 법까지.",
+      "updated": "2026-08-11",
+      "slug": "denoising",
+      "tags": [
+        "vision",
+        "enhance",
+        "training"
+      ],
+      "url": "docs/denoising.html",
+      "local": true
+    },
+    {
       "title": "데이터 품질과 커리큘럼",
       "subtitle": "무엇을 먹이느냐가 정한다",
       "stage": "train",
@@ -764,6 +779,21 @@
       "local": true
     },
     {
+      "title": "모바일 추론 런타임",
+      "subtitle": "모델과 기기 사이",
+      "stage": "apply",
+      "summary": "연산자 지원이 모델을 정한다. 그래프 분할과 전처리 불일치, 그리고 발열.",
+      "updated": "2026-08-11",
+      "slug": "mobile-runtime",
+      "tags": [
+        "vision",
+        "on-device",
+        "systems"
+      ],
+      "url": "docs/mobile-runtime.html",
+      "local": true
+    },
+    {
       "title": "LLM 서빙 — 배칭과 스케줄링",
       "subtitle": "한 장비에 여러 요청을 태우다",
       "stage": "apply",
@@ -907,6 +937,35 @@
         "detection"
       ],
       "url": "docs/rf-detr.html",
+      "local": true
+    },
+    {
+      "title": "분할",
+      "subtitle": "어디까지가 그것인가",
+      "stage": "detect",
+      "summary": "시맨틱·인스턴스·판옵틱의 구분, 해상도와 시야의 맞바꿈, 그리고 라벨 비용이라는 장벽.",
+      "updated": "2026-08-11",
+      "slug": "segmentation",
+      "tags": [
+        "vision",
+        "detection",
+        "arch"
+      ],
+      "url": "docs/segmentation.html",
+      "local": true
+    },
+    {
+      "title": "지역 특징과 매칭",
+      "subtitle": "같은 지점을 다시 찾기",
+      "stage": "detect",
+      "summary": "전역 벡터가 못 하는 점 대 점 대응. 반복 무늬라는 적과 비율 검사·RANSAC.",
+      "updated": "2026-08-11",
+      "slug": "local-features",
+      "tags": [
+        "vision",
+        "feature"
+      ],
+      "url": "docs/local-features.html",
       "local": true
     },
     {

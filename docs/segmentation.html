@@ -1,0 +1,431 @@
+<title>분할 — 어디까지가 그것인가</title>
+
+<style>
+  /* 목록 페이지와 같은 톤. 문서 자체의 팔레트를 건드리지 않도록
+     currentColor 대신 자체 변수를 쓰고, 라이트/다크 양쪽을 정의한다. */
+  .site-nav {
+    --nav-bg: #f4f4f2; --nav-fg: #4d5654; --nav-line: #d5d7d3; --nav-hi: #0f6f63;
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: .55rem;
+    padding: .5rem 1.1rem;
+    font: 500 .74rem/1 ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: .06em;
+    background: var(--nav-bg);
+    color: var(--nav-fg);
+    border-bottom: 1px solid var(--nav-line);
+  }
+  @media (prefers-color-scheme: dark) {
+    .site-nav { --nav-bg: #101211; --nav-fg: #9fa9a6; --nav-line: #242927; --nav-hi: #3fc9b4; }
+  }
+  :root[data-theme="dark"] .site-nav { --nav-bg: #101211; --nav-fg: #9fa9a6; --nav-line: #242927; --nav-hi: #3fc9b4; }
+  :root[data-theme="light"] .site-nav { --nav-bg: #f4f4f2; --nav-fg: #4d5654; --nav-line: #d5d7d3; --nav-hi: #0f6f63; }
+  .site-nav a { color: var(--nav-fg); text-decoration: none; }
+  .site-nav a:hover, .site-nav a:focus-visible { color: var(--nav-hi); outline: none; }
+  .site-nav .sep { opacity: .45; }
+  .site-nav .cur { opacity: .7; }
+  @media print { .site-nav { display: none; } }
+</style>
+<nav class="site-nav"><a href="../index.html">← AI CONCEPTS</a><span class="sep">/</span><span class="cur">분할</span></nav>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --paper: #f0f0f2;
+    --panel: #e6e5ea;
+    --ink: #17151c;
+    --ink-soft: #524e5b;
+    --ink-faint: #817d8b;
+    --rule: #d2d0d8;
+    --rule-strong: #aeabb6;
+    --accent: #5a3d8c;
+    --accent-fill: #e6dcf3;
+    --accent-line: #7d5fb0;
+    --muted: #84868e;
+    --muted-fill: #dfe0e4;
+    --warn: #a04a28;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+    --paper: #111017;
+    --panel: #191820;
+    --ink: #e7e5ee;
+    --ink-soft: #a5a2b0;
+    --ink-faint: #787484;
+    --rule: #222029;
+    --rule-strong: #383547;
+    --accent: #ab8ee8;
+    --accent-fill: #1e1836;
+    --accent-line: #7259b5;
+    --muted: #868892;
+    --muted-fill: #1a1a21;
+    --warn: #e0865e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #111017;
+    --panel: #191820;
+    --ink: #e7e5ee;
+    --ink-soft: #a5a2b0;
+    --ink-faint: #787484;
+    --rule: #222029;
+    --rule-strong: #383547;
+    --accent: #ab8ee8;
+    --accent-fill: #1e1836;
+    --accent-line: #7259b5;
+    --muted: #868892;
+    --muted-fill: #1a1a21;
+    --warn: #e0865e;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Apple SD Gothic Neo",
+      "Noto Sans KR", "Malgun Gothic", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.75;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono, .eyebrow, .spec dt, .spec dd, code, .kicker, figcaption .tag {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8rem;
+  }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); text-decoration: none; margin-bottom: -1.6rem;
+  }
+  .backlink:hover { color: var(--accent); }
+
+  .masthead { display: flex; flex-direction: column; gap: 0.85rem; }
+  .eyebrow { margin: 0; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+  h1 { margin: 0; font-size: clamp(2.2rem, 7.5vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.0; }
+  .subtitle { margin: 0; font-size: clamp(1rem, 2.6vw, 1.2rem); font-weight: 700; color: var(--ink-soft); letter-spacing: -0.01em; text-wrap: balance; }
+  .dek { margin: 0.2rem 0 0; max-width: 62ch; color: var(--ink-soft); font-size: 1.02rem; }
+
+  .spec { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .spec > div { padding: 0.85rem 1rem 0.9rem; border-left: 1px solid var(--rule); }
+  .spec > div:first-child { border-left: none; padding-left: 0; }
+  .spec dt { margin: 0 0 0.25rem; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .spec dd { margin: 0; font-size: 0.93rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+  section > h2 {
+    margin: 0; display: grid; grid-template-columns: 2.1rem 1fr; gap: 0.85rem; align-items: start;
+    font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.35; text-wrap: balance;
+  }
+  section > h2 .n {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.78rem; font-weight: 500; color: var(--accent);
+    border: 1px solid var(--rule-strong); border-radius: 2px;
+    text-align: center; line-height: 1.55rem; height: 1.7rem; margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+  section p { margin: 0; max-width: 66ch; }
+  section ul { margin: 0; padding-left: 1.15rem; max-width: 66ch; display: flex; flex-direction: column; gap: 0.55rem; }
+  section li::marker { color: var(--accent); }
+
+  strong { font-weight: 700; }
+  em { font-style: normal; color: var(--accent); font-weight: 600; }
+  code { font-size: 0.87em; background: var(--panel); border: 1px solid var(--rule); border-radius: 3px; padding: 0.05em 0.35em; white-space: nowrap; }
+
+  .eq {
+    background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent-line);
+    padding: 1rem 1.1rem; overflow-x: auto;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.98rem; white-space: nowrap;
+  }
+  .eq .cap { display: block; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 0.5rem; white-space: normal; }
+  .eq .line + .line { margin-top: 0.45rem; }
+
+  figure { margin: 0.4rem 0; background: var(--panel); border: 1px solid var(--rule); }
+  .plate { overflow-x: auto; padding: 1.2rem 1rem 0.5rem; }
+  .plate svg { display: block; min-width: 620px; width: 100%; height: auto; }
+  figcaption { border-top: 1px solid var(--rule); padding: 0.7rem 1rem 0.8rem; font-size: 0.84rem; color: var(--ink-soft); line-height: 1.6; }
+  figcaption .tag { color: var(--accent); font-size: 0.67rem; letter-spacing: 0.12em; text-transform: uppercase; margin-right: 0.5rem; }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule); background: var(--panel); }
+  .pair > div { padding: 0.95rem 1.05rem 1.05rem; }
+  .pair > div + div { border-left: 1px solid var(--rule); }
+  .pair .kicker { display: block; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.45rem; }
+  .pair .fast .kicker { color: var(--accent); }
+  .pair .slow .kicker { color: var(--muted); }
+  .pair .fast { border-top: 2px solid var(--accent-line); }
+  .pair .slow { border-top: 2px solid var(--muted); }
+  .pair p { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+  .pair .slow p { color: var(--ink-faint); }
+
+  .note { border: 1px solid var(--rule); border-top: 2px solid var(--accent-line); background: var(--panel); padding: 1rem 1.1rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 66ch; }
+  .note b { color: var(--ink); }
+
+  table.data { border-collapse: collapse; font-size: 0.88rem; min-width: 30rem; }
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+  table.data th, table.data td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--rule); }
+  table.data th { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+  table.data td { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data td.hi { color: var(--accent); font-weight: 700; }
+
+  footer { border-top: 1px solid var(--rule-strong); padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.9rem; font-size: 0.88rem; color: var(--ink-soft); }
+  footer h2 { margin: 0; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+  footer ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.45rem; }
+  .colophon { color: var(--ink-faint); font-size: 0.8rem; border-top: 1px solid var(--rule); padding-top: 0.9rem; }
+
+  @media (max-width: 560px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair > div + div { border-left: none; }
+    .spec > div { border-left: none; padding-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+</style>
+
+<div class="sheet">
+
+  <a class="backlink" href="../index.html">&larr; AI Concepts Archive</a>
+
+  <header class="masthead">
+    <p class="eyebrow">Vision · Dense Prediction · 2014–2026</p>
+    <h1>분할</h1>
+    <p class="subtitle">어디까지가 그것인가 — 시맨틱·인스턴스·판옵틱</p>
+    <p class="dek">검출은 물체를 사각형으로 감싼다. 그런데 도로와 하늘은 사각형이 아니고, 결함의 면적은 상자로 잴 수 없다. 분할은 <strong>픽셀 단위로</strong> 답하지만, 그 말은 여러 뜻을 담고 있다 — 종류만 가를 것인가, 개체를 나눌 것인가, 배경까지 포함할 것인가.</p>
+  </header>
+
+  <dl class="spec">
+    <div><dt>시맨틱</dt><dd>종류만 · 개체 구분 없음</dd></div>
+    <div><dt>인스턴스</dt><dd>개체 구분 · 배경 제외</dd></div>
+    <div><dt>판옵틱</dt><dd>둘 다 · 모든 픽셀</dd></div>
+    <div><dt>구조적 난점</dt><dd>해상도 vs 시야</dd></div>
+    <div><dt>최대 장벽</dt><dd>라벨 비용</dd></div>
+  </dl>
+
+  <section>
+    <h2><span class="n">01</span>상자로는 부족한 순간</h2>
+    <p>
+      <a href="detection-lineage.html">검출</a>은 물체를 사각형으로 감싼다.
+      빠르고 충분한 경우가 많지만, 상자가 답이 되지 않는 상황이 있다.
+    </p>
+    <ul>
+      <li><strong>모양이 상자와 다르다.</strong> 도로·하늘·잔디 같은 것은 애초에 사각형이 아니다</li>
+      <li><strong>면적이 필요하다.</strong> 결함 검사에서 "긁힘이 몇 mm²인가"는 상자로 못 잰다</li>
+      <li><strong>경계가 곧 결과다.</strong> 배경 제거·합성에서는 픽셀 단위 경계가 산출물이다</li>
+      <li><strong>상자가 겹친다.</strong> 겹쳐 놓인 물체는 상자만으로 어느 픽셀이 누구 것인지 알 수 없다</li>
+    </ul>
+    <p>
+      <strong>분할</strong>은 이것을 픽셀 단위로 답한다.
+      그런데 "픽셀마다 라벨을 붙인다"는 말은 생각보다 여러 뜻을 담고 있어,
+      먼저 <em>무엇을 요구하는지</em>를 갈라야 한다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">02</span>세 가지 분할</h2>
+    <p>
+      같은 "분할"이라도 요구가 다르다. 이 구분을 놓치면 데이터셋도 지표도 어긋난다.
+    </p>
+
+    <figure>
+      <div class="plate">
+        <svg viewBox="0 0 700 226" role="img" aria-label="시맨틱·인스턴스·판옵틱 분할의 차이. 시맨틱은 같은 종류를 한 덩어리로 묶어 개체를 구분하지 못하고, 인스턴스는 개체를 구분하지만 배경을 다루지 않으며, 판옵틱은 둘을 합쳐 모든 픽셀에 라벨과 개체 번호를 함께 준다.">
+          <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+            <text x="24" y="18" font-size="9.5" letter-spacing="1.2" fill="var(--ink-soft)">같은 장면, 다른 요구</text>
+
+            <g>
+              <text x="30" y="40" font-size="8.5" fill="var(--ink-faint)">원본</text>
+              <rect x="30" y="48" width="140" height="90" fill="var(--muted-fill)" stroke="var(--rule-strong)" stroke-width="1.1"/>
+              <rect x="30" y="110" width="140" height="28" fill="var(--ink-soft)" opacity="0.18"/>
+              <ellipse cx="70" cy="96" rx="16" ry="24" fill="var(--ink-soft)" opacity="0.4"/>
+              <ellipse cx="104" cy="96" rx="16" ry="24" fill="var(--ink-soft)" opacity="0.4"/>
+              <text x="100" y="156" text-anchor="middle" font-size="8" fill="var(--ink-faint)">사람 둘 + 도로</text>
+            </g>
+
+            <g>
+              <text x="200" y="40" font-size="8.5" fill="var(--accent)">시맨틱</text>
+              <rect x="200" y="48" width="140" height="90" fill="var(--muted-fill)" stroke="var(--rule-strong)" stroke-width="1.1"/>
+              <rect x="200" y="110" width="140" height="28" fill="var(--accent)" opacity="0.25"/>
+              <ellipse cx="240" cy="96" rx="16" ry="24" fill="var(--accent)" opacity="0.7"/>
+              <ellipse cx="274" cy="96" rx="16" ry="24" fill="var(--accent)" opacity="0.7"/>
+              <text x="200" y="156" font-size="8" fill="var(--ink-soft)">같은 색 = 같은 종류</text>
+              <text x="200" y="169" font-size="8" fill="var(--warn)">✗ 둘을 구분 못 한다</text>
+              <text x="200" y="182" font-size="8" fill="var(--accent)">✓ 도로 같은 배경도 다룬다</text>
+            </g>
+
+            <g>
+              <text x="370" y="40" font-size="8.5" fill="var(--accent)">인스턴스</text>
+              <rect x="370" y="48" width="140" height="90" fill="var(--muted-fill)" stroke="var(--rule-strong)" stroke-width="1.1"/>
+              <ellipse cx="410" cy="96" rx="16" ry="24" fill="var(--accent)" opacity="0.75"/>
+              <ellipse cx="444" cy="96" rx="16" ry="24" fill="var(--warn)" opacity="0.6"/>
+              <text x="370" y="156" font-size="8" fill="var(--accent)">✓ 개체를 구분한다</text>
+              <text x="370" y="169" font-size="8" fill="var(--warn)">✗ 도로·하늘은 대상 아님</text>
+              <text x="370" y="182" font-size="8" fill="var(--ink-faint)">셀 수 있는 것만 (things)</text>
+            </g>
+
+            <g>
+              <text x="540" y="40" font-size="8.5" fill="var(--accent)">판옵틱</text>
+              <rect x="540" y="48" width="134" height="90" fill="var(--muted-fill)" stroke="var(--accent-line)" stroke-width="1.3"/>
+              <rect x="540" y="110" width="134" height="28" fill="var(--accent)" opacity="0.25"/>
+              <ellipse cx="578" cy="96" rx="16" ry="24" fill="var(--accent)" opacity="0.75"/>
+              <ellipse cx="612" cy="96" rx="16" ry="24" fill="var(--warn)" opacity="0.6"/>
+              <text x="540" y="156" font-size="8" fill="var(--accent)">✓ 둘 다 — 모든 픽셀에</text>
+              <text x="540" y="169" font-size="8" fill="var(--ink-soft)">라벨 + 개체 번호</text>
+              <text x="540" y="182" font-size="8" fill="var(--ink-faint)">겹침 없이 정확히 하나씩</text>
+            </g>
+
+            <line x1="24" y1="196" x2="674" y2="196" stroke="var(--rule)" stroke-width="1"/>
+            <text x="24" y="216" font-size="8.5" fill="var(--ink-soft)">things = 셀 수 있는 것(사람·차) · stuff = 셀 수 없는 것(도로·하늘) — <tspan fill="var(--accent)">이 구분이 과제를 가른다</tspan></text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>
+        <span class="tag">Fig. 1</span>
+        <strong>things</strong>와 <strong>stuff</strong>의 구분이 핵심이다.
+        셀 수 있는 것은 개체를 나눠야 하고, 셀 수 없는 것은 나눌 개체가 없다.
+        판옵틱은 이 둘을 하나의 출력으로 합쳐,
+        <em>모든 픽셀이 정확히 하나의 라벨과 하나의 개체에 속하게</em> 한다.
+      </figcaption>
+    </figure>
+
+    <p>
+      지표도 갈린다. 시맨틱은 클래스별 <strong>mIoU</strong>(교집합/합집합의 평균)를 쓰고,
+      인스턴스는 검출처럼 마스크 IoU 기반 <strong>AP</strong>를 쓴다.
+      판옵틱은 둘을 합친 <strong>PQ</strong>를 쓰는데, 분할 품질과 인식 품질의 곱으로 정의된다.
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">03</span>해상도를 잃고 되찾기</h2>
+    <p>
+      분할의 구조적 난점은 <a href="cnn-basics.html">CNN 기초</a>에서 본 것 그대로다.
+      <strong>넓게 보려면 해상도를 줄여야 하는데, 픽셀 단위 출력은 해상도가 필요하다.</strong>
+    </p>
+    <p>
+      분류망을 그대로 쓰면 마지막에 <code>1/32</code> 해상도가 남는다.
+      512×512 입력이 16×16이 되는 것이다. 여기서 픽셀 라벨을 만들려면 되살려야 한다.
+    </p>
+    <div class="eq">
+      <span class="cap">해상도를 되찾는 세 방식</span>
+      <div class="line">① <strong>인코더-디코더</strong>&nbsp;&nbsp;줄인 만큼 다시 키운다 (U-Net)</div>
+      <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;스킵 연결로 초반 층의 세부를 가져온다</div>
+      <div class="line">&nbsp;</div>
+      <div class="line">② <strong>dilated 합성곱</strong>&nbsp;커널에 구멍을 내 시야만 넓힌다</div>
+      <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;해상도를 안 줄이고 수용 영역을 키운다 (DeepLab)</div>
+      <div class="line">&nbsp;</div>
+      <div class="line">③ <strong>다중 스케일 융합</strong>&nbsp;여러 해상도를 끝까지 함께 유지</div>
+    </div>
+    <p>
+      <strong>U-Net</strong> 의 스킵 연결이 특히 중요하다.
+      디코더가 위치 정보를 복원할 때, 인코더 초반의 고해상 특징을 그대로 이어 붙인다.
+      깊은 층은 <em>무엇인지</em>를 알고 얕은 층은 <em>어디인지</em>를 아는데, 둘 다 필요하기 때문이다.
+    </p>
+    <div class="note">
+      <b>U-Net 이 의료 영상에서 나온 것은 우연이 아니다.</b>
+      데이터가 수백 장뿐인 상황을 전제로 설계됐다 —
+      강한 증강, 대칭 구조, 적은 파라미터.
+      지금은 <a href="diffusion-models.html">확산 모델</a>의 기본 백본으로 더 유명해졌는데,
+      노이즈 제거도 <em>입력과 같은 크기의 출력</em>을 요구하는 과제라 구조가 그대로 맞았다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">04</span>개체를 나누는 두 갈래</h2>
+    <p>
+      인스턴스 분할은 <em>"어느 픽셀이 어느 개체인가"</em>를 답해야 한다.
+      접근이 크게 둘로 갈렸다.
+    </p>
+    <p>
+      <strong>검출 먼저(top-down).</strong> Mask R-CNN 이 대표다.
+      상자를 찾은 뒤 각 상자 안에서 마스크를 예측한다.
+      검출기 위에 마스크 분기를 하나 더 얹는 구조라 자연스럽고 성능도 좋다.
+    </p>
+    <p>
+      결정적 세부는 <strong>RoIAlign</strong> 이었다.
+      기존 RoIPool 은 관심 영역을 격자에 맞추느라 <em>반올림</em>을 했는데,
+      분류에는 무해하던 이 오차가 <strong>픽셀 단위 마스크에서는 치명적</strong>이었다.
+      쌍선형 보간으로 반올림을 없앤 것만으로 마스크 정확도가 크게 올랐다.
+    </p>
+    <p>
+      <strong>상향식(bottom-up).</strong> 픽셀마다 임베딩을 뽑고 <em>같은 개체끼리 뭉치게</em> 학습한 뒤
+      군집화로 개체를 나눈다. <a href="metric-learning.html">메트릭 러닝</a>의 발상을 픽셀에 적용한 것이다.
+      상자에 의존하지 않아 겹침이나 특이한 모양에 유연하지만, 군집 단계가 불안정하기 쉽다.
+    </p>
+    <div class="note">
+      <b>최근에는 세 과제가 하나로 합쳐지는 중이다.</b>
+      마스크를 <em>질의(query)로 예측</em>하는 방식 — <a href="detr-lineage.html">DETR</a> 계열의 발상 —
+      이 시맨틱·인스턴스·판옵틱을 <strong>같은 구조로</strong> 처리할 수 있음을 보였다.
+      과제별로 다른 헤드를 붙이던 관행이 사라지는 흐름이다.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">05</span>라벨 비용과 프롬프트 분할</h2>
+    <p>
+      분할의 실무적 최대 장벽은 모델이 아니라 <strong>라벨</strong>이다.
+      상자 하나는 클릭 두 번이면 되지만, 마스크 하나는 경계를 따라 그려야 한다.
+      이미지 한 장에 수십 분이 걸리는 경우도 흔하다.
+    </p>
+    <p>
+      그래서 우회로가 많이 연구됐다 —
+      상자 라벨만으로 마스크를 학습하거나(weakly-supervised),
+      점 몇 개만 찍거나, 합성 데이터를 쓰는 방식이다.
+    </p>
+    <p>
+      <strong>SAM</strong>(Segment Anything)은 다른 각도에서 문제를 바꿨다.
+      <em>무엇을 분할할지는 사용자가 지정하고, 모델은 경계만 잘 찾는</em> 구조다.
+      점·상자·대략적 마스크를 프롬프트로 받아 그 영역의 마스크를 낸다.
+    </p>
+    <div class="eq">
+      <span class="cap">SAM 이 바꾼 것 — 과제 정의 자체</span>
+      <div class="line">기존:&nbsp; 이미지 → <strong>정해진 클래스</strong>의 마스크</div>
+      <div class="line">SAM:&nbsp;&nbsp; 이미지 + <strong>프롬프트</strong> → 그 영역의 마스크</div>
+      <div class="line">&nbsp;</div>
+      <div class="line">// 클래스 목록이 필요 없다 — 무엇이든 가리키면 잘라낸다</div>
+      <div class="line">// 대신 '그것이 무엇인지'는 답하지 않는다</div>
+    </div>
+    <p>
+      마지막 줄이 중요하다. SAM 은 <strong>분류하지 않는다</strong>.
+      경계를 찾는 능력과 이름을 붙이는 능력을 분리한 것이고,
+      그래서 <a href="clip.html">CLIP</a> 같은 모델과 조합해 쓰는 구성이 흔하다.
+    </p>
+    <div class="note">
+      <b>실무에서는 라벨링 도구로 먼저 자리 잡았다.</b>
+      사람이 점을 찍으면 SAM 이 마스크를 만들고, 사람은 확인만 한다.
+      <em>모델을 대체하는 것이 아니라 라벨 비용을 낮추는</em> 쪽이
+      가장 확실한 효용이었다 — 앞서 말한 최대 장벽이 그것이었기 때문이다.
+    </div>
+    <p>
+      정리하면 분할은 <em>"어디까지가 그것인가"</em>를 묻는 과제다.
+      검출이 위치를 대략 답한다면 분할은 경계를 정확히 답하고,
+      그 정확도만큼 라벨 비용과 연산 비용을 치른다.
+      <strong>상자로 충분한지 먼저 묻는 것</strong>이 실무의 첫 판단이 되는 이유다.
+    </p>
+  </section>
+
+  <footer>
+    <h2>더 읽을거리</h2>
+    <ul>
+      <li>Long et al., <em>Fully Convolutional Networks for Semantic Segmentation</em> (arXiv:1411.4038) — 분류망을 분할로 바꾼 출발점.</li>
+      <li>Ronneberger et al., <em>U-Net: Convolutional Networks for Biomedical Image Segmentation</em> (arXiv:1505.04597) — 스킵 연결 인코더-디코더.</li>
+      <li>Chen et al., <em>Rethinking Atrous Convolution for Semantic Image Segmentation</em> (arXiv:1706.05587) — DeepLab. dilated 합성곱.</li>
+      <li>He et al., <em>Mask R-CNN</em> (arXiv:1703.06870) — RoIAlign 과 마스크 분기.</li>
+      <li>Kirillov et al., <em>Panoptic Segmentation</em> (arXiv:1801.00868) — things/stuff 통합과 PQ 지표.</li>
+      <li>Kirillov et al., <em>Segment Anything</em> (arXiv:2304.02643) — 프롬프트 기반 분할.</li>
+    </ul>
+    <p class="colophon">AI Concepts Archive · 자동 생성 학습 노트 · 2026-08-11</p>
+  </footer>
+
+</div>
