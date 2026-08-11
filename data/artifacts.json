@@ -209,6 +209,21 @@
       "local": true
     },
     {
+      "title": "CNN 기초",
+      "subtitle": "합성곱·풀링·수용 영역",
+      "stage": "basics",
+      "summary": "이미지의 규칙성을 구조에 새긴 두 제약. 수용 영역과 해상도의 맞바꿈, 그리고 잔차 연결.",
+      "updated": "2026-08-11",
+      "slug": "cnn-basics",
+      "tags": [
+        "vision",
+        "arch",
+        "training"
+      ],
+      "url": "docs/cnn-basics.html",
+      "local": true
+    },
+    {
       "title": "Transformer",
       "subtitle": "모든 단어가 서로를 바라보다",
       "stage": "arch",
@@ -775,6 +790,21 @@
         "safety"
       ],
       "url": "docs/evaluation-benchmarks.html",
+      "local": true
+    },
+    {
+      "title": "화질 평가 지표",
+      "subtitle": "무엇을 재고 있는가",
+      "stage": "eval",
+      "summary": "PSNR 이 같은데 체감이 다른 이유. 구조를 따로 재는 SSIM 과 사람 판단을 학습한 LPIPS.",
+      "updated": "2026-08-11",
+      "slug": "image-quality-metrics",
+      "tags": [
+        "vision",
+        "enhance",
+        "safety"
+      ],
+      "url": "docs/image-quality-metrics.html",
       "local": true
     },
     {
