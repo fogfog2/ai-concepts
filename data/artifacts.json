@@ -824,6 +824,21 @@
       "local": true
     },
     {
+      "title": "벡터 검색",
+      "subtitle": "임베딩을 실제로 쓸 수 있게",
+      "stage": "apply",
+      "summary": "전수 비교가 불가능해지는 지점과 근사 탐색 세 전략. 검색 파이프라인의 1단계.",
+      "updated": "2026-08-11",
+      "slug": "vector-search",
+      "tags": [
+        "common",
+        "feature",
+        "systems"
+      ],
+      "url": "docs/vector-search.html",
+      "local": true
+    },
+    {
       "title": "모바일 추론 런타임",
       "subtitle": "모델과 기기 사이",
       "stage": "apply",
@@ -865,6 +880,21 @@
         "safety"
       ],
       "url": "docs/evaluation-benchmarks.html",
+      "local": true
+    },
+    {
+      "title": "유사도 임계값",
+      "subtitle": "어디서 자를 것인가",
+      "stage": "eval",
+      "summary": "두 분포는 반드시 겹친다. 규모가 커지면 같은 임계값이 무너지는 이유까지.",
+      "updated": "2026-08-11",
+      "slug": "similarity-threshold",
+      "tags": [
+        "vision",
+        "feature",
+        "safety"
+      ],
+      "url": "docs/similarity-threshold.html",
       "local": true
     },
     {
@@ -982,6 +1012,21 @@
         "detection"
       ],
       "url": "docs/rf-detr.html",
+      "local": true
+    },
+    {
+      "title": "ISP",
+      "subtitle": "센서 값을 사진으로 만드는 일",
+      "stage": "detect",
+      "summary": "화소당 색이 하나뿐이라 66%가 추정값이다. 사람 눈과 인식 모델의 목표가 어긋나는 지점.",
+      "updated": "2026-08-11",
+      "slug": "isp-pipeline",
+      "tags": [
+        "vision",
+        "enhance",
+        "on-device"
+      ],
+      "url": "docs/isp-pipeline.html",
       "local": true
     },
     {
