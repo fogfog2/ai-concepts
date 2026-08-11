@@ -311,6 +311,21 @@
       "local": true
     },
     {
+      "title": "NAS",
+      "subtitle": "구조를 자동으로 찾기",
+      "stage": "arch",
+      "summary": "평가가 비싸다는 난점과 가중치 공유. 목표에 실측 지연을 넣는 것이 진짜 기여였다.",
+      "updated": "2026-08-11",
+      "slug": "nas",
+      "tags": [
+        "vision",
+        "on-device",
+        "arch"
+      ],
+      "url": "docs/nas.html",
+      "local": true
+    },
+    {
       "title": "경량 백본",
       "subtitle": "휴대폰에서 도는 신경망",
       "stage": "arch",
@@ -1001,6 +1016,21 @@
       "local": true
     },
     {
+      "title": "적대적 예제와 강건성",
+      "subtitle": "보이지 않는 변화로 답이 뒤집힌다",
+      "stage": "eval",
+      "summary": "픽셀당 ±8로 정확도가 0이 된다. 버그가 아니라 데이터의 성질이라는 관점까지.",
+      "updated": "2026-08-11",
+      "slug": "adversarial-robustness",
+      "tags": [
+        "common",
+        "safety",
+        "training"
+      ],
+      "url": "docs/adversarial-robustness.html",
+      "local": true
+    },
+    {
       "title": "Prompt Injection",
       "subtitle": "데이터가 명령이 되는 순간",
       "stage": "eval",
@@ -1086,6 +1116,36 @@
         "detection"
       ],
       "url": "docs/rf-detr.html",
+      "local": true
+    },
+    {
+      "title": "NeRF & 3D 표현",
+      "subtitle": "공간을 무엇으로 담을 것인가",
+      "stage": "detect",
+      "summary": "메시가 담지 못하는 것을 함수로, 다시 명시적 덩어리로. 3DGS 이후의 분화까지.",
+      "updated": "2026-08-11",
+      "slug": "nerf-3d",
+      "tags": [
+        "vision",
+        "arch",
+        "generative"
+      ],
+      "url": "docs/nerf-3d.html",
+      "local": true
+    },
+    {
+      "title": "Optical Flow",
+      "subtitle": "시간 축의 대응 문제",
+      "stage": "detect",
+      "summary": "미지수 2개에 식 1개인 조리개 문제. RAFT의 상관 볼륨과 합성 데이터 의존.",
+      "updated": "2026-08-11",
+      "slug": "optical-flow",
+      "tags": [
+        "vision",
+        "detection",
+        "feature"
+      ],
+      "url": "docs/optical-flow.html",
       "local": true
     },
     {
