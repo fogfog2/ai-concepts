@@ -1,4 +1,62 @@
 {
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
-  "days": []
+  "days": [
+    {
+      "date": "2026-08-11",
+      "items": [
+        {
+          "title": "Google DeepMind 리더십 개편 — Hassabis 는 의장으로, Jeff Dean 은 퇴사",
+          "category": "산업",
+          "url": "https://www.bloomberg.com/news/articles/2026-08-06/google-shifts-ai-power-to-california-in-race-against-anthropic-openai",
+          "facts": [
+            "2026-08-08 Demis Hassabis 가 DeepMind 일상 운영에서 물러나 의장 겸 Alphabet 수석과학자가 됐다.",
+            "운영 지휘는 CTO Koray Kavukcuoglu 가 맡는다.",
+            "Jeff Dean 이 27년 만에 퇴사해 Discovery Loop 라는 공익법인을 창업했고, Sanjay Ghemawat·Quoc Le·Oriol Vinyals 가 공동창업자로 합류했다. Google 은 투자자 겸 클라우드 제공자로 남는다."
+          ],
+          "takeaway": "모델 자체는 안 바뀌지만, Gemini 계열의 로드맵과 속도가 달라질 수 있는 조직 변화다."
+        },
+        {
+          "title": "Anthropic, 약 710억 달러 규모 컴퓨트 확보",
+          "category": "산업",
+          "url": "https://www.buildfastwithai.com/blogs/ai-news-today-august-9-2026",
+          "facts": [
+            "칩 리스 의무 기준 약 710억 달러 규모를 확보했다고 보도됐다. Volta 와의 약 100억 달러 계약이 포함된다.",
+            "자체 칩 설계 팀도 새로 꾸렸다.",
+            "(미확인) Anthropic 공식 뉴스룸에서는 이 수치를 확인하지 못했다 — 2차 보도만 있다."
+          ],
+          "takeaway": "업계 칩 부족이 계속된다는 신호이고, 장기적으로 추론 단가에 영향을 준다."
+        },
+        {
+          "title": "Anthropic, 첫 Chief Global Affairs Officer 선임",
+          "category": "산업",
+          "url": "https://www.anthropic.com/news",
+          "facts": [
+            "2026-08-04 Mariano-Florentino \"Tino\" Cuéllar 가 합류한다고 발표했다. Daniela Amodei 사장 직속이다.",
+            "2026-08-07 에는 Fable 5 의 생물학 관련 안전장치 개선을 공지했다."
+          ],
+          "takeaway": "규제 대응 조직을 키우는 흐름이다. 모델 사용 정책 변화의 선행 지표가 될 수 있다."
+        },
+        {
+          "title": "OpenAI GPT-5.6-Cyber, Meta Muse Glimmer 출시",
+          "category": "모델",
+          "url": "https://aireleasetracker.com/latest",
+          "facts": [
+            "2026-08-10 두 모델이 릴리스 트래커에 등록됐다.",
+            "(미확인) 트래커는 날짜만 확인해 줄 뿐 능력·벤치마크·비전 기능 여부는 싣고 있지 않다. 1차 출처를 열지 못했다."
+          ],
+          "takeaway": "이름과 날짜만 확인된 상태다. 실사용 영향은 공식 모델 카드가 나와야 판단할 수 있다."
+        },
+        {
+          "title": "오픈보캐블러리 검출·분할에서 VLM 평가 정리",
+          "category": "연구",
+          "url": "https://arxiv.org/abs/2504.09480",
+          "facts": [
+            "Vision-Language Model 을 검출·분할에 쓰는 접근을 검출 8개·분할 8개 시나리오로 나눠 비교한 리뷰다.",
+            "구조별로 강점과 한계가 갈린다고 보고한다."
+          ],
+          "takeaway": "정해진 클래스 목록 없이 검출·분할하는 흐름이 정리 단계에 들어섰다는 뜻이다."
+        }
+      ]
+    }
+  ]
 }
