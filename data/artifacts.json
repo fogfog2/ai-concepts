@@ -398,6 +398,21 @@
       "local": true
     },
     {
+      "title": "메트릭 러닝",
+      "subtitle": "같은 것은 가깝게, 다른 것은 멀게",
+      "stage": "train",
+      "summary": "클래스가 정해지지 않은 세계에서 거리 자체를 학습한다. 삼중항에서 각도 마진까지.",
+      "updated": "2026-08-11",
+      "slug": "metric-learning",
+      "tags": [
+        "vision",
+        "feature",
+        "training"
+      ],
+      "url": "docs/metric-learning.html",
+      "local": true
+    },
+    {
       "title": "Super-Resolution",
       "subtitle": "없는 픽셀을 지어내는 일",
       "stage": "train",
@@ -847,6 +862,21 @@
         "detection"
       ],
       "url": "docs/rf-detr.html",
+      "local": true
+    },
+    {
+      "title": "NMS",
+      "subtitle": "중복 상자를 걷어내는 마지막 수작업",
+      "stage": "detect",
+      "summary": "학습에는 중복이 이롭고 출력에는 해롭다는 어긋남. 가림 상황의 실패와 NMS-free 흐름.",
+      "updated": "2026-08-11",
+      "slug": "nms",
+      "tags": [
+        "vision",
+        "detection",
+        "efficiency"
+      ],
+      "url": "docs/nms.html",
       "local": true
     },
     {
