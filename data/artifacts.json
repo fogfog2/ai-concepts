@@ -753,6 +753,20 @@
       "local": true
     },
     {
+      "title": "실험 관리",
+      "subtitle": "재현할 수 없는 개선은 개선이 아니다",
+      "stage": "infra",
+      "summary": "무엇을 바꿔서 좋아졌는지 모르는 상태를 막는 법. 완전 재현이 불가능한 이유까지.",
+      "updated": "2026-08-11",
+      "slug": "experiment-tracking",
+      "tags": [
+        "common",
+        "systems"
+      ],
+      "url": "docs/experiment-tracking.html",
+      "local": true
+    },
+    {
       "title": "Mixed Precision",
       "subtitle": "16비트로 학습하기",
       "stage": "infra",
@@ -851,6 +865,36 @@
         "systems"
       ],
       "url": "docs/ai-agents-tool-use.html",
+      "local": true
+    },
+    {
+      "title": "Few-Shot / Zero-Shot",
+      "subtitle": "예시가 거의 없을 때",
+      "stage": "apply",
+      "summary": "분류를 비교로 바꾼다. 프로토타입과 텍스트 대표, 그리고 좋은 표현이 알고리즘보다 중요하다는 결과.",
+      "updated": "2026-08-11",
+      "slug": "few-shot-learning",
+      "tags": [
+        "vision",
+        "feature",
+        "training"
+      ],
+      "url": "docs/few-shot-learning.html",
+      "local": true
+    },
+    {
+      "title": "Vision-Language 모델",
+      "subtitle": "비교에서 생성으로",
+      "stage": "apply",
+      "summary": "CLIP 이 못 하던 생성. 이미지를 토큰으로 옮기는 커넥터와 해상도·비용의 맞바꿈.",
+      "updated": "2026-08-11",
+      "slug": "vision-language-models",
+      "tags": [
+        "vision",
+        "systems",
+        "feature"
+      ],
+      "url": "docs/vision-language-models.html",
       "local": true
     },
     {
