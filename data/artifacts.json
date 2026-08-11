@@ -97,6 +97,12 @@
       "desc": "작은 장비에 올리기 — 경량화·양자화·가지치기"
     },
     {
+      "id": "enhance",
+      "group": "topic",
+      "name": "화질 개선",
+      "desc": "복원·초해상·생성으로 화질을 올린다"
+    },
+    {
       "id": "feature",
       "group": "topic",
       "name": "특징·매칭",
@@ -389,6 +395,21 @@
         "training"
       ],
       "url": "docs/gan.html",
+      "local": true
+    },
+    {
+      "title": "Super-Resolution",
+      "subtitle": "없는 픽셀을 지어내는 일",
+      "stage": "train",
+      "summary": "픽셀 오차를 줄이면 여러 답의 평균이 되어 흐려진다. 목표를 바꾼 과정과 그 대가.",
+      "updated": "2026-08-11",
+      "slug": "super-resolution",
+      "tags": [
+        "vision",
+        "enhance",
+        "generative"
+      ],
+      "url": "docs/super-resolution.html",
       "local": true
     },
     {
