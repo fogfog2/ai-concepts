@@ -633,6 +633,51 @@
       "local": true
     },
     {
+      "title": "온디바이스 양자화",
+      "subtitle": "INT8 로 실제 굴리기",
+      "stage": "infer",
+      "summary": "가중치만이 아니라 활성값까지. per-channel 이 필요한 이유를 단계 수로 보인다.",
+      "updated": "2026-08-11",
+      "slug": "ondevice-quantization",
+      "tags": [
+        "vision",
+        "on-device",
+        "efficiency"
+      ],
+      "url": "docs/ondevice-quantization.html",
+      "local": true
+    },
+    {
+      "title": "캘리브레이션",
+      "subtitle": "보지 못한 입력의 범위를 정하기",
+      "stage": "infer",
+      "summary": "활성값 범위를 몇백 장으로 추정한다. 최댓값을 쓸 것인가 잘라낼 것인가.",
+      "updated": "2026-08-11",
+      "slug": "calibration",
+      "tags": [
+        "vision",
+        "on-device",
+        "efficiency"
+      ],
+      "url": "docs/calibration.html",
+      "local": true
+    },
+    {
+      "title": "QAT",
+      "subtitle": "깎일 것을 알고 자라게 하기",
+      "stage": "infer",
+      "summary": "반올림은 미분 불가다. STE 로 우회해 양자화를 학습에 넣는 방법.",
+      "updated": "2026-08-11",
+      "slug": "qat",
+      "tags": [
+        "common",
+        "on-device",
+        "training"
+      ],
+      "url": "docs/qat.html",
+      "local": true
+    },
+    {
       "title": "Knowledge Distillation",
       "subtitle": "큰 모델의 판단을 옮겨 담다",
       "stage": "infer",
