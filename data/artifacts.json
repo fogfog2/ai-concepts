@@ -65,6 +65,86 @@
       "desc": "검출기 계보를 순서대로 읽는 특집. 영역 제안 → 앵커 → 라벨 할당 → NMS가 차례로 학습에 흡수되는 과정이고, 마지막이 현재 도달점인 RF-DETR이다. 위에서부터 읽도록 배열했다."
     }
   ],
+  "tags": [
+    {
+      "id": "llm",
+      "group": "domain",
+      "name": "LLM",
+      "desc": "언어 모델 쪽 이야기"
+    },
+    {
+      "id": "vision",
+      "group": "domain",
+      "name": "Vision",
+      "desc": "이미지·영상 쪽 이야기"
+    },
+    {
+      "id": "common",
+      "group": "domain",
+      "name": "공통",
+      "desc": "어느 도메인에서나 쓰이는 밑바탕"
+    },
+    {
+      "id": "detection",
+      "group": "topic",
+      "name": "검출·분류",
+      "desc": "물체를 찾고 무엇인지 가른다"
+    },
+    {
+      "id": "on-device",
+      "group": "topic",
+      "name": "온디바이스",
+      "desc": "작은 장비에 올리기 — 경량화·양자화·가지치기"
+    },
+    {
+      "id": "feature",
+      "group": "topic",
+      "name": "특징·매칭",
+      "desc": "표현을 뽑아 같고 다름을 재는 것"
+    },
+    {
+      "id": "generative",
+      "group": "topic",
+      "name": "생성",
+      "desc": "없던 것을 만들어내는 모델"
+    },
+    {
+      "id": "arch",
+      "group": "topic",
+      "name": "구조",
+      "desc": "무엇을 어떻게 쌓는가"
+    },
+    {
+      "id": "training",
+      "group": "topic",
+      "name": "학습",
+      "desc": "어떤 과제와 방법으로 가르치는가"
+    },
+    {
+      "id": "alignment",
+      "group": "topic",
+      "name": "정렬",
+      "desc": "학습된 모델을 원하는 방향으로"
+    },
+    {
+      "id": "efficiency",
+      "group": "topic",
+      "name": "효율",
+      "desc": "같은 결과를 싸고 빠르게"
+    },
+    {
+      "id": "systems",
+      "group": "topic",
+      "name": "시스템",
+      "desc": "실제로 굴리는 공학"
+    },
+    {
+      "id": "safety",
+      "group": "topic",
+      "name": "평가·안전",
+      "desc": "잘 됐는지, 어디가 뚫리는지"
+    }
+  ],
   "items": [
     {
       "title": "Tokenization",
@@ -73,6 +153,10 @@
       "summary": "BPE가 빈도만 세어 형태소를 찾아내는 과정, 그리고 한국어가 비싼 구조적 원인.",
       "updated": "2026-08-09",
       "slug": "tokenization",
+      "tags": [
+        "common",
+        "training"
+      ],
       "url": "docs/tokenization.html",
       "local": true
     },
@@ -83,6 +167,10 @@
       "summary": "평균을 어느 축으로 내느냐가 배치 의존성과 추론 동작을 가른다. Pre-LN과 RMSNorm.",
       "updated": "2026-08-09",
       "slug": "normalization",
+      "tags": [
+        "common",
+        "training"
+      ],
       "url": "docs/normalization.html",
       "local": true
     },
@@ -93,6 +181,10 @@
       "summary": "어텐션은 순서를 모른다. 위치를 더할 것인가 회전시킬 것인가 — 정현파에서 RoPE까지.",
       "updated": "2026-08-09",
       "slug": "embeddings",
+      "tags": [
+        "common",
+        "arch"
+      ],
       "url": "docs/embeddings.html",
       "local": true
     },
@@ -103,6 +195,10 @@
       "summary": "연쇄 법칙의 계산 순서가 만든 역전파, 그리고 Adam에서 AdamW로 옮겨간 한 줄.",
       "updated": "2026-08-09",
       "slug": "backprop-optimizers",
+      "tags": [
+        "common",
+        "training"
+      ],
       "url": "docs/backprop-optimizers.html",
       "local": true
     },
@@ -113,6 +209,10 @@
       "summary": "셀프 어텐션이 문장 속 모든 단어를 동시에 저울질하는 방식. 현대 LLM의 뼈대.",
       "updated": "2026-08-06",
       "slug": "transformer",
+      "tags": [
+        "common",
+        "arch"
+      ],
       "url": "docs/transformer.html",
       "local": true
     },
@@ -123,6 +223,10 @@
       "summary": "비전 전용 구조를 걷어낸 대가와 보상 — 편향은 시작점을 높이고 천장을 낮춘다.",
       "updated": "2026-08-09",
       "slug": "vision-transformer",
+      "tags": [
+        "vision",
+        "arch"
+      ],
       "url": "docs/vision-transformer.html",
       "local": true
     },
@@ -133,6 +237,11 @@
       "summary": "top-k 라우팅으로 파라미터 수와 토큰당 연산량을 분리하는 구조.",
       "updated": "2026-08-06",
       "slug": "mixture-of-experts",
+      "tags": [
+        "common",
+        "arch",
+        "efficiency"
+      ],
       "url": "docs/mixture-of-experts.html",
       "local": true
     },
@@ -143,6 +252,10 @@
       "summary": "셀 상태가 그래디언트를 살린 방식과, 어텐션이 이긴 진짜 이유인 순차성 병목.",
       "updated": "2026-08-09",
       "slug": "rnn-lstm",
+      "tags": [
+        "common",
+        "arch"
+      ],
       "url": "docs/rnn-lstm.html",
       "local": true
     },
@@ -153,6 +266,11 @@
       "summary": "입력에 따라 변하는 상태공간 모델. 선형 스케일링을 얻고 무엇을 내주었는가.",
       "updated": "2026-08-10",
       "slug": "mamba-ssm",
+      "tags": [
+        "common",
+        "arch",
+        "efficiency"
+      ],
       "url": "docs/mamba-ssm.html",
       "local": true
     },
@@ -163,6 +281,11 @@
       "summary": "재구성만 시켰더니 의미가 생긴 이유, 그리고 확산 모델이 올라탄 그 공간.",
       "updated": "2026-08-10",
       "slug": "autoencoders-vae",
+      "tags": [
+        "common",
+        "arch",
+        "generative"
+      ],
       "url": "docs/autoencoders-vae.html",
       "local": true
     },
@@ -173,6 +296,10 @@
       "summary": "이웃에게 메시지를 받아 자신을 갱신하는 구조. 층을 쌓을수록 뭉개지는 문제까지.",
       "updated": "2026-08-10",
       "slug": "graph-neural-networks",
+      "tags": [
+        "common",
+        "arch"
+      ],
       "url": "docs/graph-neural-networks.html",
       "local": true
     },
@@ -183,6 +310,10 @@
       "summary": "양방향 학습을 막던 제약을 구조가 아니라 과제 교체로 푼 방법.",
       "updated": "2026-08-09",
       "slug": "bert-masked-lm",
+      "tags": [
+        "llm",
+        "training"
+      ],
       "url": "docs/bert-masked-lm.html",
       "local": true
     },
@@ -193,6 +324,11 @@
       "summary": "노이즈를 더하는 과정을 거꾸로 되돌리는 법을 배워 이미지를 꺼내는 원리.",
       "updated": "2026-08-06",
       "slug": "diffusion-models",
+      "tags": [
+        "vision",
+        "generative",
+        "training"
+      ],
       "url": "docs/diffusion-models.html",
       "local": true
     },
@@ -203,6 +339,11 @@
       "summary": "이미지와 텍스트를 하나의 임베딩 공간에 놓아 제로샷 분류를 가능하게 한 학습.",
       "updated": "2026-07-30",
       "slug": "clip",
+      "tags": [
+        "vision",
+        "feature",
+        "training"
+      ],
       "url": "docs/clip.html",
       "local": true
     },
@@ -213,6 +354,10 @@
       "summary": "같은 관측에서 정반대 처방이 나온 이유. Chinchilla의 20:1과 그것을 어기는 근거.",
       "updated": "2026-08-09",
       "slug": "scaling-laws",
+      "tags": [
+        "common",
+        "training"
+      ],
       "url": "docs/scaling-laws.html",
       "local": true
     },
@@ -223,6 +368,11 @@
       "summary": "데이터 자신이 정답이 되는 과제 설계. 대조학습과 붕괴를 피하는 장치들.",
       "updated": "2026-08-10",
       "slug": "self-supervised-learning",
+      "tags": [
+        "common",
+        "training",
+        "feature"
+      ],
       "url": "docs/self-supervised-learning.html",
       "local": true
     },
@@ -233,6 +383,11 @@
       "summary": "판별자를 손실 함수로 쓴 발상, 그리고 확산 모델에 자리를 내준 이유.",
       "updated": "2026-08-10",
       "slug": "gan",
+      "tags": [
+        "vision",
+        "generative",
+        "training"
+      ],
       "url": "docs/gan.html",
       "local": true
     },
@@ -243,6 +398,10 @@
       "summary": "중복 제거와 필터링이 파라미터를 늘리는 것보다 싸게 먹히는 구간.",
       "updated": "2026-08-10",
       "slug": "curriculum-data-quality",
+      "tags": [
+        "common",
+        "training"
+      ],
       "url": "docs/curriculum-data-quality.html",
       "local": true
     },
@@ -253,6 +412,11 @@
       "summary": "ΔW를 저랭크로 쪼개 학습 파라미터를 0.06%로 줄이는 법.",
       "updated": "2026-08-07",
       "slug": "lora",
+      "tags": [
+        "common",
+        "alignment",
+        "efficiency"
+      ],
       "url": "docs/lora.html",
       "local": true
     },
@@ -263,6 +427,10 @@
       "summary": "선호 쌍을 보상으로 바꾸고, 끝내 보상 모델을 소거해 버린 DPO의 유도까지.",
       "updated": "2026-08-08",
       "slug": "rlhf",
+      "tags": [
+        "llm",
+        "alignment"
+      ],
       "url": "docs/rlhf.html",
       "local": true
     },
@@ -273,6 +441,10 @@
       "summary": "다음 단어를 맞추던 모델이 부탁을 알아듣게 되는 단계. 정렬의 첫 관문.",
       "updated": "2026-08-10",
       "slug": "instruction-tuning",
+      "tags": [
+        "llm",
+        "alignment"
+      ],
       "url": "docs/instruction-tuning.html",
       "local": true
     },
@@ -283,6 +455,10 @@
       "summary": "RLHF의 최적해를 역산해 강화학습 없이 같은 목표에 도달하는 유도.",
       "updated": "2026-08-10",
       "slug": "dpo-alignment",
+      "tags": [
+        "llm",
+        "alignment"
+      ],
       "url": "docs/dpo-alignment.html",
       "local": true
     },
@@ -293,6 +469,11 @@
       "summary": "어디에 무엇을 끼워넣을지의 선택지 비교. 추론 지연이 갈리는 지점.",
       "updated": "2026-08-10",
       "slug": "peft-adapters",
+      "tags": [
+        "common",
+        "alignment",
+        "efficiency"
+      ],
       "url": "docs/peft-adapters.html",
       "local": true
     },
@@ -303,6 +484,11 @@
       "summary": "모델이 자기 답을 원칙에 비춰 고치게 하는 방식. RLAIF의 실체.",
       "updated": "2026-08-10",
       "slug": "constitutional-ai",
+      "tags": [
+        "llm",
+        "alignment",
+        "safety"
+      ],
       "url": "docs/constitutional-ai.html",
       "local": true
     },
@@ -313,6 +499,11 @@
       "summary": "병목이 FLOPs가 아니라 HBM 왕복이었다는 것. 타일링과 온라인 소프트맥스.",
       "updated": "2026-08-09",
       "slug": "flash-attention",
+      "tags": [
+        "common",
+        "efficiency",
+        "systems"
+      ],
       "url": "docs/flash-attention.html",
       "local": true
     },
@@ -323,6 +514,11 @@
       "summary": "GPU 메모리의 60~80%를 낭비하던 구조를, OS의 페이징을 빌려 4% 미만으로.",
       "updated": "2026-08-09",
       "slug": "kv-cache-paged-attention",
+      "tags": [
+        "llm",
+        "efficiency",
+        "systems"
+      ],
       "url": "docs/kv-cache-paged-attention.html",
       "local": true
     },
@@ -333,6 +529,10 @@
       "summary": "작은 모델의 초안을 채택해도 출력 분포가 수학적으로 보존되는 이유.",
       "updated": "2026-08-09",
       "slug": "speculative-decoding",
+      "tags": [
+        "llm",
+        "efficiency"
+      ],
       "url": "docs/speculative-decoding.html",
       "local": true
     },
@@ -343,6 +543,11 @@
       "summary": "4비트에서도 버티는 이유는 목표를 바꿨기 때문. GPTQ와 AWQ.",
       "updated": "2026-08-09",
       "slug": "quantization",
+      "tags": [
+        "common",
+        "efficiency",
+        "on-device"
+      ],
       "url": "docs/quantization.html",
       "local": true
     },
@@ -353,6 +558,11 @@
       "summary": "정답 대신 큰 모델의 확률 분포를 배우게 하는 것이 왜 더 나은가.",
       "updated": "2026-08-10",
       "slug": "knowledge-distillation",
+      "tags": [
+        "common",
+        "efficiency",
+        "on-device"
+      ],
       "url": "docs/knowledge-distillation.html",
       "local": true
     },
@@ -363,6 +573,11 @@
       "summary": "비정형 희소성이 이론상 이득을 실제 속도로 바꾸지 못하는 이유. 2:4 구조적 희소성.",
       "updated": "2026-08-10",
       "slug": "pruning-sparsity",
+      "tags": [
+        "common",
+        "efficiency",
+        "on-device"
+      ],
       "url": "docs/pruning-sparsity.html",
       "local": true
     },
@@ -373,6 +588,11 @@
       "summary": "데이터·텐서·파이프라인 병렬의 분담과 통신량. ZeRO가 줄인 중복.",
       "updated": "2026-08-10",
       "slug": "distributed-training",
+      "tags": [
+        "common",
+        "systems",
+        "training"
+      ],
       "url": "docs/distributed-training.html",
       "local": true
     },
@@ -383,6 +603,11 @@
       "summary": "fp16이 언더플로로 무너지는 지점과 loss scaling, 그리고 bf16이 이긴 이유.",
       "updated": "2026-08-10",
       "slug": "mixed-precision",
+      "tags": [
+        "common",
+        "systems",
+        "efficiency"
+      ],
       "url": "docs/mixed-precision.html",
       "local": true
     },
@@ -393,6 +618,11 @@
       "summary": "활성값을 버리고 필요할 때 다시 계산하는 거래. √n 지점의 유래.",
       "updated": "2026-08-10",
       "slug": "gradient-checkpointing",
+      "tags": [
+        "common",
+        "systems",
+        "efficiency"
+      ],
       "url": "docs/gradient-checkpointing.html",
       "local": true
     },
@@ -403,6 +633,11 @@
       "summary": "지식을 가중치에서 꺼내 외부로 옮기는 선택과 그 대가.",
       "updated": "2026-08-09",
       "slug": "rag",
+      "tags": [
+        "llm",
+        "systems",
+        "feature"
+      ],
       "url": "docs/rag.html",
       "local": true
     },
@@ -413,6 +648,10 @@
       "summary": "호스트·클라이언트·서버 구조와 프리미티브. 상태를 버린 2026-07-28 개정.",
       "updated": "2026-08-09",
       "slug": "model-context-protocol",
+      "tags": [
+        "llm",
+        "systems"
+      ],
       "url": "docs/model-context-protocol.html",
       "local": true
     },
@@ -423,6 +662,10 @@
       "summary": "예시 몇 개로 새 과제를 하는 현상. 무엇을 배우는 게 아니라 무엇을 고르는가.",
       "updated": "2026-08-10",
       "slug": "in-context-learning",
+      "tags": [
+        "llm",
+        "training"
+      ],
       "url": "docs/in-context-learning.html",
       "local": true
     },
@@ -433,6 +676,10 @@
       "summary": "중간 과정을 쓰게 했더니 정답률이 오른 이유, 그리고 추론 시간 스케일링.",
       "updated": "2026-08-10",
       "slug": "chain-of-thought",
+      "tags": [
+        "llm",
+        "training"
+      ],
       "url": "docs/chain-of-thought.html",
       "local": true
     },
@@ -443,6 +690,10 @@
       "summary": "관측·결정·행동의 순환. 언제 에이전트가 필요하고 언제 과한가.",
       "updated": "2026-08-10",
       "slug": "ai-agents-tool-use",
+      "tags": [
+        "llm",
+        "systems"
+      ],
       "url": "docs/ai-agents-tool-use.html",
       "local": true
     },
@@ -453,6 +704,11 @@
       "summary": "연속 배칭이 처리량을 끌어올리는 원리와 지연·처리량의 맞바꿈.",
       "updated": "2026-08-10",
       "slug": "llm-serving",
+      "tags": [
+        "llm",
+        "systems",
+        "efficiency"
+      ],
       "url": "docs/llm-serving.html",
       "local": true
     },
@@ -463,6 +719,10 @@
       "summary": "점수가 오르는 것과 능력이 오르는 것의 차이. 오염과 포화, 그리고 대안.",
       "updated": "2026-08-10",
       "slug": "evaluation-benchmarks",
+      "tags": [
+        "common",
+        "safety"
+      ],
       "url": "docs/evaluation-benchmarks.html",
       "local": true
     },
@@ -473,6 +733,10 @@
       "summary": "구조에서 비롯된 원인과, 완화가 제거를 뜻하지 않는 이유.",
       "updated": "2026-08-10",
       "slug": "hallucination",
+      "tags": [
+        "llm",
+        "safety"
+      ],
       "url": "docs/hallucination.html",
       "local": true
     },
@@ -483,6 +747,11 @@
       "summary": "지시와 데이터를 구분하지 못하는 구조적 취약점. 에이전트에서 커지는 위험.",
       "updated": "2026-08-10",
       "slug": "prompt-injection",
+      "tags": [
+        "llm",
+        "safety",
+        "systems"
+      ],
       "url": "docs/prompt-injection.html",
       "local": true
     },
@@ -493,6 +762,10 @@
       "summary": "중첩 때문에 뉴런 하나가 여러 뜻을 갖는 문제와, 희소 오토인코더의 접근.",
       "updated": "2026-08-10",
       "slug": "interpretability",
+      "tags": [
+        "common",
+        "safety"
+      ],
       "url": "docs/interpretability.html",
       "local": true
     },
@@ -503,6 +776,11 @@
       "summary": "가변 개수 출력이라는 난점, 제안 단계를 없앤 과정, Focal Loss가 푼 클래스 불균형.",
       "updated": "2026-08-09",
       "slug": "detection-lineage",
+      "tags": [
+        "vision",
+        "detection",
+        "arch"
+      ],
       "url": "docs/detection-lineage.html",
       "local": true
     },
@@ -513,6 +791,11 @@
       "summary": "버전 번호의 혼란을 정리하고, 앵커·NMS를 하나씩 없앤 과정과 라이선스 갈림.",
       "updated": "2026-08-09",
       "slug": "yolo-lineage",
+      "tags": [
+        "vision",
+        "detection",
+        "on-device"
+      ],
       "url": "docs/yolo-lineage.html",
       "local": true
     },
@@ -523,6 +806,11 @@
       "summary": "헝가리안 매칭으로 중복을 원천 차단한 발상과, 실용화까지 걸린 5년.",
       "updated": "2026-08-09",
       "slug": "detr-lineage",
+      "tags": [
+        "vision",
+        "detection",
+        "arch"
+      ],
       "url": "docs/detr-lineage.html",
       "local": true
     },
@@ -533,6 +821,10 @@
       "summary": "실시간 최초 60 AP. DINOv2 백본의 이점과 CPU 경로 부재라는 대가, 이전 판단 기준.",
       "updated": "2026-08-09",
       "slug": "rf-detr",
+      "tags": [
+        "vision",
+        "detection"
+      ],
       "url": "docs/rf-detr.html",
       "local": true
     },
@@ -543,6 +835,11 @@
       "summary": "앵커 디코딩 공식, 이웃 칸까지 쓰는 정적 라벨 할당, 그리고 모델 스케일링.",
       "updated": "2026-08-06",
       "slug": "yolov5",
+      "tags": [
+        "vision",
+        "detection",
+        "on-device"
+      ],
       "url": "docs/yolov5.html",
       "local": true
     },
@@ -553,6 +850,11 @@
       "summary": "성능을 끌어올린 것이 왜 백본이 아니라 라벨 할당이었는지.",
       "updated": "2026-08-06",
       "slug": "yolox",
+      "tags": [
+        "vision",
+        "detection",
+        "on-device"
+      ],
       "url": "docs/yolox.html",
       "local": true
     }

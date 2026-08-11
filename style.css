@@ -168,6 +168,81 @@ h1 {
 /* ---------- 하단: 기술 문서 ---------- */
 .docs { margin-top: 4.5rem; }
 
+/* ---------- 태그 필터 ----------
+   단계(순서)와 다른 축이라 생김새도 다르게 잡는다.
+   단계는 괘선과 번호, 필터는 눌리는 칩. */
+.filters {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  margin: 1.4rem 0 0;
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.frow { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+.flabel {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  width: 2.6rem;
+  flex: 0 0 auto;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 0.32rem;
+  padding: 0.24rem 0.55rem;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color .14s, border-color .14s, background .14s;
+}
+.chip .n {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+.chip:hover { color: var(--accent); border-color: var(--accent); }
+.chip:hover .n { color: var(--accent); }
+.chip.on {
+  color: var(--paper);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.chip.on .n { color: var(--paper); opacity: .8; }
+/* 눌러도 0편이 되는 조합은 눌리지 않을 것처럼 보이게만 한다(막지는 않는다) */
+.chip.off { opacity: .38; }
+.chip.clear {
+  align-self: flex-start;
+  margin-left: 2.95rem;
+  color: var(--ink-faint);
+  border-style: dashed;
+}
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* 문서 행에 붙는 태그 — 필터가 아니라 표시용이라 훨씬 조용하게 */
+.doc-tags {
+  grid-column: 2;
+  display: flex; flex-wrap: wrap; gap: 0.28rem;
+  margin-top: 0.3rem;
+}
+.dtag {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.02em;
+  padding: 0.04rem 0.32rem;
+  color: var(--ink-faint);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+.dtag.on {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 /* ---------- 단계 ---------- */
 .stage { margin-top: 3rem; }
 
@@ -388,6 +463,11 @@ footer {
   .stage-count { grid-column: 2; justify-self: start; margin-top: 0.2rem; }
   .doc { grid-template-columns: 1.9rem 1fr auto; }
   .doc-idx { padding-left: 0; }
+
+  /* 좁은 화면에서는 라벨을 위로 빼야 칩이 들어간다 */
+  .frow { align-items: flex-start; }
+  .flabel { width: 100%; margin-bottom: 0.15rem; }
+  .chip.clear { margin-left: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

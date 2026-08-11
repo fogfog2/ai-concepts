@@ -7,7 +7,14 @@
 (function () {
   'use strict';
 
-  var state = { days: [], cur: 0, artifacts: [], stages: [] };
+  var state = {
+    days: [], cur: 0,
+    artifacts: [], stages: [], tags: [],
+    /* 도메인은 문서마다 하나뿐이라 하나만 고른다(또는 전체).
+       주제는 여러 개가 붙으므로 AND 로 좁힌다 — "vision 이면서 on-device" 같은 요구. */
+    domain: null,
+    topics: []
+  };
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -88,17 +95,109 @@
 
   /* ---------- 기술 문서 ---------- */
 
+  /* 문서 행에 붙는 태그 표시.
+     지금 고른 태그는 강조해, 왜 이 문서가 걸렸는지 바로 보이게 한다. */
+  function tagChips(tags) {
+    if (!tags || !tags.length) return '';
+    var byId = {};
+    state.tags.forEach(function (t) { byId[t.id] = t; });
+    var html = tags.map(function (id) {
+      var t = byId[id];
+      if (!t) return '';
+      var on = (state.domain === id) || state.topics.indexOf(id) >= 0;
+      return '<span class="dtag' + (on ? ' on' : '') + '">' + esc(t.name) + '</span>';
+    }).join('');
+    return html ? '<span class="doc-tags">' + html + '</span>' : '';
+  }
+
+  /* 지금 필터를 통과하는 문서들 */
+  function visibleDocs() {
+    return state.artifacts.filter(function (a) {
+      var tags = a.tags || [];
+      if (state.domain && tags.indexOf(state.domain) < 0) return false;
+      for (var i = 0; i < state.topics.length; i++) {
+        if (tags.indexOf(state.topics[i]) < 0) return false;
+      }
+      return true;
+    });
+  }
+
+  /* 어떤 태그를 지금 더 누를 수 있는지 미리 센다.
+     0편이 될 버튼을 누르게 두면 빈 화면만 나와 답답하다. */
+  function countWith(tagId, group) {
+    return state.artifacts.filter(function (a) {
+      var tags = a.tags || [];
+      if (tags.indexOf(tagId) < 0) return false;
+      if (group !== 'domain' && state.domain && tags.indexOf(state.domain) < 0) return false;
+      for (var i = 0; i < state.topics.length; i++) {
+        if (state.topics[i] !== tagId && tags.indexOf(state.topics[i]) < 0) return false;
+      }
+      return true;
+    }).length;
+  }
+
+  function renderFilters() {
+    var box = document.getElementById('filters');
+    if (!state.tags.length) { box.innerHTML = ''; return; }
+
+    function group(g, label) {
+      var tags = state.tags.filter(function (t) { return t.group === g; });
+      if (!tags.length) return '';
+      return '<div class="frow">' +
+        '<span class="flabel">' + label + '</span>' +
+        tags.map(function (t) {
+          var on = (g === 'domain')
+            ? state.domain === t.id
+            : state.topics.indexOf(t.id) >= 0;
+          var n = countWith(t.id, g);
+          return '<button class="chip' + (on ? ' on' : '') + (!n && !on ? ' off' : '') +
+              '" data-g="' + g + '" data-id="' + esc(t.id) + '"' +
+              (t.desc ? ' title="' + esc(t.desc) + '"' : '') +
+              ' aria-pressed="' + (on ? 'true' : 'false') + '">' +
+            esc(t.name) + '<span class="n">' + n + '</span>' +
+          '</button>';
+        }).join('') +
+      '</div>';
+    }
+
+    var any = state.domain || state.topics.length;
+    box.innerHTML = group('domain', '분야') + group('topic', '주제') +
+      (any ? '<button class="chip clear" id="clear">필터 해제</button>' : '');
+
+    Array.prototype.forEach.call(box.querySelectorAll('.chip'), function (el) {
+      el.addEventListener('click', function () {
+        if (el.id === 'clear') { state.domain = null; state.topics = []; }
+        else if (el.dataset.g === 'domain') {
+          state.domain = (state.domain === el.dataset.id) ? null : el.dataset.id;
+        } else {
+          var i = state.topics.indexOf(el.dataset.id);
+          if (i >= 0) state.topics.splice(i, 1); else state.topics.push(el.dataset.id);
+        }
+        renderFilters();
+        renderDocs();
+      });
+    });
+  }
+
   function renderDocs() {
     var body = document.getElementById('docs-body');
-    var list = state.artifacts;
+    var list = visibleDocs();
 
-    if (!list.length) {
+    if (!state.artifacts.length) {
       body.innerHTML = '<div class="empty">등록된 기술 문서가 없습니다.</div>';
       return;
     }
 
-    document.getElementById('docs-meta').textContent =
-      list.length + '편 · ' + state.stages.length + '단계';
+    var filtered = state.domain || state.topics.length;
+    document.getElementById('docs-meta').textContent = filtered
+      ? list.length + '편 / 전체 ' + state.artifacts.length + '편'
+      : state.artifacts.length + '편 · ' + state.stages.length + '단계';
+
+    if (!list.length) {
+      body.innerHTML = '<div class="empty">고른 조건에 맞는 문서가 없습니다.<br>' +
+        '태그를 하나 줄여 보세요.</div>';
+      return;
+    }
 
     body.innerHTML = state.stages.map(function (st) {
       var items = list.filter(function (a) { return a.stage === st.id; });
@@ -115,6 +214,7 @@
             (a.subtitle ? '<i>' + esc(a.subtitle) + '</i>' : '') +
           '</span>' +
           (a.summary ? '<span class="doc-sum">' + esc(a.summary) + '</span>' : '') +
+          tagChips(a.tags) +
           '<span class="doc-go" aria-hidden="true">' + (ext ? '↗' : '→') + '</span>' +
         '</a>';
       }).join('');
@@ -141,9 +241,11 @@
     state.days = (res[0] && res[0].days) || [];
     state.artifacts = (res[1] && res[1].items) || [];
     state.stages = (res[1] && res[1].stages) || [];
+    state.tags = (res[1] && res[1].tags) || [];
 
     renderNews();
     renderDays();
+    renderFilters();
     renderDocs();
 
     var foot = document.getElementById('foot');
