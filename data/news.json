@@ -15,40 +15,6 @@
             "같은 날 시행 예정이던 고위험 시스템 의무는 AI Omnibus 개정으로 2027년 12월 2일로 16개월 미뤄졌고, 규제 제품에 내장된 고위험 시스템은 2028년 8월 2일로 밀렸다."
           ],
           "takeaway": "당장 구속력이 생긴 것은 \"표시\" 의무이지 \"성능·문서화\" 의무가 아니다. 워터마킹과 출처 표기가 먼저 실무 과제가 됐다."
-        },
-        {
-          "title": "Jeff Dean, 27년 만에 구글을 떠나 Discovery Loop 창업",
-          "category": "산업",
-          "url": "https://techcrunch.com/2026/08/05/jeff-dean-and-other-top-ai-researchers-are-leaving-google-to-launch-their-own-startup/",
-          "facts": [
-            "8월 5일 구글 수석과학자 Jeff Dean 이 퇴사를 발표했다. 1999년 30번째 직원으로 입사해 약 27년을 재직했다.",
-            "공동창업자로 Sanjay Ghemawat, Quoc Le, Oriol Vinyals 가 함께 나간다.",
-            "신설 법인 Discovery Loop 는 공익법인(public benefit corporation) 형태이며, 실험 루프 전체를 자동화해 연구 속도를 바꾸는 것을 목표로 내걸었다.",
-            "초기 투자는 Radical Ventures 와 Khosla Ventures 가 공동 주도했고 알파벳도 참여했다."
-          ],
-          "takeaway": "MapReduce·TensorFlow·Brain 을 거친 인프라 계보의 인물들이 한꺼번에 움직였다. 대상이 모델이 아니라 연구 과정 자체라는 점이 특이하다."
-        },
-        {
-          "title": "구글, AI 리더십을 캘리포니아로 재편",
-          "category": "산업",
-          "url": "https://www.bloomberg.com/news/articles/2026-08-06/google-shifts-ai-power-to-california-in-race-against-anthropic-openai",
-          "facts": [
-            "구글이 AI 연구·운영 조직 지휘를 마운틴뷰 본사로 집중시켰다.",
-            "Koray Kavukcuoglu 가 연구와 운영을 총괄하고, Demis Hassabis 는 일상 운영에서 물러나 Google DeepMind 회장 겸 알파벳 최고과학자를 맡는다.",
-            "이 개편은 Jeff Dean 팀 이탈과 같은 주에 공개됐다."
-          ],
-          "takeaway": "위 항목과 한 사건의 양면으로 읽는 편이 맞다. 다만 인과 방향은 보도만으로 단정하기 어렵다."
-        },
-        {
-          "title": "Anthropic, Fable 5 생물학 안전장치 강화",
-          "category": "모델",
-          "url": "https://www.anthropic.com/news",
-          "facts": [
-            "8월 7일 Anthropic 이 \"Improving Fable 5's biology safeguards\" 를 게시했다.",
-            "8월 4일에는 Mariano-Florentino (Tino) Cuéllar 를 Chief Global Affairs Officer 로 선임했다고 발표했다.",
-            "(본문 상세는 목록 페이지에서만 확인했다. 개별 게시물 원문은 열지 못했다.)"
-          ],
-          "takeaway": "규제 집행이 시작된 시점과 겹친다. 안전장치 갱신과 대외정책 인선이 같은 주에 나온 것은 우연으로 보기 어렵다."
         }
       ]
     },
