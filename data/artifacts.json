@@ -517,6 +517,21 @@
       "local": true
     },
     {
+      "title": "DINO 와 자기증류",
+      "subtitle": "라벨 없이 배운 시각 특징",
+      "stage": "train",
+      "summary": "교사가 학생의 과거 평균인데도 붕괴하지 않는 이유. 센터링과 샤프닝의 균형에서 DINOv3까지.",
+      "updated": "2026-08-12",
+      "slug": "dino-self-distillation",
+      "tags": [
+        "vision",
+        "feature",
+        "training"
+      ],
+      "url": "docs/dino-self-distillation.html",
+      "local": true
+    },
+    {
       "title": "LoRA",
       "subtitle": "얼린 가중치 옆에 샛길을 내다",
       "stage": "align",

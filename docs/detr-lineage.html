@@ -410,8 +410,13 @@
     <p>
       마지막 항목이 결정적이다. DETR 계열은 백본이 트랜스포머라서
       <strong>비전 사전학습의 발전을 곧바로 흡수한다</strong>.
-      DINOv2 같은 자기지도 사전학습 모델이 좋아지면 검출기도 함께 좋아진다.
+      <a href="dino-self-distillation.html">DINOv2</a> 같은 자기지도 사전학습 모델이 좋아지면 검출기도 함께 좋아진다.
       CNN 기반 YOLO에는 이 통로가 좁다.
+    </p>
+    <p>
+      <strong>이름이 겹치는 점을 짚어 둔다.</strong> 위에서 말한 개선 기법 DINO(DETR with Improved
+      DeNoising Anchor Boxes)와, 백본으로 쓰는 DINOv2 의 DINO 는 <em>서로 다른 계보</em>다.
+      약자가 우연히 같을 뿐이고, 뒤쪽은 <a href="dino-self-distillation.html">라벨 없는 자기증류</a>에서 왔다.
     </p>
     <p>
       앞서 다룬 ViT 편의 결론이 여기서 다시 나타난다 —
