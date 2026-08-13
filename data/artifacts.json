@@ -1134,6 +1134,21 @@
       "local": true
     },
     {
+      "title": "다중 객체 추적",
+      "subtitle": "정체성은 곱해진다",
+      "stage": "detect",
+      "summary": "검출 오류는 그 프레임에서 끝나지만 정체성 오류는 그 뒤를 전부 오염시킨다.",
+      "updated": "2026-08-13",
+      "slug": "object-tracking",
+      "tags": [
+        "vision",
+        "detection",
+        "feature"
+      ],
+      "url": "docs/object-tracking.html",
+      "local": true
+    },
+    {
       "title": "Optical Flow",
       "subtitle": "시간 축의 대응 문제",
       "stage": "detect",

@@ -2,6 +2,23 @@
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
   "days": [
     {
+      "date": "2026-08-13",
+      "items": [
+        {
+          "title": "Google Tensor G6 — 2nm 공정, 온디바이스 AI 3.5배 (미확인)",
+          "category": "시스템",
+          "url": "https://blog.google/products-and-platforms/devices/pixel/google-pixel-11-pro-xl/",
+          "facts": [
+            "2026년 8월 12일 Made by Google 행사에서 Pixel 11 · 11 Pro · 11 Pro XL 과 Tensor G6 가 공개됐다.",
+            "Tensor G6 는 TSMC N2 공정으로, 양산 스마트폰 칩 중 2nm 급에 처음 도달한 사례로 보도됐다.",
+            "TPU 연산량이 이전 세대 대비 50% 늘고 메모리 대역폭도 함께 올라, 알림 요약·음성 전사 같은 상시 로컬 작업이 최대 3.5배 빠르고 소비 전력은 최대 3.5분의 1이라고 발표됐다.",
+            "CPU 는 7코어 구성이며 전력 효율이 최대 20% 개선됐다고 밝혔다."
+          ],
+          "takeaway": "숫자가 걸린 곳이 최고 성능이 아니라 **상시 배경 작업의 전력**이라는 점이 이 발표의 성격을 말해 준다. 온디바이스 추론의 병목이 연산량에서 전력·메모리 대역폭으로 옮겨 갔다는 서술과 같은 방향이다."
+        }
+      ]
+    },
+    {
       "date": "2026-08-12",
       "items": [
         {
