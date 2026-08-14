@@ -1179,6 +1179,21 @@
       "local": true
     },
     {
+      "title": "HDR 과 톤 매핑",
+      "subtitle": "담을 수 없는 밝기를 다루는 법",
+      "stage": "detect",
+      "summary": "넓히는 문제와 좁히는 문제는 방향이 반대다. 휴대폰이 브라케팅 대신 짧은 노출 버스트를 고른 이유.",
+      "updated": "2026-08-14",
+      "slug": "hdr-tone-mapping",
+      "tags": [
+        "vision",
+        "enhance",
+        "on-device"
+      ],
+      "url": "docs/hdr-tone-mapping.html",
+      "local": true
+    },
+    {
       "title": "분할",
       "subtitle": "어디까지가 그것인가",
       "stage": "detect",
