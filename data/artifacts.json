@@ -458,6 +458,21 @@
       "local": true
     },
     {
+      "title": "DINO 와 자기증류",
+      "subtitle": "라벨 없이 배운 시각 특징",
+      "stage": "train",
+      "summary": "교사가 학생의 과거 평균인데도 붕괴하지 않는 이유. 센터링과 샤프닝의 균형에서 DINOv3까지.",
+      "updated": "2026-08-12",
+      "slug": "dino-self-distillation",
+      "tags": [
+        "vision",
+        "feature",
+        "training"
+      ],
+      "url": "docs/dino-self-distillation.html",
+      "local": true
+    },
+    {
       "title": "ControlNet",
       "subtitle": "말로 못 하는 것을 그림으로",
       "stage": "train",
@@ -631,6 +646,21 @@
         "systems"
       ],
       "url": "docs/kv-cache-paged-attention.html",
+      "local": true
+    },
+    {
+      "title": "긴 문맥",
+      "subtitle": "넣을 수 있는 길이와 쓸 수 있는 길이",
+      "stage": "infer",
+      "summary": "KV 캐시는 선형, 어텐션은 제곱 — 5만 토큰 언저리에서 병목이 뒤바뀐다. 그리고 표방 길이는 유효 길이가 아니다.",
+      "updated": "2026-08-16",
+      "slug": "long-context",
+      "tags": [
+        "llm",
+        "efficiency",
+        "arch"
+      ],
+      "url": "docs/long-context.html",
       "local": true
     },
     {
@@ -1191,6 +1221,21 @@
         "on-device"
       ],
       "url": "docs/hdr-tone-mapping.html",
+      "local": true
+    },
+    {
+      "title": "다중 객체 추적",
+      "subtitle": "정체성은 곱해진다",
+      "stage": "detect",
+      "summary": "검출 오류는 그 프레임에서 끝나지만 정체성 오류는 그 뒤를 전부 오염시킨다.",
+      "updated": "2026-08-13",
+      "slug": "object-tracking",
+      "tags": [
+        "vision",
+        "detection",
+        "feature"
+      ],
+      "url": "docs/object-tracking.html",
       "local": true
     },
     {
