@@ -2,6 +2,23 @@
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
   "days": [
     {
+      "date": "2026-08-17",
+      "items": [
+        {
+          "title": "Google, Imagen 4 생성 엔드포인트 3종을 오늘자로 종료 (미확인)",
+          "category": "도구",
+          "url": "https://ai.google.dev/gemini-api/docs/models/imagen",
+          "facts": [
+            "Gemini API 에서 `imagen-4.0-generate-001`, `imagen-4.0-ultra-generate-001`,",
+            "`imagen-4.0-fast-generate-001` 세 모델이 **2026-08-17 자로 종료**된다.",
+            "Vertex AI 쪽 사용 중단 고지는 2026-03-24 에 나왔고, Gemini API 종료일이 오늘이다.",
+            "권장 대체 모델은 `gemini-3.1-flash-image` 다."
+          ],
+          "takeaway": "신규성은 없다 — 5개월 전 고지된 일정이 오늘 만료될 뿐이다. 그래도 실은 이유는 오늘 코드가 깨지는 쪽이 있어서다. 응답 구조와 장당 호출 수가 함께 바뀌므로 모델 이름만 갈아 끼우면 되는 종류가 아니다."
+        }
+      ]
+    },
+    {
       "date": "2026-08-14",
       "items": [
         {

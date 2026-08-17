@@ -589,6 +589,21 @@
       "local": true
     },
     {
+      "title": "RLVR",
+      "subtitle": "채점 가능한 것만 보상한다",
+      "stage": "align",
+      "summary": "보상을 신경망이 아니라 채점 프로그램이 준다. GRPO 가 가치망까지 걷어내는 대신 생기는 새 실패.",
+      "updated": "2026-08-17",
+      "slug": "rlvr",
+      "tags": [
+        "llm",
+        "alignment",
+        "training"
+      ],
+      "url": "docs/rlvr.html",
+      "local": true
+    },
+    {
       "title": "PEFT — Adapter·Prefix·IA³",
       "subtitle": "LoRA 말고도 있는 길",
       "stage": "align",
