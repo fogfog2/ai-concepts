@@ -1298,6 +1298,21 @@
       "local": true
     },
     {
+      "title": "IoU 계열 손실",
+      "subtitle": "상자를 겹침으로 배우기",
+      "stage": "detect",
+      "summary": "겹치지 않으면 IoU 의 기울기가 0 이 된다. 그 평지를 GIoU·DIoU·CIoU 가 메워 온 방식.",
+      "updated": "2026-08-18",
+      "slug": "iou-losses",
+      "tags": [
+        "vision",
+        "detection",
+        "training"
+      ],
+      "url": "docs/iou-losses.html",
+      "local": true
+    },
+    {
       "title": "NMS",
       "subtitle": "중복 상자를 걷어내는 마지막 수작업",
       "stage": "detect",

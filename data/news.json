@@ -2,6 +2,23 @@
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
   "days": [
     {
+      "date": "2026-08-18",
+      "items": [
+        {
+          "title": "Microsoft, Copilot 앱을 하나로 합치며 소비자 기능 3종을 오늘자로 종료 (미확인)",
+          "category": "도구",
+          "url": "https://support.microsoft.com/en-us/microsoft-365-copilot/learning/changes-microsoft-copilot-app",
+          "facts": [
+            "소비자용 Copilot 과 Microsoft 365 Copilot 두 앱이 하나로 합쳐지고,",
+            "2026-08-18 자로 기능 3종이 종료**된다 — Podcasts(문서·웹페이지를 오디오 대담으로 만들던 기능),",
+            "Group Chat(스레드·메시지·이미지 포함 전체), Deep Research(웹 출처를 인용한 장문 리포트 생성).",
+            "음성 모드의 애니메이션 캐릭터 Mico 도 핵심 소비자 경험에서 빠진다."
+          ],
+          "takeaway": "신규성은 없다 — 08-13 에 고지된 일정이 오늘 발효될 뿐이다. 그래도 싣는 이유는 어제의 Imagen 4 건과 같다. 기능이 사라지는 날과 과금 경계가 바뀌는 날이 오늘이고, 도메인이 바뀌므로 사내 프록시를 쓰는 쪽은 오늘 접속이 끊긴다. 한편 무료 등급에서 심층 리서치를 걷어 유료로 옮긴 것은 에이전트형 기능의 원가가 광고·번들로 감당되지 않는다는 신호에 가깝다."
+        }
+      ]
+    },
+    {
       "date": "2026-08-17",
       "items": [
         {
