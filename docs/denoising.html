@@ -297,7 +297,7 @@
     </p>
     <div class="note">
       <b>같은 발상을 이미 본 적이 있다.</b>
-      <a href="cnn-basics.html">잔차 연결</a>이 "항등을 배우지 말고 변화량만 배우게" 한 것,
+      <a href="residual-connections.html">잔차 연결</a>이 "항등을 배우지 말고 변화량만 배우게" 한 것,
       그리고 <a href="diffusion-models.html">확산 모델</a>이
       <em>이미지가 아니라 섞인 노이즈를 예측하게</em> 한 것이 모두 같은 계열이다.
       확산 모델의 학습 목표가 사실상 <strong>denoising</strong> 그 자체라는 점은
@@ -393,7 +393,7 @@
       실무 배치에서 중요한 판단이 하나 더 있다. <strong>파이프라인의 어느 지점</strong>에서 노이즈를 다룰 것인가.
     </p>
     <p>
-      카메라는 센서의 RAW 데이터를 <a href="isp-pipeline.html">여러 단계</a>(디모자이킹·화이트밸런스·<a href="hdr-tone-mapping.html">톤매핑</a>·압축)를 거쳐
+      카메라는 센서의 RAW 데이터를 <a href="isp-pipeline.html">여러 단계</a>(디모자이킹·화이트밸런스·톤매핑·압축)를 거쳐
       최종 이미지로 만든다. 노이즈 제거를 <em>어디에 넣느냐</em>가 결과를 바꾼다.
     </p>
 
@@ -412,7 +412,7 @@
     <p>
       <strong>여러 장을 합치는 것</strong>이 원리적으로 가장 강력하다.
       앞에서 본 <code>1/√N</code> 이 그대로 적용된다 —
-      실제로 스마트폰의 야간 촬영과 <a href="hdr-tone-mapping.html">HDR 합성</a>은 대부분 이 방식이다.
+      실제로 스마트폰의 야간 촬영은 대부분 이 방식이다.
       다만 손떨림과 피사체 움직임을 정렬해야 하고, 정렬이 틀리면 잔상이 생긴다.
     </p>
     <div class="note">

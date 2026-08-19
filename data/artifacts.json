@@ -224,6 +224,20 @@
       "local": true
     },
     {
+      "title": "잔차 연결",
+      "subtitle": "기본값을 항등으로 바꾸기",
+      "stage": "arch",
+      "summary": "층을 쌓았더니 학습 오차가 올랐다. 한 줄의 덧셈이 그것을 뒤집었고, 그것만으로는 이번엔 터진다.",
+      "updated": "2026-08-19",
+      "slug": "residual-connections",
+      "tags": [
+        "common",
+        "arch"
+      ],
+      "url": "docs/residual-connections.html",
+      "local": true
+    },
+    {
       "title": "Transformer",
       "subtitle": "모든 단어가 서로를 바라보다",
       "stage": "arch",
