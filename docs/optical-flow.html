@@ -401,7 +401,7 @@
       <b>합성-실제 격차가 이 분야의 상수다.</b>
       <a href="super-resolution.html">bicubic 축소로만 학습한 초해상</a>이
       실사진에서 실패하던 것과 같은 문제다.
-      합성 데이터에는 <em>모션 블러·롤링 셔터·노이즈·압축 아티팩트</em>가 없다.
+      합성 데이터에는 <em><a href="deblurring.html">모션 블러</a>·롤링 셔터·노이즈·압축 아티팩트</em>가 없다.
       그래서 합성으로 사전학습하고 소량의 실제 데이터로 미세조정하는 순서가 관행이 됐다.
     </div>
     <p>
@@ -421,8 +421,7 @@
     <ul>
       <li><strong>동영상 초해상·denoise</strong> — 여러 프레임을 정렬해 합치면 <a href="denoising.html">1/√N 효과</a>를 얻는다</li>
       <li><strong>프레임 보간</strong> — 중간 프레임을 만들어 부드럽게</li>
-      <li><strong><a href="hdr-tone-mapping.html">HDR 합성</a></strong> — 노출이 다른 장을 맞춘다. 밝기 항상성이 깨져 특히 어렵다</li>
-      <li><strong><a href="object-tracking.html">추적</a></strong> — 검출 결과를 프레임 간에 잇는다</li>
+      <li><strong>추적</strong> — 검출 결과를 프레임 간에 잇는다</li>
       <li><strong>손떨림 보정</strong> — 전역 움직임을 추정해 상쇄</li>
       <li><strong>행동 인식</strong> — 움직임 패턴 자체가 단서</li>
     </ul>
@@ -448,7 +447,7 @@
       <b>온디바이스에서는 여전히 비싸다.</b> 조밀한 flow 는
       <a href="segmentation.html">분할</a>처럼 <em>입력 크기의 출력</em>을 내는 데다,
       RAFT 계열은 상관 볼륨이 크고 반복까지 한다.
-      그래서 모바일에서는 <em>희소 <a href="object-tracking.html">추적</a></em>으로 대체하거나,
+      그래서 모바일에서는 <em>희소 추적</em>으로 대체하거나,
       반복 횟수를 줄이거나, 해상도를 낮춰 쓰는 절충이 흔하다 —
       <a href="mobile-runtime.html">예산 안에서 무엇을 포기할지</a>의 문제로 돌아온다.
     </div>

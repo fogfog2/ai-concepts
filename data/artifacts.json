@@ -532,6 +532,21 @@
       "local": true
     },
     {
+      "title": "디블러링",
+      "subtitle": "겹친 빛을 되돌리기",
+      "stage": "train",
+      "summary": "흐림은 곱셈이 아니라 합성곱이다. 그냥 나누면 터지고, 지워진 주파수는 되살아나지 않는다.",
+      "updated": "2026-08-20",
+      "slug": "deblurring",
+      "tags": [
+        "vision",
+        "enhance",
+        "training"
+      ],
+      "url": "docs/deblurring.html",
+      "local": true
+    },
+    {
       "title": "데이터 품질과 커리큘럼",
       "subtitle": "무엇을 먹이느냐가 정한다",
       "stage": "train",
