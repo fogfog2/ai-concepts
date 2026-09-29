@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Claude Code, Codex, Gemini와 Jev의 에이전트 성능 자료. 벤치마크 점수의 출처, 모델, 실행 조건, 관측 날짜를 함께 확인합니다.">
+  <meta name="theme-color" content="#08101c">
+  <title>에이전트 성능 관측소 — AI Concepts</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="benchmarks.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 바로가기</a>
+  <header class="site-header"><div class="header-inner"><a class="brand" href="index.html"><span class="brand-mark">✳</span><span>AI<span class="brand-light"> Concepts</span></span></a><nav class="top-nav" aria-label="주 메뉴"><a href="index.html#explore">기술 지도</a><a href="index.html#library">문서</a><a href="index.html#news">소식</a><a href="benchmarks.html" aria-current="page">에이전트 성능</a></nav><a class="header-action" href="index.html">지도로 돌아가기 ↗</a></div></header>
+  <main id="main" class="shell benchmark-main">
+    <section class="benchmark-hero"><p class="eyebrow"><span class="pulse-dot"></span> AGENT BENCHMARK WATCH / 2026</p><h1>성능의 숫자와<br><em>그 숫자의 조건.</em></h1><p>모델 이름만으로 에이전트를 비교하기는 어렵습니다. 같은 과제의 공개 결과를 모으되, 어떤 모델·하네스·노력 수준으로 실행했는지 함께 기록합니다.</p><div class="benchmark-meta"><span id="as-of">스냅샷을 불러오는 중…</span><span>출처 연결 · 날짜 기록 · 조건 공개</span></div></section>
+    <section class="benchmark-section" aria-labelledby="benchmark-title"><div class="section-top"><p class="kicker">01 / SAME BENCHMARK</p><span class="section-index">단위가 같은 결과만 나란히</span></div><div class="benchmark-heading"><div><h2 id="benchmark-title">코딩 에이전트 <em>평가.</em></h2><p id="benchmark-desc"></p></div><a id="benchmark-source" class="source-link" href="#">원본 리더보드 ↗</a></div><div class="score-grid" id="score-grid"><span class="loading">평가 결과를 불러오는 중…</span></div><div class="interpretation"><span class="interpretation-icon">i</span><div><strong>점수를 읽는 법</strong><p id="benchmark-note"></p></div></div></section>
+    <section class="benchmark-section jev-section" aria-labelledby="jev-title"><div class="section-top"><p class="kicker">02 / DIFFERENT ROLE</p><span class="section-index">동일 과제 점수가 없을 때</span></div><div class="jev-layout"><div><h2 id="jev-title">Jev는 어디에 <em>놓일까?</em></h2><p>Jev는 에이전트 전체가 아니라 에이전트 안의 짧은 의사결정 계층을 겨냥합니다. 같은 저장소 수정 과제를 풀었다는 공개 결과가 확인될 때까지 코딩 해결률 순위에 섞지 않습니다.</p></div><div class="jev-card" id="jev-card"><span class="loading">Jev 자료를 불러오는 중…</span></div></div></section>
+    <section class="benchmark-section" aria-labelledby="method-title"><div class="section-top"><p class="kicker">03 / HOW TO READ</p><span class="section-index">매일 확인 · 변경될 때만 갱신</span></div><h2 id="method-title">비교 전에 확인할 <em>세 가지.</em></h2><div class="method-grid"><article><span>01</span><h3>같은 과제인가</h3><p>데이터셋의 버전과 평가 탭이 다르면 수치를 같은 축에 놓지 않습니다.</p></article><article><span>02</span><h3>누가 실행했는가</h3><p>모델뿐 아니라 에이전트 하네스와 노력 수준이 결과에 영향을 줍니다.</p></article><article><span>03</span><h3>언제 확인했는가</h3><p>관측 날짜와 원문 링크를 남깁니다. 매일 점검해도 변화가 없으면 날짜를 새로 꾸미지 않습니다.</p></article></div></section>
+    <section class="benchmark-section" aria-labelledby="history-title"><div class="section-top"><p class="kicker">04 / CHANGE LOG</p></div><h2 id="history-title">관측 기록.</h2><div id="benchmark-history" class="history-list"></div></section>
+  </main>
+  <footer class="site-footer"><div class="shell footer-inner"><div><span class="brand-mark">✳</span> AI CONCEPTS <small>기술의 위치를 찾는 지도</small></div><span style="margin-left:auto">AGENT BENCHMARK WATCH</span><a href="#main">맨 위로 ↑</a></div></footer>
+  <script src="benchmarks.js" defer></script>
+</body>
+</html>

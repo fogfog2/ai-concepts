@@ -13,7 +13,7 @@
       "no": "02",
       "name": "아키텍처",
       "tagline": "무엇을 쌓을 것인가",
-      "desc": "어텐션을 축으로 한 구조와 그 변형들. 언어에서 출발해 이미지로, 그리고 조건부 연산으로."
+      "desc": "어텐션, 합성곱, 상태 공간, 잠재 표현. 문제에 맞는 계산 구조를 선택하고 서로 연결합니다."
     },
     {
       "id": "train",
@@ -322,6 +322,21 @@
         "generative"
       ],
       "url": "docs/autoencoders-vae.html",
+      "local": true
+    },
+    {
+      "title": "U-Net과 인코더·디코더",
+      "subtitle": "작게 보고 다시 크게 그리다",
+      "stage": "arch",
+      "summary": "넓은 문맥과 정확한 위치를 함께 쓰는 대칭 구조. 같은 크기의 특징을 이어 붙이는 이유와 그 비용.",
+      "updated": "2026-09-30",
+      "slug": "u-net-encoder-decoder",
+      "tags": [
+        "vision",
+        "arch",
+        "detection"
+      ],
+      "url": "docs/u-net-encoder-decoder.html",
       "local": true
     },
     {

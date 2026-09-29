@@ -1,256 +1,51 @@
-/* ai.js — 상단 오늘의 소식 + 하단 기술 문서
- *
- * 데이터는 두 곳에서 읽는다. 한쪽이 없어도 다른 쪽은 그대로 보인다.
- *   data/news.json       archive/*.md 에서 생성된 날짜별 뉴스
- *   data/artifacts.json  catalog.py 에서 생성된 기술 문서 목록
- */
-(function () {
+(function(){
   'use strict';
-
-  var state = {
-    days: [], cur: 0,
-    artifacts: [], stages: [], tags: [],
-    /* 도메인은 문서마다 하나뿐이라 하나만 고른다(또는 전체).
-       주제는 여러 개가 붙으므로 AND 로 좁힌다 — "vision 이면서 on-device" 같은 요구. */
-    domain: null,
-    topics: []
+  var state={days:[],day:0,items:[],stages:[],tags:[],domain:null,topics:[],query:'',selectedStage:null,mapDomain:null};
+  var $=function(id){return document.getElementById(id)};
+  var esc=function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')};
+  var getJson=function(url){return fetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw Error(r.status);return r.json()})};
+  var bySlug=function(slug){return state.items.find(function(item){return item.slug===slug})};
+  var mapGroups={
+    arch:[
+      {title:'어텐션과 토큰',desc:'입력 요소 사이의 관계를 선택해 계산합니다.',slugs:['transformer','vision-transformer','mixture-of-experts','embeddings']},
+      {title:'합성곱과 시각 구조',desc:'가까운 픽셀의 규칙을 구조에 새깁니다.',slugs:['cnn-basics','u-net-encoder-decoder','efficient-backbone','residual-connections','detection-lineage']},
+      {title:'시간과 상태',desc:'긴 순서를 기억하며 한 단계씩 갱신합니다.',slugs:['rnn-lstm','mamba-ssm','long-context']},
+      {title:'표현과 관계',desc:'잠재 공간과 연결 구조를 모델링합니다.',slugs:['autoencoders-vae','graph-neural-networks','nas']}
+    ],
+    detect:[
+      {title:'검출기의 계보',desc:'영역 제안에서 실시간 집합 예측까지.',slugs:['detection-lineage','yolo-lineage','detr-lineage','rf-detr']},
+      {title:'상자와 중복',desc:'경계상자와 후처리가 만나는 지점.',slugs:['iou-losses','nms','yolov5','yolox']},
+      {title:'픽셀과 시간',desc:'위치뿐 아니라 모양과 움직임을 읽습니다.',slugs:['segmentation','optical-flow','depth-estimation','object-tracking']},
+      {title:'현장으로',desc:'이미지 품질과 실제 장치가 만드는 제약.',slugs:['isp-pipeline','mobile-runtime','person-reid']}
+    ]
   };
-
-  function esc(s) {
-    return String(s == null ? '' : s)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+  var stageMeta={basics:['01','기초 부품','표현이 만들어지는 바닥을 봅니다.'],arch:['02','모델 아키텍처','무엇을 어떻게 쌓을지 선택합니다.'],train:['03','학습','데이터와 과제로 능력을 만듭니다.'],align:['04','적응 · 정렬','이미 배운 모델의 방향을 바꿉니다.'],infer:['05','추론 최적화','같은 모델을 더 빠르고 가볍게.'],infra:['06','학습 인프라','큰 모델을 실제로 굴리는 기반.'],apply:['07','응용 · 시스템','모델을 도구와 서비스에 연결합니다.'],eval:['08','평가 · 안전','성능과 실패를 확인합니다.'],detect:['09','Vision 특집','검출부터 추적까지 이어 읽습니다.']};
+  function renderStages(){
+    $('stage-grid').innerHTML=state.stages.map(function(st){var m=stageMeta[st.id]||[st.no,st.name,st.tagline];var n=state.items.filter(function(x){return x.stage===st.id}).length;return '<button class="stage-card'+(st.id==='arch'?' featured':'')+'" type="button" data-stage="'+esc(st.id)+'" aria-pressed="false"><span class="stage-top"><span>'+esc(m[0])+' / '+n+' DOCS</span><span class="stage-arrow">↗</span></span><strong>'+esc(m[1])+'</strong><small>'+esc(m[2])+'</small></button>'}).join('');
+    $('stage-grid').querySelectorAll('[data-stage]').forEach(function(btn){btn.addEventListener('click',function(){openMap(btn.dataset.stage)})});
   }
-
-  function getJson(url) {
-    return fetch(url, { cache: 'no-store' }).then(function (r) {
-      if (!r.ok) throw new Error(r.status);
-      return r.json();
-    });
+  function genericGroups(stageId){
+    var docs=state.items.filter(function(x){return x.stage===stageId});var topicTags=state.tags.filter(function(x){return x.group==='topic'});var groups=topicTags.map(function(tag){var matches=docs.filter(function(d){return(d.tags||[]).indexOf(tag.id)>=0});return{title:tag.name,desc:tag.desc,slugs:matches.map(function(x){return x.slug})}}).filter(function(x){return x.slugs.length});groups.sort(function(a,b){return b.slugs.length-a.slugs.length});var covered=new Set(groups.slice(0,4).reduce(function(all,g){return all.concat(g.slugs)},[]));var rest=docs.filter(function(d){return !covered.has(d.slug)});var result=groups.slice(0,4);if(rest.length){result.push({title:'함께 읽기',desc:'이 영역과 연결되는 다른 개념입니다.',slugs:rest.map(function(x){return x.slug})})}return result;
   }
-
-  function host(url) {
-    try { return new URL(url).hostname.replace(/^www\./, ''); } catch (e) { return ''; }
+  function openMap(id){
+    var stage=state.stages.find(function(s){return s.id===id});if(!stage)return;state.selectedStage=id;state.mapDomain=null;
+    $('stage-grid').querySelectorAll('[data-stage]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.stage===id))});
+    $('concept-title').textContent=(stageMeta[id]||[])[1]||stage.name;
+    $('concept-desc').textContent=stage.desc||stage.tagline;
+    $('mindmap-root').innerHTML='<small>FOCUS AREA / '+esc(stage.no)+'</small><strong>'+esc((stageMeta[id]||[])[1]||stage.name)+'</strong><span>'+esc(stage.tagline)+'</span>';
+    $('concept-panel').hidden=false;renderMapDomains();renderMapBranches();$('concept-panel').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
   }
-
-  /* ---------- 뉴스 ---------- */
-
-  function renderNews() {
-    var body = document.getElementById('news-body');
-    var meta = document.getElementById('news-date');
-
-    if (!state.days.length) {
-      meta.textContent = '';
-      body.innerHTML = '<div class="empty">아직 수집된 소식이 없습니다.</div>';
-      return;
-    }
-
-    var day = state.days[state.cur];
-    /* 가장 최근 날짜면 '오늘', 아니면 날짜를 그대로 보여준다 */
-    meta.textContent = day.date + (state.cur === 0 ? '' : ' · 지난 소식');
-
-    body.innerHTML = day.items.map(function (it) {
-      var h = it.url ? host(it.url) : '';
-      var facts = (it.facts || []).map(function (f) {
-        return '<li>' + esc(f) + '</li>';
-      }).join('');
-
-      return '<article class="item">' +
-        '<h3>' +
-          (it.url
-            ? '<a href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">' +
-                esc(it.title) + '<span class="ext" aria-hidden="true">↗</span></a>'
-            : esc(it.title)) +
-        '</h3>' +
-        '<div class="item-meta">' +
-          (it.category ? '<span class="tag">' + esc(it.category) + '</span>' : '') +
-          (h ? '<span class="src">' + esc(h) + '</span>' : '') +
-        '</div>' +
-        (facts ? '<ul class="facts">' + facts + '</ul>' : '') +
-        (it.takeaway
-          ? '<p class="takeaway"><b>그래서</b>' + esc(it.takeaway) + '</p>'
-          : '') +
-      '</article>';
-    }).join('');
-  }
-
-  function renderDays() {
-    var nav = document.getElementById('days');
-    if (state.days.length < 2) { nav.innerHTML = ''; return; }
-
-    nav.innerHTML = '<span class="days-label">지난 날짜</span>' +
-      state.days.slice(0, 14).map(function (d, i) {
-        return '<button class="day' + (i === state.cur ? ' on' : '') +
-          '" data-i="' + i + '">' + esc(d.date.slice(5)) + '</button>';
-      }).join('');
-
-    Array.prototype.forEach.call(nav.querySelectorAll('.day'), function (el) {
-      el.addEventListener('click', function () {
-        state.cur = +el.dataset.i;
-        renderNews();
-        renderDays();
-      });
-    });
-  }
-
-  /* ---------- 기술 문서 ---------- */
-
-  /* 문서 행에 붙는 태그 표시.
-     지금 고른 태그는 강조해, 왜 이 문서가 걸렸는지 바로 보이게 한다. */
-  function tagChips(tags) {
-    if (!tags || !tags.length) return '';
-    var byId = {};
-    state.tags.forEach(function (t) { byId[t.id] = t; });
-    var html = tags.map(function (id) {
-      var t = byId[id];
-      if (!t) return '';
-      var on = (state.domain === id) || state.topics.indexOf(id) >= 0;
-      return '<span class="dtag' + (on ? ' on' : '') + '">' + esc(t.name) + '</span>';
-    }).join('');
-    return html ? '<span class="doc-tags">' + html + '</span>' : '';
-  }
-
-  /* 지금 필터를 통과하는 문서들 */
-  function visibleDocs() {
-    return state.artifacts.filter(function (a) {
-      var tags = a.tags || [];
-      if (state.domain && tags.indexOf(state.domain) < 0) return false;
-      for (var i = 0; i < state.topics.length; i++) {
-        if (tags.indexOf(state.topics[i]) < 0) return false;
-      }
-      return true;
-    });
-  }
-
-  /* 어떤 태그를 지금 더 누를 수 있는지 미리 센다.
-     0편이 될 버튼을 누르게 두면 빈 화면만 나와 답답하다. */
-  function countWith(tagId, group) {
-    return state.artifacts.filter(function (a) {
-      var tags = a.tags || [];
-      if (tags.indexOf(tagId) < 0) return false;
-      if (group !== 'domain' && state.domain && tags.indexOf(state.domain) < 0) return false;
-      for (var i = 0; i < state.topics.length; i++) {
-        if (state.topics[i] !== tagId && tags.indexOf(state.topics[i]) < 0) return false;
-      }
-      return true;
-    }).length;
-  }
-
-  function renderFilters() {
-    var box = document.getElementById('filters');
-    if (!state.tags.length) { box.innerHTML = ''; return; }
-
-    function group(g, label) {
-      var tags = state.tags.filter(function (t) { return t.group === g; });
-      if (!tags.length) return '';
-      return '<div class="frow">' +
-        '<span class="flabel">' + label + '</span>' +
-        tags.map(function (t) {
-          var on = (g === 'domain')
-            ? state.domain === t.id
-            : state.topics.indexOf(t.id) >= 0;
-          var n = countWith(t.id, g);
-          return '<button class="chip' + (on ? ' on' : '') + (!n && !on ? ' off' : '') +
-              '" data-g="' + g + '" data-id="' + esc(t.id) + '"' +
-              (t.desc ? ' title="' + esc(t.desc) + '"' : '') +
-              ' aria-pressed="' + (on ? 'true' : 'false') + '">' +
-            esc(t.name) + '<span class="n">' + n + '</span>' +
-          '</button>';
-        }).join('') +
-      '</div>';
-    }
-
-    var any = state.domain || state.topics.length;
-    box.innerHTML = group('domain', '분야') + group('topic', '주제') +
-      (any ? '<button class="chip clear" id="clear">필터 해제</button>' : '');
-
-    Array.prototype.forEach.call(box.querySelectorAll('.chip'), function (el) {
-      el.addEventListener('click', function () {
-        if (el.id === 'clear') { state.domain = null; state.topics = []; }
-        else if (el.dataset.g === 'domain') {
-          state.domain = (state.domain === el.dataset.id) ? null : el.dataset.id;
-        } else {
-          var i = state.topics.indexOf(el.dataset.id);
-          if (i >= 0) state.topics.splice(i, 1); else state.topics.push(el.dataset.id);
-        }
-        renderFilters();
-        renderDocs();
-      });
-    });
-  }
-
-  function renderDocs() {
-    var body = document.getElementById('docs-body');
-    var list = visibleDocs();
-
-    if (!state.artifacts.length) {
-      body.innerHTML = '<div class="empty">등록된 기술 문서가 없습니다.</div>';
-      return;
-    }
-
-    var filtered = state.domain || state.topics.length;
-    document.getElementById('docs-meta').textContent = filtered
-      ? list.length + '편 / 전체 ' + state.artifacts.length + '편'
-      : state.artifacts.length + '편 · ' + state.stages.length + '단계';
-
-    if (!list.length) {
-      body.innerHTML = '<div class="empty">고른 조건에 맞는 문서가 없습니다.<br>' +
-        '태그를 하나 줄여 보세요.</div>';
-      return;
-    }
-
-    body.innerHTML = state.stages.map(function (st) {
-      var items = list.filter(function (a) { return a.stage === st.id; });
-      if (!items.length) return '';
-
-      var rows = items.map(function (a, i) {
-        var ext = !a.local;
-        var idx = ('0' + (i + 1)).slice(-2);
-        return '<a class="doc" href="' + esc(a.url) + '"' +
-            (ext ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' +
-          '<span class="doc-idx" aria-hidden="true">' + idx + '</span>' +
-          '<span class="doc-head">' +
-            '<b>' + esc(a.title) + '</b>' +
-            (a.subtitle ? '<i>' + esc(a.subtitle) + '</i>' : '') +
-          '</span>' +
-          (a.summary ? '<span class="doc-sum">' + esc(a.summary) + '</span>' : '') +
-          tagChips(a.tags) +
-          '<span class="doc-go" aria-hidden="true">' + (ext ? '↗' : '→') + '</span>' +
-        '</a>';
-      }).join('');
-
-      return '<section class="stage">' +
-        '<div class="stage-head">' +
-          '<span class="stage-no">' + esc(st.no) + '</span>' +
-          '<h3>' + esc(st.name) +
-            (st.tagline ? ' <em>' + esc(st.tagline) + '</em>' : '') +
-          '</h3>' +
-          '<span class="stage-count">' + items.length + '편</span>' +
-          (st.desc ? '<p>' + esc(st.desc) + '</p>' : '') +
-        '</div>' +
-        '<div class="doc-list">' + rows + '</div>' +
-      '</section>';
-    }).join('');
-  }
-
-  /* ---------- 시작 ---------- */
-  Promise.all([
-    getJson('data/news.json').catch(function () { return { days: [] }; }),
-    getJson('data/artifacts.json').catch(function () { return { items: [] }; })
-  ]).then(function (res) {
-    state.days = (res[0] && res[0].days) || [];
-    state.artifacts = (res[1] && res[1].items) || [];
-    state.stages = (res[1] && res[1].stages) || [];
-    state.tags = (res[1] && res[1].tags) || [];
-
-    renderNews();
-    renderDays();
-    renderFilters();
-    renderDocs();
-
-    var foot = document.getElementById('foot');
-    foot.textContent = state.days.length
-      ? 'AI CONCEPTS · ' + state.artifacts.length + ' ENTRIES · NEWS ' + state.days.length + 'D'
-      : 'AI CONCEPTS · ' + state.artifacts.length + ' ENTRIES';
-  });
+  function renderMapDomains(){var options=[['all','전체'],['llm','LLM'],['vision','Vision'],['common','공통']];$('concept-domains').innerHTML=options.map(function(o){return '<button type="button" class="domain-button" data-map-domain="'+o[0]+'" aria-pressed="'+String((state.mapDomain||'all')===o[0])+'">'+o[1]+'</button>'}).join('');$('concept-domains').querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){state.mapDomain=b.dataset.mapDomain==='all'?null:b.dataset.mapDomain;renderMapDomains();renderMapBranches()})})}
+  function renderMapBranches(){var groups=mapGroups[state.selectedStage]||genericGroups(state.selectedStage);$('mindmap-branches').innerHTML=groups.map(function(g,i){var docs=g.slugs.map(bySlug).filter(Boolean);return '<article class="branch"><div class="branch-head"><strong>'+esc(g.title)+'</strong><span>'+String(i+1).padStart(2,'0')+'</span></div><p>'+esc(g.desc)+'</p><div class="branch-docs">'+(docs.length?docs.map(function(d){var dim=state.mapDomain&&(d.tags||[]).indexOf(state.mapDomain)<0;return '<a class="'+(dim?'dim':'')+'" href="'+esc(d.url)+'"'+(d.local?'':' target="_blank" rel="noopener noreferrer"')+' title="'+esc(d.summary)+'">'+esc(d.title)+'</a>'}).join(''):'<span class="branch-empty">연결 문서 준비 중</span>')+'</div></article>'}).join('')}
+  $('close-concept').addEventListener('click',function(){$('concept-panel').hidden=true;state.selectedStage=null;$('stage-grid').querySelectorAll('[data-stage]').forEach(function(b){b.setAttribute('aria-pressed','false')});$('stage-grid').scrollIntoView({block:'start'})});
+  function renderRecommendation(data){var item=bySlug(data.slug);if(!item){$('recommendation-body').innerHTML='<p>새 추천을 준비하고 있습니다.</p>';return}$('recommendation').querySelector('.kicker').textContent='추천 기술 / '+(data.date||'');$('recommendation-body').innerHTML='<div><h2>'+esc(data.title||item.title)+'</h2><p>'+esc(data.reason||item.summary)+'</p></div><a href="'+esc(item.url)+'">문서 읽기 <span aria-hidden="true">↗</span></a>'}
+  function renderNews(){var day=state.days[state.day];if(!day){$('news-date').textContent='';$('news-body').innerHTML='<div class="empty">확인된 소식이 없습니다.</div>';return}$('news-date').textContent='마지막 게시 · '+day.date;$('news-body').innerHTML=day.items.slice(0,3).map(function(it){var host='';try{host=new URL(it.url).hostname.replace(/^www\./,'')}catch(e){}var summary=(it.facts||[]).find(function(f){return f&&f.length>12})||it.takeaway||'';return '<article class="news-card"><div class="news-meta">'+esc(it.category||'소식')+' / '+esc(day.date)+'</div><h3>'+(it.url?'<a href="'+esc(it.url)+'" target="_blank" rel="noopener noreferrer">'+esc(it.title)+' ↗</a>':esc(it.title))+'</h3><p>'+esc(summary)+'</p><span class="source">'+esc(host||'출처 미확인')+'</span></article>'}).join('');$('days').innerHTML='<span class="days-label">지난 기록</span>'+state.days.slice(0,14).map(function(d,i){return '<button type="button" class="day" data-day="'+i+'"'+(i===state.day?' aria-current="date"':'')+'>'+esc(d.date.slice(5))+'</button>'}).join('');$('days').querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){state.day=Number(b.dataset.day);renderNews()})})}
+  function visibleDocs(){var q=state.query;return state.items.filter(function(d){var tags=d.tags||[];if(state.domain&&tags.indexOf(state.domain)<0)return false;if(state.topics.some(function(t){return tags.indexOf(t)<0}))return false;return !q||[d.title,d.subtitle,d.summary,d.slug].join(' ').toLocaleLowerCase().indexOf(q)>=0})}
+  function countWith(id,group){return state.items.filter(function(d){var tags=d.tags||[];if(tags.indexOf(id)<0)return false;if(group!=='domain'&&state.domain&&tags.indexOf(state.domain)<0)return false;return state.topics.every(function(t){return t===id||tags.indexOf(t)>=0})}).length}
+  function renderFilters(){function group(name,label){var tags=state.tags.filter(function(t){return t.group===name});return '<div class="frow"><span class="flabel">'+label+'</span>'+tags.map(function(t){var active=name==='domain'?state.domain===t.id:state.topics.indexOf(t.id)>=0;var n=countWith(t.id,name);return '<button type="button" class="chip'+(active?' on':'')+(!n&&!active?' off':'')+'" data-group="'+name+'" data-tag="'+esc(t.id)+'" title="'+esc(t.desc)+'" aria-pressed="'+String(active)+'">'+esc(t.name)+'<span class="n">'+n+'</span></button>'}).join('')+'</div>'}$('filters').innerHTML=group('domain','분야')+group('topic','주제')+((state.domain||state.topics.length)?'<button type="button" class="chip clear" id="clear">필터 해제</button>':'');$('filters').querySelectorAll('.chip').forEach(function(b){b.addEventListener('click',function(){if(b.id==='clear'){state.domain=null;state.topics=[]}else if(b.dataset.group==='domain'){state.domain=state.domain===b.dataset.tag?null:b.dataset.tag}else{var i=state.topics.indexOf(b.dataset.tag);if(i>=0)state.topics.splice(i,1);else state.topics.push(b.dataset.tag)}renderFilters();renderDocs()})})}
+  function renderDocs(){var docs=visibleDocs();$('docs-meta').textContent=docs.length+' / '+state.items.length+'편';$('stage-jumps').innerHTML=state.stages.filter(function(s){return docs.some(function(d){return d.stage===s.id})}).map(function(s){return '<a href="#stage-'+esc(s.id)+'">'+esc(s.no)+' '+esc(s.name)+'</a>'}).join('');$('docs-body').innerHTML=docs.length?state.stages.map(function(s){var list=docs.filter(function(d){return d.stage===s.id});if(!list.length)return'';return '<section class="stage-block" id="stage-'+esc(s.id)+'"><div class="stage-block-head"><span class="no">'+esc(s.no)+'</span><h3>'+esc(s.name)+'</h3><p>'+list.length+'편 · '+esc(s.tagline)+'</p></div><div class="doc-list">'+list.map(function(d){return '<a class="doc-row" href="'+esc(d.url)+'"'+(d.local?'':' target="_blank" rel="noopener noreferrer"')+'><div><strong>'+esc(d.title)+'</strong><p>'+esc(d.summary||d.subtitle)+'</p><span class="tags">'+esc((d.tags||[]).join(' · '))+'</span></div><span class="arrow" aria-hidden="true">↗</span></a>'}).join('')+'</div></section>'}).join(''):'<div class="empty">일치하는 문서가 없습니다. 검색어나 필터를 줄여보세요.</div>'}
+  $('doc-search').addEventListener('input',function(e){state.query=e.target.value.trim().toLocaleLowerCase();renderDocs()});
+  document.addEventListener('keydown',function(e){if(e.key==='/'&&!/input|textarea/i.test(document.activeElement.tagName)){e.preventDefault();$('doc-search').focus()}});
+  $('filter-toggle').addEventListener('click',function(){var open=$('filters').hidden;$('filters').hidden=!open;this.setAttribute('aria-expanded',String(open))});
+  Promise.all([getJson('data/artifacts.json'),getJson('data/news.json').catch(function(){return{days:[]}}),getJson('data/recommendation.json').catch(function(){return{slug:''}})]).then(function(data){state.items=data[0].items||[];state.stages=data[0].stages||[];state.tags=data[0].tags||[];state.days=data[1].days||[];$('hero-doc-count').textContent=state.items.length;renderStages();renderFilters();renderDocs();renderNews();renderRecommendation(data[2]);$('foot').textContent=state.items.length+' ARTICLES · '+state.stages.length+' STAGES'}).catch(function(){$('stage-grid').innerHTML='<div class="empty">기술 지도를 불러오지 못했습니다.</div>';$('docs-body').innerHTML='<div class="empty">문서 데이터를 불러오지 못했습니다. 새로고침해 주세요.</div>'});
 })();

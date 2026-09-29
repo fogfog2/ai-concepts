@@ -1,61 +1,89 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AI Concepts — 오늘의 소식과 기술 문서</title>
-<meta name="description" content="매일의 AI 소식과, 모델이 만들어져 서비스되기까지의 순서로 정리한 기술 문서 49편.">
-
-<meta property="og:type" content="website">
-<meta property="og:title" content="AI Concepts">
-<meta property="og:description" content="매일의 AI 소식과 기술 문서 49편.">
-<meta name="twitter:card" content="summary">
-
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>🧩</text></svg>">
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="AI 시스템의 전체 흐름에서 출발해 개념을 탐색하는 한국어 기술 지도. 기술 문서, 검증된 뉴스, 에이전트 벤치마크를 함께 읽습니다.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AI Concepts — 기술의 위치를 찾는 지도">
+  <meta property="og:description" content="AI 시스템의 전체 흐름에서 개념을 찾고, 관련 기술 문서를 읽어보세요.">
+  <meta name="theme-color" content="#08101c">
+  <title>AI Concepts — 기술의 위치를 찾는 지도</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="wrap">
-
-  <header class="masthead">
-    <h1>AI Concepts</h1>
-    <p class="lede">
-      매일의 소식은 <strong>위에서</strong>, 쌓아 읽는 기술 문서는 <strong>아래에서</strong>.
-    </p>
+  <a class="skip-link" href="#main">본문으로 바로가기</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html" aria-label="AI Concepts 첫 화면"><span class="brand-mark">✳</span><span>AI<span class="brand-light"> Concepts</span></span></a>
+      <nav class="top-nav" aria-label="주 메뉴">
+        <a href="#explore">기술 지도</a>
+        <a href="#library">문서</a>
+        <a href="#news">소식</a>
+        <a href="benchmarks.html">에이전트 성능 <span aria-hidden="true">↗</span></a>
+      </nav>
+      <a class="header-action" href="#explore">탐색 시작 <span aria-hidden="true">↗</span></a>
+    </div>
   </header>
 
-  <!-- ── 상단: 오늘의 소식 ─────────────────────────── -->
-  <section class="news" id="news" aria-labelledby="news-h">
-    <div class="sec-head">
-      <h2 id="news-h">오늘의 소식</h2>
-      <span class="sec-meta" id="news-date"></span>
-    </div>
-    <div id="news-body">
-      <div class="loading">불러오는 중…</div>
-    </div>
-    <nav class="days" id="days" aria-label="지난 날짜"></nav>
-  </section>
+  <main id="main">
+    <section class="hero shell" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="pulse-dot"></span> AN ATLAS FOR INTELLIGENT SYSTEMS</p>
+        <h1 id="hero-title">AI를 이해하는<br><em>새로운 경로.</em></h1>
+        <p class="hero-lede">흩어진 기술을 시스템의 흐름 위에 놓았습니다. 큰 그림에서 시작해, 궁금한 개념을 따라가세요.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#explore">기술 지도 열기 <span aria-hidden="true">↗</span></a>
+          <a class="button button-quiet" href="#library">전체 문서 보기 <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="hero-facts"><span><strong id="hero-doc-count">85</strong> 기술 문서</span><span><strong>09</strong> 읽기 단계</span><span>뉴스 · 벤치마크</span></div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="orbit orbit-c"></div>
+        <div class="orbit-core"><span>AI</span><small>CONCEPTS</small></div>
+        <span class="orbit-node node-1">DATA</span><span class="orbit-node node-2">MODEL</span><span class="orbit-node node-3">TRAIN</span><span class="orbit-node node-4">SERVE</span><span class="orbit-node node-5">EVAL</span>
+        <div class="hero-grid"></div>
+      </div>
+    </section>
 
-  <!-- ── 하단: 기술 문서 ──────────────────────────── -->
-  <section class="docs" id="docs" aria-labelledby="docs-h">
-    <div class="sec-head">
-      <h2 id="docs-h">기술 문서</h2>
-      <span class="sec-meta" id="docs-meta"></span>
-    </div>
-    <p class="sec-lede">
-      모델이 만들어져 서비스되기까지의 순서로 묶었습니다.
-      위에서부터 읽으면 하나의 흐름이 되고, 필요한 단계만 골라 봐도 됩니다.
-    </p>
+    <section class="explore-section shell" id="explore" aria-labelledby="explore-title">
+      <div class="section-top"><p class="kicker">01 / EXPLORE THE SYSTEM</p><span class="section-index">큰 그림 → 개념 지도 → 문서</span></div>
+      <div class="section-heading"><div><h2 id="explore-title">기술의 <em>위치</em>에서 시작하세요.</h2><p>시스템의 한 영역을 선택하면 관련 개념이 갈래로 펼쳐집니다.</p></div></div>
+      <div class="journey" aria-label="AI 시스템 흐름"><span>설계</span><i></i><span>학습</span><i></i><span>운영</span><i></i><span>검증</span></div>
+      <div class="stage-grid" id="stage-grid" aria-label="기술 분야 선택"></div>
+      <section class="concept-panel" id="concept-panel" aria-live="polite" aria-labelledby="concept-title" hidden>
+        <div class="concept-top">
+          <div><p class="kicker" id="concept-step">02 / CONCEPT MAP</p><h3 id="concept-title"></h3><p id="concept-desc"></p></div>
+          <button class="close-button" id="close-concept" type="button" aria-label="개념 지도 닫기">✕</button>
+        </div>
+        <div class="concept-toolbar"><span>관련 분야</span><div id="concept-domains" role="group" aria-label="분야 선택"></div></div>
+        <div class="mindmap"><div class="mindmap-root" id="mindmap-root"></div><div class="mindmap-branches" id="mindmap-branches"></div></div>
+        <p class="concept-footnote">하나의 문서가 여러 갈래와 연결될 수 있습니다. 분야 버튼은 관련 문서를 강조합니다.</p>
+      </section>
+    </section>
 
-    <div class="filters" id="filters" aria-label="태그 필터"></div>
+    <section class="signal-section shell" aria-label="새 소식과 에이전트 성능">
+      <article class="signal-card recommendation" id="recommendation"><p class="kicker">TODAY'S CONCEPT</p><div id="recommendation-body"><span class="loading">추천 기술을 불러오는 중…</span></div></article>
+      <a class="signal-card benchmark-promo" href="benchmarks.html"><p class="kicker">AGENT BENCHMARK WATCH</p><div><h2>에이전트의 성능,<br><em>숫자 뒤까지.</em></h2><p>Claude · Codex · Gemini · Jev의 평가 결과를 출처와 실행 조건까지 함께 봅니다.</p></div><span class="signal-arrow" aria-hidden="true">↗</span></a>
+    </section>
 
-    <div id="docs-body">
-      <div class="loading">불러오는 중…</div>
-    </div>
-  </section>
+    <section class="news-section shell" id="news" aria-labelledby="news-title">
+      <div class="section-top"><p class="kicker">02 / FIELD NOTES</p><span id="news-date" class="section-index"></span></div>
+      <div class="section-heading"><div><h2 id="news-title">최근 확인한 <em>AI 소식.</em></h2><p>게시 날짜와 원문을 확인한 소식만 기록합니다.</p></div></div>
+      <div id="news-body" class="news-grid"><span class="loading">소식을 불러오는 중…</span></div>
+      <nav id="days" class="day-nav" aria-label="지난 소식 날짜"></nav>
+    </section>
 
-  <footer id="foot"></footer>
-</div>
-<script src="ai.js"></script>
+    <section class="library-section shell" id="library" aria-labelledby="library-title">
+      <div class="section-top"><p class="kicker">03 / THE LIBRARY</p><span id="docs-meta" class="section-index"></span></div>
+      <div class="section-heading"><div><h2 id="library-title">깊이 읽는 <em>기술 문서.</em></h2><p>지도로 둘러본 개념을 문서로 이어 읽거나, 이름으로 바로 찾아보세요.</p></div></div>
+      <div class="library-tools"><label class="search-wrap"><span class="search-icon" aria-hidden="true">⌕</span><span class="sr-only">문서 검색</span><input id="doc-search" type="search" placeholder="제목이나 개념 검색 · Transformer, 양자화, 검출…" autocomplete="off"><kbd>/</kbd></label><button type="button" class="filter-toggle" id="filter-toggle" aria-expanded="false" aria-controls="filters">분야와 주제 <span aria-hidden="true">⌄</span></button></div>
+      <div id="filters" class="filters" aria-label="태그 필터" hidden></div>
+      <nav class="stage-jumps" id="stage-jumps" aria-label="단계 바로가기"></nav>
+      <div id="docs-body" class="docs-body"><span class="loading">기술 문서를 불러오는 중…</span></div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="shell footer-inner"><div><span class="brand-mark">✳</span> AI CONCEPTS <small>기술의 위치를 찾는 지도</small></div><span id="foot"></span><a href="#main">맨 위로 ↑</a></div></footer>
+  <script src="ai.js" defer></script>
 </body>
 </html>
