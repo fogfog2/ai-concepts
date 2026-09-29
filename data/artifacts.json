@@ -1208,6 +1208,22 @@
       "local": true
     },
     {
+      "title": "RTMDet 계열",
+      "subtitle": "검출에서 마스크와 회전 상자까지",
+      "stage": "detect",
+      "summary": "CSPNeXt와 soft label 할당, tiny부터 x까지의 크기 선택, Ins·R의 과제 확장.",
+      "updated": "2026-09-30",
+      "slug": "rtmdet-family",
+      "tags": [
+        "vision",
+        "detection",
+        "arch",
+        "on-device"
+      ],
+      "url": "docs/rtmdet-family.html",
+      "local": true
+    },
+    {
       "title": "NeRF & 3D 표현",
       "subtitle": "공간을 무엇으로 담을 것인가",
       "stage": "detect",

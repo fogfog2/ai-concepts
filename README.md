@@ -4,7 +4,7 @@ AI 기술 문서를 **파이프라인 → 개념 지도 → 본문** 순서로 �
 
 👉 [사이트 보기](https://fogfog2.github.io/ai-concepts/)
 
-현재 문서 85편, 9단계입니다. 첫 화면의 단계 카드를 누르면 두 번째 화면에 해당 단계의 주요 갈래와 연결된 문서가 나타납니다. 아키텍처 단계는 Transformer·CNN·상태 공간 모델 등으로 나뉘며 LLM / Vision / 공통 관점으로 좁혀 볼 수 있습니다. 검색과 태그 필터로 전체 문서를 바로 찾을 수도 있습니다.
+현재 문서 86편, 9단계입니다. 첫 화면의 단계 카드를 누르면 두 번째 화면에 해당 단계의 주요 갈래와 연결된 문서가 나타납니다. 아키텍처 단계는 Transformer·CNN·상태 공간 모델 등으로 나뉘며 LLM / Vision / 공통 관점으로 좁혀 볼 수 있습니다. 검색과 태그 필터로 전체 문서를 바로 찾을 수도 있습니다.
 
 ## 콘텐츠
 
@@ -23,7 +23,7 @@ data/artifacts.json                      문서 목록
 data/news.json                           최근 소식
 data/recommendation.json                 오늘의 추천
 data/benchmarks.json                     공개 평가 결과
-docs/<slug>.html                         기술 문서 85편
+docs/<slug>.html                         기술 문서 86편
 ```
 
 데이터 파일과 기술 문서는 [ai-daily-routine](https://github.com/fogfog2/ai-daily-routine)의 카탈로그·생성기·뉴스 아카이브에서 만들어집니다. 다음 동기화에서 덮어써지므로 생성된 JSON이나 HTML은 직접 편집하지 않습니다. UI 파일은 이 저장소에서 관리합니다.

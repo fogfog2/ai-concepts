@@ -13,7 +13,7 @@
       {title:'표현과 관계',desc:'잠재 공간과 연결 구조를 모델링합니다.',slugs:['autoencoders-vae','graph-neural-networks','nas']}
     ],
     detect:[
-      {title:'검출기의 계보',desc:'영역 제안에서 실시간 집합 예측까지.',slugs:['detection-lineage','yolo-lineage','detr-lineage','rf-detr']},
+      {title:'검출기의 계보',desc:'영역 제안에서 실시간 집합 예측까지.',slugs:['detection-lineage','yolo-lineage','rtmdet-family','detr-lineage','rf-detr']},
       {title:'상자와 중복',desc:'경계상자와 후처리가 만나는 지점.',slugs:['iou-losses','nms','yolov5','yolox']},
       {title:'픽셀과 시간',desc:'위치뿐 아니라 모양과 움직임을 읽습니다.',slugs:['segmentation','optical-flow','depth-estimation','object-tracking']},
       {title:'현장으로',desc:'이미지 품질과 실제 장치가 만드는 제약.',slugs:['isp-pipeline','mobile-runtime','person-reid']}
