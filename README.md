@@ -10,7 +10,7 @@ AI 기술 문서를 **파이프라인 → 개념 지도 → 본문** 순서로 �
 
 - **오늘의 추천:** `data/recommendation.json`의 날짜·문서·선정 이유를 표시합니다.
 - **AI 소식:** `data/news.json`에서 마지막 게시일을 명시하고, 원문으로 연결합니다.
-- **에이전트 벤치마크:** [benchmarks.html](benchmarks.html)에 Claude Code·Codex·Gemini의 같은 벤치마크 탭에서 공개된 결과를 출처·모델·하네스·effort와 함께 표시합니다. Jev는 평가 목적이 달라 별도로 추적합니다. `data/benchmarks.json`에 확인일과 변경 이력을 보관합니다.
+- **Claude × Codex 비교:** [benchmarks.html](benchmarks.html)에서 Astra·Sol(6.1 포함)·Luna와 Fable·Opus·Sonnet의 low·medium·high·xhigh·max 결과를 비교합니다. 10개 벤치마크 선택, effort 곡선·점수/비용 표, 두 설정의 직접 비교를 제공합니다. AA의 공통 API 평가와 과거 제품 하네스 기록을 구분하고, 미공개·fallback·확인 날짜를 표시합니다. 데이터 원본과 갱신·검증기는 `ai-daily-routine`에서 관리합니다.
 - **기술 문서:** 각 문서에 목차와 이전·다음 탐색 링크가 있습니다.
 
 ## 구조
