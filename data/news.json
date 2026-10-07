@@ -14,6 +14,81 @@
             "MHRA는 변화하는 AI 의료기기의 변경 관리 지침 초안을 2026년 12월까지 제시하고, 전체 이행 로드맵을 2027년 봄까지 발표할 계획이다. 발표된 이행 계획이며 모든 새 규정이 이미 시행됐다는 뜻은 아니다."
           ],
           "takeaway": "의료 AI의 평가는 배포 전 성능뿐 아니라 배포 후 변화·감시·업데이트 관리까지 이어져야 한다."
+        },
+        {
+          "title": "Claude, Google Docs·Sheets·Slides 연동 공개 베타",
+          "category": "도구",
+          "url": "https://claude.com/resources/articles/claude-now-works-in-google-docs-sheets-and-slides",
+          "facts": [
+            "Anthropic은 10월 6일 모든 유료 Claude 플랜에 Google Docs·Sheets·Slides 연동 공개 베타를 발표했다. Google 파일 안의 사이드바와 Claude에서 파일을 생성·편집하는 커넥터를 제공한다.",
+            "Docs의 문서 편집, Sheets의 수식·피벗·차트, Slides의 기존 테마·레이아웃 활용을 지원한다. 파일 접근은 기존 Google 공유 권한을 따른다.",
+            "기본 설정은 편집 전 승인을 요청하며, 모든 편집 수락 설정으로 자동 적용할 수 있다. Team·Enterprise의 커넥터는 소유자 또는 기본 소유자가 먼저 활성화해야 한다."
+          ],
+          "takeaway": "문서·표·슬라이드 작업을 Claude 에이전트 흐름에 연결할 수 있으며, 자동 편집 범위는 승인 설정과 조직 권한으로 조절한다."
+        },
+        {
+          "title": "Anthropic, 보안 에이전트용 Cyber Verification Program 확대",
+          "category": "도구",
+          "url": "https://www.anthropic.com/news/cyber-verification-program",
+          "facts": [
+            "Anthropic은 10월 6일 Project Glasswing과 Cyber Verification Program을 통합하고 보안 작업 접근을 Defense Access·Red Team Access·Specialized Access의 세 단계로 구성했다.",
+            "검증된 보안 전문가와 조직은 자격·작업 범위에 따라 Opus 5.5·Sonnet 5.5·Mythos 5.1 등을 활용한다. Red Team은 승인된 보안 테스트를 수행하는 조직 대상이며 Specialized는 별도 심사를 거치는 제한된 접근이다.",
+            "일반 공개 모델도 소유한 코드의 검토·취약점 탐색, 알려진 문제 수정, 보안 경보 분류에 계속 사용할 수 있다. 확대 프로그램이 모든 사용자에게 모든 모델을 개방한다는 의미는 아니다."
+          ],
+          "takeaway": "보안 에이전트 모델 선택은 성능뿐 아니라 조직의 검증 자격과 허용된 테스트 범위까지 함께 확인해야 한다."
+        },
+        {
+          "title": "OpenAI Decisions API 공개 베타 — GPT-6 Luna로 에이전트 분류·라우팅",
+          "category": "도구",
+          "url": "https://developers.openai.com/api/docs/changelog",
+          "facts": [
+            "OpenAI는 10월 6일 Decisions API를 gpt-6-luna와 함께 공개 베타로 전환했다. 9월 말 제한된 미리보기 발표 이후 접근 단계가 바뀐 후속 소식이다.",
+            "텍스트와 이미지를 받아 조건의 확률, 고정된 선택지 중 선택, 평가 기준에 따른 점수를 반환하며 분류·우선순위 결정·라우팅에 사용할 수 있다.",
+            "현재 지원 모델은 gpt-6-luna이며 POST /v1/decisions로 호출한다. 복잡한 JSON 생성이나 도구 호출이 필요한 흐름은 Responses API와 구분해 설계한다."
+          ],
+          "takeaway": "Luna를 에이전트의 빠른 판단 단계에 배치하고, 복잡한 실행은 별도 에이전트 흐름으로 연결하는 구성을 검토할 수 있다."
+        }
+      ]
+    },
+    {
+      "date": "2026-10-05",
+      "items": [
+        {
+          "title": "Codex CLI 0.160.1 — Windows 원격 MCP 실행 환경 수정",
+          "category": "도구",
+          "url": "https://github.com/openai/codex/releases/tag/rust-v0.160.1",
+          "facts": [
+            "OpenAI는 10월 5일 Codex CLI 0.160.1을 공개했다. 10월 7일 확인 시 GitHub의 최신 안정 릴리스다.",
+            "원격 환경 변수를 명시한 stdio MCP 서버 실행에서도 SYSTEMROOT·TEMP·TMP를 보존하도록 수정했다. Unix 호스트에서 Windows 실행기의 시작 환경을 유지하는 패치다."
+          ],
+          "takeaway": "Windows 원격 실행기와 stdio MCP를 연결하는 사용자는 환경 변수 누락에 따른 시작 실패 수정이 포함된 버전을 확인할 수 있다."
+        }
+      ]
+    },
+    {
+      "date": "2026-10-01",
+      "items": [
+        {
+          "title": "Claude Code mods — 프롬프트·도구·권한 흐름을 TypeScript로 확장",
+          "category": "도구",
+          "url": "https://claude.com/resources/articles/claude-code-mods",
+          "facts": [
+            "Anthropic은 10월 1일 Claude Code mods를 소개했다. TypeScript 함수로 프롬프트, 사용자 인터페이스, 기본 도구와 새 기능을 바꾸며 플러그인을 통해 CLI와 데스크톱에 배포한다.",
+            "이벤트 전후 또는 대체·감싸기 방식으로 프롬프트 수정, 도구 호출 차단·재작성·재시도, 권한 승인·거부, 도구 출력 가리기 등을 구현할 수 있다.",
+            "mods는 샌드박스에서 실행되지 않고 Claude Code와 같은 머신 접근 권한을 가진다. 관리형 Team·Enterprise의 sec-default는 먼저 로드되어 위험한 사용자 mod 동작을 제한한다."
+          ],
+          "takeaway": "반복되는 팀 개발 규칙을 에이전트 동작에 반영할 수 있으며, 실행 코드의 출처와 조직 정책을 함께 관리해야 한다."
+        },
+        {
+          "title": "Codex CLI 0.160.0 — 에이전트 인계·서브에이전트·재연결 개선",
+          "category": "도구",
+          "url": "https://github.com/openai/codex/releases/tag/rust-v0.160.0",
+          "facts": [
+            "OpenAI는 10월 1일 Codex CLI 0.160.0을 공개했다. 선택적으로 사용하는 Guardian 검토가 이전 사용자 지시와 에이전트 인계 맥락을 가져올 수 있도록 확장했다.",
+            "서브에이전트는 시작 중인 실행 환경을 유지하고 환경 설정·준비 실패를 전달받도록 수정됐다. 연결 복구 후에는 제출 여부가 불확실한 메시지를 먼저 정리한 뒤 미전송 대기 메시지를 재개해 중복 전송을 방지한다.",
+            "터미널 UI의 세션 재개·분기에서 provider, reasoning-summary, verbosity 설정과 기록 표시를 보존하는 수정도 포함됐다."
+          ],
+          "takeaway": "여러 에이전트의 인계와 긴 작업의 재연결 안정성을 개선한 릴리스이며, 모델 자체의 벤치마크 점수 향상과는 별개의 변경이다."
         }
       ]
     },
