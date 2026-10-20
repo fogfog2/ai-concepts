@@ -861,7 +861,7 @@
       "subtitle": "재현할 수 없는 개선은 개선이 아니다",
       "stage": "infra",
       "summary": "무엇을 바꿔서 좋아졌는지 모르는 상태를 막는 법. 완전 재현이 불가능한 이유까지.",
-      "updated": "2026-08-11",
+      "updated": "2026-10-20",
       "slug": "experiment-tracking",
       "tags": [
         "common",
@@ -962,13 +962,43 @@
       "subtitle": "모델에 손을 달아주다",
       "stage": "apply",
       "summary": "관측·결정·행동의 순환. 언제 에이전트가 필요하고 언제 과한가.",
-      "updated": "2026-08-10",
+      "updated": "2026-10-20",
       "slug": "ai-agents-tool-use",
       "tags": [
         "llm",
         "systems"
       ],
       "url": "docs/ai-agents-tool-use.html",
+      "local": true
+    },
+    {
+      "title": "REA — 역공학 에이전트",
+      "subtitle": "관측에서 구현까지 근거를 잇다",
+      "stage": "apply",
+      "summary": "Claude·Codex와 분석 도구를 MCP로 연결한다. 근거·가설·미확인을 구분하고 독립 시험으로 재구현을 확인한다.",
+      "updated": "2026-10-20",
+      "slug": "rea-reverse-engineering",
+      "tags": [
+        "llm",
+        "systems",
+        "safety"
+      ],
+      "url": "docs/rea-reverse-engineering.html",
+      "local": true
+    },
+    {
+      "title": "장기 실행 연구 에이전트",
+      "subtitle": "대기·복구·조건부 기억",
+      "stage": "apply",
+      "summary": "Meta REA·Claude 워크플로·AReaL-RSI. 영속 상태와 연구 절차 개정을 가중치 학습과 구분하고 전체 비용을 평가한다.",
+      "updated": "2026-10-20",
+      "slug": "durable-research-agents",
+      "tags": [
+        "llm",
+        "systems",
+        "efficiency"
+      ],
+      "url": "docs/durable-research-agents.html",
       "local": true
     },
     {
@@ -1124,7 +1154,7 @@
       "subtitle": "데이터가 명령이 되는 순간",
       "stage": "eval",
       "summary": "지시와 데이터를 구분하지 못하는 구조적 취약점. 에이전트에서 커지는 위험.",
-      "updated": "2026-08-10",
+      "updated": "2026-10-20",
       "slug": "prompt-injection",
       "tags": [
         "llm",
