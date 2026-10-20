@@ -1,5 +1,6 @@
 {
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
+  "checked_at": "2026-10-20",
   "days": [
     {
       "date": "2026-10-15",
@@ -14,6 +15,42 @@
             "워크스페이스 기본 모델, 저장된 설정, 커스텀 에이전트, 예약 작업과 스크립트에 gpt-5.5가 남아 있는지 확인할 필요가 있다."
           ],
           "takeaway": "예약 실행이 예전 모델을 계속 지정하고 있다면 다음 실행 전에 모델 설정을 확인할 시점이다."
+        },
+        {
+          "title": "Codex CLI 0.163.0 — 실행 중 지시·설정 검색·도구 병렬 조회",
+          "category": "도구",
+          "url": "https://github.com/openai/codex/releases/tag/rust-v0.163.0",
+          "facts": [
+            "OpenAI는 10월 15일 Codex CLI 0.163.0을 공개했다. 10월 20일 확인 시 최신 안정 릴리스이며, 응답 중 후속 메시지로 방향을 바꾸고 턴 중단 시 실행 중인 Code Mode 셀과 중첩 도구 호출도 멈춘다.",
+            "/config에서 설정을 검색·변경하고 재시작 필요 여부를 확인할 수 있다. 스킬·메모리·대화 이력 등 서로 독립적인 읽기 전용 도구는 병렬로 조회한다.",
+            "저장된 스레드를 재개할 때 현재 관리 정책과 명시적 재정의를 지키면서 권한·네트워크 승인을 복원한다. /daemon으로 관리형 백그라운드 서버를 재시작하고 자동 재연결하는 기능도 추가했다."
+          ],
+          "takeaway": "긴 에이전트 작업을 실행 중에 조정하고, 재개·설정 변경 과정의 마찰을 줄이는 운영 개선이다."
+        },
+        {
+          "title": "Claude Opus 5.5 Fast mode 정식 제공 — 베타 헤더 제거",
+          "category": "도구",
+          "url": "https://platform.claude.com/docs/en/release-notes/overview",
+          "facts": [
+            "Anthropic은 10월 15일 Claude Opus 5.5 Fast mode를 연구 미리보기에서 정식 제공으로 전환했다. 별도 접근 신청과 fast-mode-2026-02-01 베타 헤더가 더 이상 필요하지 않다.",
+            "Start·Build·Scale 사용량 등급에 기본 Fast mode 속도 제한을 제공하며, 기존 헤더를 보내는 요청도 계속 동작한다. Opus 5·Opus 4.8 Fast mode는 연구 미리보기와 베타 헤더 요구가 유지된다."
+          ],
+          "takeaway": "Opus 5.5 에이전트의 지연 시간을 줄이는 옵션을 더 쉽게 적용할 수 있지만, 속도 옵션 자체를 벤치마크 품질 향상으로 해석하지 않는다."
+        }
+      ]
+    },
+    {
+      "date": "2026-10-14",
+      "items": [
+        {
+          "title": "Claude API·Managed Agents에 OpenTelemetry 실행 추적 베타",
+          "category": "도구",
+          "url": "https://platform.claude.com/docs/en/release-notes/overview",
+          "facts": [
+            "Anthropic은 10월 14일 Messages API 요청과 Claude Managed Agents 세션을 외부 관측 시스템에서 추적하는 OpenTelemetry export 베타를 발표했다.",
+            "Python·TypeScript·C#·Go·Java·PHP·Ruby SDK가 span을 내보낸다. API에서 span을 받으려면 Claude Console에 OpenTelemetry 목적지를 추가한다."
+          ],
+          "takeaway": "에이전트의 요청·세션 실행 경로를 기존 관측 도구에서 분석하는 기반이며, 작업 성공률이나 비용 평가는 별도로 수집해야 한다."
         }
       ]
     },
@@ -56,6 +93,16 @@
             "실행 중인 백그라운드 서버와 CLI 기본 기능 설정 차이 때문에 시작하지 못하던 문제도 수정했다. 호환성 검사는 명시적인 명령줄 기능 재정의에만 적용된다."
           ],
           "takeaway": "질문 응답이나 재연결 과정에서 CLI가 중단됐던 사용자가 확인할 유지보수 패치다."
+        },
+        {
+          "title": "Claude Managed Agents 동적 워크플로 — 여러 에이전트를 단계별 실행",
+          "category": "도구",
+          "url": "https://platform.claude.com/docs/en/release-notes/overview",
+          "facts": [
+            "Anthropic은 10월 9일 Claude Managed Agents의 dynamic workflows 베타를 발표했다. 수백 개 문서 검토처럼 여러 조각으로 나뉜 작업에서 에이전트가 워크플로 프로그램을 작성하고 서버가 백그라운드로 실행한다.",
+            "프로그램은 여러 에이전트를 단계별로 실행하고 결과를 결합한다. multiagent 설정에서 workflows를 활성화하고, 시스템 프롬프트로 시작 조건을 안내하며 workflow_run.* 이벤트로 진행 상황을 추적한다."
+          ],
+          "takeaway": "대량 병렬 작업을 개별 호출로 직접 조립하는 대신 관리형 워크플로로 실행할 수 있는 선택지가 생겼다."
         }
       ]
     },

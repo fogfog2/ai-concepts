@@ -55,7 +55,7 @@
       $('days').innerHTML='';
       return;
     }
-    $('news-date').textContent=latest?'최근 '+entries.length+'건 · 최신 기록 '+entries[0].date:'기록 · '+day.date+' / '+entries.length+'건';
+    $('news-date').textContent=latest?(state.newsCheckedAt?'확인 '+state.newsCheckedAt+' · ':'')+'최근 '+entries.length+'건 · 최신 기록 '+entries[0].date:'기록 · '+day.date+' / '+entries.length+'건';
     $('news-body').innerHTML=entries.map(function(entry){
       var it=entry.item,host='';
       try{host=new URL(it.url).hostname.replace(/^www\./,'')}catch(e){}
@@ -73,5 +73,5 @@
   $('doc-search').addEventListener('input',function(e){state.query=e.target.value.trim().toLocaleLowerCase();renderDocs()});
   document.addEventListener('keydown',function(e){if(e.key==='/'&&!/input|textarea/i.test(document.activeElement.tagName)){e.preventDefault();$('doc-search').focus()}});
   $('filter-toggle').addEventListener('click',function(){var open=$('filters').hidden;$('filters').hidden=!open;this.setAttribute('aria-expanded',String(open))});
-  Promise.all([getJson('data/artifacts.json'),getJson('data/news.json').catch(function(){return{days:[]}}),getJson('data/recommendation.json').catch(function(){return{slug:''}})]).then(function(data){state.items=data[0].items||[];state.stages=data[0].stages||[];state.tags=data[0].tags||[];state.days=data[1].days||[];$('hero-doc-count').textContent=state.items.length;renderStages();renderFilters();renderDocs();renderNews();renderRecommendation(data[2]);$('foot').textContent=state.items.length+' ARTICLES · '+state.stages.length+' STAGES'}).catch(function(){$('stage-grid').innerHTML='<div class="empty">기술 지도를 불러오지 못했습니다.</div>';$('docs-body').innerHTML='<div class="empty">문서 데이터를 불러오지 못했습니다. 새로고침해 주세요.</div>'});
+  Promise.all([getJson('data/artifacts.json'),getJson('data/news.json').catch(function(){return{days:[]}}),getJson('data/recommendation.json').catch(function(){return{slug:''}})]).then(function(data){state.items=data[0].items||[];state.stages=data[0].stages||[];state.tags=data[0].tags||[];state.days=data[1].days||[];state.newsCheckedAt=data[1].checked_at||'';$('hero-doc-count').textContent=state.items.length;renderStages();renderFilters();renderDocs();renderNews();renderRecommendation(data[2]);$('foot').textContent=state.items.length+' ARTICLES · '+state.stages.length+' STAGES'}).catch(function(){$('stage-grid').innerHTML='<div class="empty">기술 지도를 불러오지 못했습니다.</div>';$('docs-body').innerHTML='<div class="empty">문서 데이터를 불러오지 못했습니다. 새로고침해 주세요.</div>'});
 })();
