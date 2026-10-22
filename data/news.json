@@ -1,7 +1,45 @@
 {
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
-  "checked_at": "2026-10-22",
+  "checked_at": "2026-10-23",
   "days": [
+    {
+      "date": "2026-10-22",
+      "items": [
+        {
+          "title": "Claude Platform, Google Cloud에서 Anthropic 관리형으로 정식 제공",
+          "category": "도구",
+          "url": "https://claude.com/resources/articles/claude-models-on-google-cloud-anthropic-managed",
+          "facts": [
+            "Anthropic은 10월 22일 Claude Models on Google Cloud (Anthropic managed)의 일반 제공을 발표했다. Anthropic이 운영하는 Claude API에 Google Cloud 프로젝트를 통해 접근하며, 기존 Google 관리형 제공도 유지된다.",
+            "Google Cloud IAM 인증과 Marketplace 청구를 사용하고, Claude 사용액을 기존 Google Cloud 사용 약정에 반영할 수 있다. 현재 엔드포인트는 US·Global이다.",
+            "Claude Platform의 새 기능과 베타를 네이티브 플랫폼 공개일에 함께 제공한다고 안내했다. 공식 문서는 Opus 5.5 Fast mode 지원도 명시하지만, 제한된 베타는 별도 접근 자격이 필요하다."
+          ],
+          "takeaway": "Google Cloud를 쓰는 조직은 인증·청구를 유지하면서 Claude API 신기능을 도입하는 경로를 선택할 수 있으며, Anthropic 관리형과 Google 관리형의 지원·운영 조건을 구분해야 한다."
+        },
+        {
+          "title": "Anthropic, 서브에이전트를 스킬·도구로 통합하는 평가 중심 가이드 공개",
+          "category": "도구",
+          "url": "https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop",
+          "facts": [
+            "Anthropic은 10월 22일 일부 라우터·플래너·도메인 서브에이전트를 단일 에이전트 루프로 통합하는 설계 가이드를 공개했다. 필요한 스킬·도구만 점진적으로 불러오는 방식을 제안한다.",
+            "여러 기업 배포 비교에서 품질·비용·지연 개선을 자주 관측했다는 공급사 설명이다. 보편적 벤치마크 승리나 모든 다중 에이전트 구조의 대체를 입증한 결과는 아니며, 병렬 작업·독립 검증·컨텍스트 분리가 필요한 서브에이전트는 유지 대상으로 설명한다.",
+            "동반 공개한 anthropics/single-agent-loop-kit은 동일한 평가로 변경 전후를 비교하는 참조 구현이다. 저장소는 유지보수·기여 접수를 하지 않는다고 명시하며, 실제 모델 검증 범위도 예제의 일부 실행으로 제한해 공개한다."
+          ],
+          "takeaway": "에이전트 수를 늘리는 것만으로 성능을 기대하기보다, 작업 완료율·비용·지연을 같은 조건에서 측정하고 한 구성씩 바꿀 근거가 생겼다."
+        },
+        {
+          "title": "OpenAI Decisions API 정식 제공 — Luna 판단 요청당 질문 400개 지원",
+          "category": "도구",
+          "url": "https://developers.openai.com/api/docs/changelog",
+          "facts": [
+            "OpenAI는 10월 22일 gpt-6-luna 기반 Decisions API의 일반 제공을 발표했다. 10월 6일 공개 베타 이후 제공 단계와 기능이 바뀐 후속 소식이다.",
+            "요청당 질문 한도를 베타의 200개에서 400개로 늘렸다. 공통 입력의 프롬프트 캐싱, 질문별 지시의 이미지, input_json을 통한 구조화 데이터 입력도 지원한다.",
+            "현재 지원 모델은 gpt-6-luna다. 텍스트·이미지·JSON에서 조건 확률·선택·점수를 얻는 API이며, Codex CLI의 새 버전이나 다른 모델의 effort별 성능 향상 발표와는 구분한다."
+          ],
+          "takeaway": "반복 분류·라우팅·평가처럼 많은 판단을 묶는 에이전트 흐름에서 호출 구성과 캐시 사용을 재검토할 수 있다."
+        }
+      ]
+    },
     {
       "date": "2026-10-21",
       "items": [
@@ -48,6 +86,33 @@
             "SDK·CLI 자체의 변경도 별도로 있어 API 헤더만 바꾸는 것으로 업그레이드가 끝나지 않는다. 공식 안내는 코드 수정과 버전 전환을 함께 배포하고 새 버전으로 시험하도록 권고한다."
           ],
           "takeaway": "Claude 에이전트 의존성을 업데이트할 때 요청 파라미터·메시지 형식·SDK 타입을 함께 점검하고, 모델 성능 향상과 API 호환성 변경을 구분해야 한다."
+        },
+        {
+          "title": "Bear Robotics KINO-2 — 시연에서 로봇 조작 학습·평가·파일럿 배포까지",
+          "category": "로보틱스",
+          "url": "https://www.businesswire.com/news/home/20261021776819/en/Bear-Robotics-Launches-KINO-2-Through-Engineering-Collaboration-with-NVIDIA",
+          "facts": [
+            "Bear Robotics는 KINO-2 로봇 학습 플랫폼을 발표했다. 최초 Business Wire 원문의 datePublished는 10월 21일 11:30 UTC이며, 국내 배포본은 한국시간 10월 22일 11:30에 게시됐다. 오늘 최초 발표된 기술로 처리하지 않았다.",
+            "작업 시연으로 모델을 학습·개선하고 KR1 휴머노이드에서 스킬을 평가한 뒤 고객 파일럿에 배포하는 흐름이다. 자체 모델과 외부 기반 모델을 공통 학습·평가·배포 도구로 다룬다.",
+            "NVIDIA Isaac OS·TensorRT·양자화를 적용해 초기 비최적화 GR00T 추론을 약 500ms에서 60ms로 줄였다는 회사 내부 측정도 공개했다. 다른 로봇·모델·작업에서 같은 배수의 개선을 보장하는 독립 벤치마크는 아니다."
+          ],
+          "takeaway": "로봇 에이전트의 실용성은 모델뿐 아니라 시연 데이터·검증·온보드 추론·기존 운용 시스템의 연결까지 함께 평가해야 한다."
+        }
+      ]
+    },
+    {
+      "date": "2026-10-20",
+      "items": [
+        {
+          "title": "OpenAI API, 12시간 프롬프트 캐시 제공 — 긴 간격의 반복 입력 재사용",
+          "category": "시스템",
+          "url": "https://developers.openai.com/api/docs/guides/prompt-caching",
+          "facts": [
+            "OpenAI는 10월 20일 API 변경 기록에서 12시간 프롬프트 캐싱을 발표했다. 지원하는 Responses API 모델에서 공통 지시·도구·문맥을 긴 간격의 요청 사이에도 재사용하는 선택지다.",
+            "12시간 캐시 쓰기는 일반 입력 토큰 가격의 2.5배다. 공식 문서는 GPT-5.6 이후 지원 모델의 기본 30분 쓰기를 1.25배, 읽기는 대부분 0.1배·GPT-6.1 Sol은 0.05배로 안내한다.",
+            "최소 캐시 수명은 캐시 읽기 가격의 적용 자격을 다루며, 모든 요청에서 저장된 KV 재사용이나 낮은 지연을 보장하지 않는다. 적용 모델·공통 접두부·실제 사용량과 쓰기 비용을 함께 확인해야 한다."
+          ],
+          "takeaway": "같은 문맥을 하루 동안 반복 사용하는 에이전트는 절감을 검토할 수 있지만, 재사용이 적으면 높은 캐시 쓰기 비용이 이득을 상쇄할 수 있다."
         }
       ]
     },
