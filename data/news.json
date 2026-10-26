@@ -1,7 +1,47 @@
 {
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
-  "checked_at": "2026-10-26",
+  "checked_at": "2026-10-27",
   "days": [
+    {
+      "date": "2026-10-26",
+      "items": [
+        {
+          "title": "GPT-6.1 Terra 출시 — 컴퓨터 사용·effort별 비용 개선, Codex와 Work에 제공",
+          "category": "모델",
+          "url": "https://openai.com/index/introducing-gpt-6-1-terra/",
+          "facts": [
+            "OpenAI는 10월 26일 GPT-6.1 Terra를 출시했다. Plus·Pro·Enterprise·Edu의 ChatGPT Work와 Codex, API의 gpt-6.1-terra로 제공한다고 발표했으며 API 변경 기록도 이날 출시를 명시한다.",
+            "표준 API 단가는 100만 토큰당 입력 $1·캐시 읽기 $0.05·출력 $5다. GPT-5.6 Terra와 GPT-6.1 Sol보다 표준 단가가 50% 낮다는 설명이며 구독료 할인과 다르다. 모델 문서상 272K 초과 입력은 전체 요청의 입력·캐시 요율 2배·출력 1.5배가 적용되고 캐시 쓰기·도구 비용도 별도다.",
+            "Agents’ Last Exam에서 medium effort가 GPT-5.6 Terra보다 15%p 높고 비용은 약 3분의 1, max effort의 작업당 비용은 Claude Opus 5.5보다 약 9배 낮다고 OpenAI가 밝혔다. Astra·Sol보다 작업 완료가 3배 이상 빠르다는 내용도 공급사 측정이며 독립 평가나 모든 코딩 업무의 우위를 뜻하지 않는다.",
+            "모델 문서는 effort none·low·medium(기본)·high·xhigh·max를 지원하고 도구 호출에는 Responses API가 필요하다고 명시한다. 공급사는 가장 복잡한 코딩에는 Sol·Astra를 여전히 권장한다. 이 발표를 같은 effort·하네스의 독립 벤치마크 표에 합산하지 않았다."
+          ],
+          "takeaway": "화면 조작·시각 정보가 섞인 반복 업무의 비용 비교 후보가 늘었다. 자신이 쓰는 effort와 문맥 길이, 도구 비용을 고정해 Claude·Codex 대안을 비교해야 한다."
+        },
+        {
+          "title": "Claude Code 2.1.311 — 긴 세션 압축·MCP·서브에이전트 안정성 수정",
+          "category": "도구",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.311",
+          "facts": [
+            "Anthropic은 10월 26일 21:51:23 UTC, 한국시간 10월 27일 06:51에 Claude Code 2.1.311 안정판을 공개했다. 확인일과 구분해 GitHub 원문 UTC 발표일에 기록한다.",
+            "표준 문맥 세션이 요청 200K 토큰을 넘을 때 잘못된 1M 문맥 크레딧 오류로 중단되던 문제를 고쳐, 대화를 압축하고 계속 진행하도록 했다. 표준 세션에 1M 문맥을 무료 제공한다는 변경은 아니다.",
+            "서브에이전트 시작 후 연결된 MCP 서버 도구를 쓰지 못하던 문제, 압축 직후 MEMORY.md·CLAUDE.md의 옛 내용을 읽던 문제, SubagentStop 훅의 반복 실행과 작업 중인 하위 에이전트의 worktree 조기 삭제를 수정했다.",
+            "self-hosted-runner에는 --hold-idle-file·--max-hold-min을 추가했다. /effort는 계획 모델이 세션 모델과 다를 때 캐시 미스 경고가 누락되던 문제를 수정했고, Pro·Max의 한 시간 이내 재실행은 네트워크 요청 두 개를 생략해 시작 지연을 줄인다. 모델 자체의 effort별 성능 향상 발표는 아니다."
+          ],
+          "takeaway": "긴 코딩 세션과 MCP·백그라운드 작업의 복구·압축 경로를 점검할 릴리스다. 비용 변화는 모델 점수와 별도로 캐시 미스·재시작·실제 실행 시간을 측정해야 한다."
+        },
+        {
+          "title": "Gemini API, 신규 유료 프로젝트의 요청 저장 기본값 변경",
+          "category": "도구",
+          "url": "https://ai.google.dev/gemini-api/docs/changelog",
+          "facts": [
+            "Google은 10월 26일 Gemini API 변경 기록에서 신규 유료 프로젝트의 Generate Content API 요청 저장 기본값을 store=true로 바꿨다고 공지했다. 적용 대상은 generateContent·streamGenerateContent·batchGenerateContent이며 Interactions API의 기본 동작과 맞춘 변경이다.",
+            "기존 프로젝트는 현재 설정을 유지한다. 상세 가이드는 10월 26일 이전 생성 프로젝트의 Generate Content 저장이 기본 비활성화이며, AI Studio에서 이미 켜둔 경우는 예외라고 설명한다. 무료 티어 전체나 모든 기존 프로젝트가 일괄 변경됐다고 해석하지 않는다.",
+            "개별 요청에 store=false를 지정하거나 AI Studio Logs and Datasets 대시보드의 Settings에서 Generate Content API logging을 끄면 저장을 해제할 수 있다. 프로젝트 기본값과 요청별 옵션을 구분해 안내한다."
+          ],
+          "takeaway": "새 Gemini 기반 에이전트나 개발 환경을 만들 때 요청 저장 정책을 확인해야 한다. 기존 프로젝트를 복제·재생성하는 과정에서도 로그 기본값을 같은 것으로 가정하지 않는 편이 좋다."
+        }
+      ]
+    },
     {
       "date": "2026-10-25",
       "items": [
@@ -116,6 +156,18 @@
             "외부로 보내는 메시지는 주 작업 모델과 별도인 민감 정보 분류기가 검사하며, 승인과 행동 확인도 작업 모델 바깥에서 수행한다고 설명한다. 회사는 이 보호가 무해한 메시지를 막거나 문제를 놓칠 수 있어 연구 미리보기에서 계속 조정한다고 명시했다."
           ],
           "takeaway": "지속 실행 에이전트를 도입할 때 접근 취소·기억 초기화·외부 전송 검사를 각각 확인할 근거가 추가됐다. 이 설계 설명 자체가 독립적인 안전성 보증은 아니다."
+        },
+        {
+          "title": "Async-RBench — 비동기 서브에이전트 결과 처리 능력을 따로 평가",
+          "category": "연구",
+          "url": "https://arxiv.org/abs/2610.32429",
+          "facts": [
+            "10월 23일 09:53 UTC 제출된 Async-RBench v1은 비동기 작업 실행을 평가하는 연구 프리프린트다. 최종 작업 성공과 별도로, 늦게 도착한 서브에이전트 결과를 주 에이전트가 어떻게 반영하는지 검사한다. 논문이 연결한 공식 GitHub에 코드와 과제 구성이 공개돼 있다.",
+            "200개 실행 가능 과제·8개 시나리오에서 상태 조건에 따라 결과 전달을 제어한다. Event Response Contract는 바꿔야 할 것·유지할 것·금지된 변경·다시 검증할 것을 지정하고, Dynamic Replanning Score(DRS)는 대응 과정과 결과를 같은 비중으로 평가한다.",
+            "저자들이 평가한 9개 에이전트의 DRS는 19.2~45.1점이며 중복 보고·하위 에이전트 실패에서 특히 낮았다. 해당 실행 프로토콜의 평균 작업 성공률은 비동기 26.0%, 일괄 전달 29.7%였다. DRS 점수와 성공률은 다른 지표다.",
+            "이는 저자 측 실험이며 최신 Claude·Codex 모델의 동일 effort 제품 순위가 아니다. 비동기 기능이 언제나 불리하다는 결론이나 다른 벤치마크의 점수로 확장하지 않는다."
+          ],
+          "takeaway": "다중 에이전트 도구를 비교할 때 병렬 처리 속도뿐 아니라 오래된 결과·중복·실패를 반영하는 방식도 평가할 수 있다. 실제 사용하는 모델·effort·하네스에서 따로 검증해야 한다."
         }
       ]
     },
