@@ -1,10 +1,98 @@
 {
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
-  "checked_at": "2026-10-30",
+  "checked_at": "2026-10-31",
   "days": [
+    {
+      "date": "2026-10-30",
+      "items": [
+        {
+          "title": "Claude Code 2.1.314 — 관리자 effort 제한 복구·작업 폴더 밖 쓰기 차단",
+          "category": "도구",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.314",
+          "facts": [
+            "Anthropic은 10월 30일 01:06:26 UTC, 한국시간 10월 30일 10:06에 Claude Code 2.1.314 안정판을 공개했다. 관리자가 모델의 effort 상한을 낮춘 경우 Invalid effort level 오류가 반복되던 문제를 수정해 허용 수준으로 낮춰 재시도하고 실제 사용하는 수준을 알린다.",
+            "permissions.blockWritesOutsideWorkingDirectories 설정을 추가했다. 켜면 모든 권한 모드에서 Write·Edit·NotebookEdit가 작업 디렉터리 밖의 경로를 거부한다. 모든 셸 명령까지 차단하는 설정으로 확대 해석하지 않는다. 재개한 worktree에 샌드박스가 적용되지 않던 문제도 수정했다.",
+            "VS Code·Claude Desktop Code 탭에서는 20만 토큰 이상 대화를 유휴 상태에서 요약하고, 다음 메시지 때 프롬프트 캐시가 만료돼 있으면 그 요약을 사용한다. 압축·캐시·비용을 확인할 변화이며 모델의 문맥 창 확대 발표는 아니다.",
+            "claude -p 시작 실패를 무출력·종료 코드 0 대신 오류·코드 1로 보고하도록 고쳤다. 대규모 하위 에이전트 작업의 부모 메모리 사용과 손상된 기록 재개도 개선했다. 새 모델의 독립 성능 평가나 effort별 속도 향상을 측정한 결과는 아니다."
+          ],
+          "takeaway": "Claude·Codex를 비교할 때 선택한 effort와 실제 적용 수준을 함께 남겨야 한다. 자동화에서는 종료 코드·작업 폴더·유휴 압축을 확인하면 실패를 성공으로 처리하거나 예상 밖 파일을 수정하는 일을 줄일 수 있다."
+        },
+        {
+          "title": "Opus 4.8 Fast mode, 11월 30일 종료 예고 — Opus 5.5로 이전 권고",
+          "category": "모델",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/fast-mode",
+          "facts": [
+            "Anthropic은 10월 30일 릴리스 노트에서 Claude Opus 4.8의 Fast mode를 deprecated로 지정하고 2026년 11월 30일 제거한다고 공지했다. 예고일과 실제 종료일을 구분하며, 10월 30일에 이미 중단됐다고 소개하지 않는다.",
+            "제거 후 claude-opus-4-8에 speed: \"fast\"를 지정한 요청은 오류가 된다. 계속 Fast mode를 쓰려면 Opus 5.5로 이전하라고 안내한다. 이 공지는 Opus 4.8 일반 속도의 전체 모델 종료를 뜻하지 않는다.",
+            "Opus 5.5 Fast mode는 이미 정식 제공 중이고 Opus 5·4.8의 기존 Fast mode는 연구 미리보기다. Fast mode는 추론 서비스 속도 설정으로, 응답에 쓰는 토큰과 깊이를 조절하는 effort와 구분한다. 이번 공지에 새 단가 인하나 독립 벤치마크 결과는 없다."
+          ],
+          "takeaway": "Opus 4.8 Fast mode를 고정한 에이전트는 종료 전에 모델·speed 설정과 오류 처리를 옮겨야 한다. Claude·Codex 비용·속도 비교에서는 모델 버전·effort·서비스 속도를 각각 기록할 수 있다."
+        },
+        {
+          "title": "Gemini Computer Use 정식 제공 — 두 API에서 UI 에이전트 구축 지원",
+          "category": "도구",
+          "url": "https://ai.google.dev/gemini-api/docs/computer-use",
+          "facts": [
+            "Google은 10월 30일 Gemini API 변경 기록에서 Computer Use 도구를 Interactions·GenerateContent API 모두에 정식 제공한다고 발표했다. 기존 기능의 제공 단계 변경이며 새 기반 모델 출시나 모든 에이전트의 독립 성능 향상 발표와 구분한다.",
+            "스크린샷에서 클릭·키 입력 등 UI 동작을 생성해 브라우저·모바일·데스크톱 에이전트를 만들 수 있다. 개발자가 클라이언트 실행 환경과 동작 처리·다음 화면 반환 루프를 구현해야 하며 API가 사용자의 기기를 자동으로 운영해 주는 관리형 실행 환경은 아니다.",
+            "현재 공식 가이드는 Gemini 4 Argon·3.8 Flash·3.5 Flash-Lite·3 Flash Preview를 지원 목록으로 안내한다. 3.8 Flash를 권장하며 도구 정식 제공과 목록에 포함된 개별 모델의 Preview 상태를 구분한다.",
+            "클라이언트는 safety_decision의 승인 요구·차단을 처리해야 한다. 스크린샷 프롬프트 인젝션 탐지는 기본값 false인 선택 기능이며 별도로 켜야 한다. 정식 제공을 무오류·무감독 실행 보장으로 해석하지 않는다."
+          ],
+          "takeaway": "Claude·Codex 외 UI 자동화 후보로 같은 작업을 시험할 수 있다. 비교 시 모델·thinking 설정뿐 아니라 클라이언트 실행기·승인 처리·화면 검사·전체 작업 지연과 비용을 함께 맞춰야 한다."
+        },
+        {
+          "title": "GPT-6 Rosalind Research, 승인된 Business에 제한 제공 — Work·Codex에서 사용",
+          "category": "과학",
+          "url": "https://help.openai.com/en/articles/20001193-gpt-rosalind-for-life-sciences-research",
+          "facts": [
+            "OpenAI는 10월 30일 Business 릴리스 노트에서 생명과학용 GPT-6 Rosalind Research를 일부 승인된 Business 고객에게 Work·Codex에서 순차 제공한다고 밝혔다. Chat 탭에는 제공되지 않으며 조직과 사용자 모두 Research 승인이 필요하다.",
+            "기존 GPT-5.5 Rosalind Research는 계속 선택할 수 있다. Discovery 승인은 GPT-6 Research 접근을 부여하지 않으며 구독 구매·워크스페이스 가입·Life Sciences Research 플러그인 설치만으로도 접근 권한이 생기지 않는다.",
+            "공식 도움말은 별도로 승인된 조직에만 API 접근을 안내하고, Enterprise에서는 기본 꺼짐인 2주 Admin Preview를 거친다고 설명한다. Business 공지를 모든 요금제·API·일반 고객의 즉시 정식 제공으로 확대하지 않는다.",
+            "이번에 확인한 원문은 모델 접근·설정에 관한 공지다. 새 임상 효과나 독립적인 과학 성능 평가, Astra·Sol·Claude 대비 같은 조건의 우열을 입증한 결과는 제시하지 않는다."
+          ],
+          "takeaway": "승인된 연구팀은 Work·Codex의 도구 기반 생명과학 작업에 새 Research 모델을 검토할 수 있다. 실제 사용 전 기존 승인 범위·모델 활성화·제품별 권한을 따로 확인해야 한다."
+        }
+      ]
+    },
     {
       "date": "2026-10-29",
       "items": [
+        {
+          "title": "Pro 100·500의 Work·Codex 한도 2배 — Pro 200 축소 계획 취소",
+          "category": "도구",
+          "url": "https://help.openai.com/en/articles/6825453-chatgpt-release-notes",
+          "facts": [
+            "OpenAI는 10월 29일 공식 ChatGPT·Business 릴리스 노트에서 Pro 100·500의 포함 Work·Codex 사용 한도를 이전의 2배로 늘렸다고 발표했다. 기존 API 크레딧 혜택과 다른 구독 사용량 변경이다.",
+            "9월 29일 이메일로 예고한 Pro 200 한도 축소도 취소했다. 이미 높은 한도인 가입자는 그대로 유지하고, 낮은 한도인 가입자는 10월 29일부터 2배로 높여 같은 한도에 맞춘다. 모든 Pro 200 계정이 현재 높은 한도에서 다시 2배가 된다는 뜻은 아니다.",
+            "원문은 Business Premium의 포함 사용량도 늘린다고 안내하지만 본문의 구체적인 2배 수치는 Pro 100·500에 명시한다. 이 문구만으로 Business Premium의 정확한 배수나 Business Standard·Plus의 한도 변화까지 확정하지 않는다.",
+            "이 공지는 모델별 토큰 단가 인하·추론 속도 향상·effort별 성능 개선을 발표한 것이 아니다. 포함 사용량의 증가를 완료 작업 수 2배나 API 키 호출 비용 면제로 바꾸어 해석하지 않는다."
+          ],
+          "takeaway": "Codex를 주로 쓰는 Pro 사용자는 실제 계정의 새 포함 한도와 잔여량을 확인할 수 있다. 모델·effort·속도에 따른 사용량 소모와 별도 API 크레딧은 구분해 예산을 비교해야 한다."
+        },
+        {
+          "title": "Preflight Bench — UI 에이전트의 클릭 직전 픽셀 검사·대기 규칙 연구 공개",
+          "category": "연구",
+          "url": "https://arxiv.org/abs/2610.39282",
+          "facts": [
+            "10월 29일 03:33:26 UTC 공개된 arXiv v1 연구는 화면을 보고 계획한 클릭이 실행 전 화면 변화로 빗나가는 문제를 다룬다. 저자 측 측정에서 공개 웹페이지 31개의 완전 로드 뒤 클릭은 30초 내 0.4%가 오래된 위치가 됐지만, 페이지를 연 직후 첫 1초에는 17%였다.",
+            "합성 화면의 검사 벤치마크에서는 픽셀 비교가 이동한 표적을 82% 탐지·오탐 4%·약 0.3초로 검사했다고 보고했다. 같은 위치 확인 과제에서 Opus 5.5와 비슷한 탐지율에 지연은 약 8분의 1이었다. 이는 제한된 하위 과제의 저자 실험이며 에이전트 전체 성능 순위가 아니다.",
+            "논문·공식 GitHub는 벤치마크 생성기·검사·코드·결과를 공개한다. 클릭 전 위치는 픽셀로 확인하고, 이전 동작의 성공 여부 같은 의미 판단은 모델에 맡기며, 검사 실패 시 새 스크린샷으로 다시 계획하는 방식을 제안한다.",
+            "실제 페이지 측정은 비상업용 31개·한 브라우저·3일 조건이고 상업 사이트는 공개 크롤 기록으로 분석했다. 10개 오픈소스 에이전트 비교는 대기 규칙을 재구현한 것으로 제품을 끝까지 실행한 평가가 아니다. 독립 저자 연구의 사전 공개이며 이번 작업에서 재현하지 않았다."
+          ],
+          "takeaway": "브라우저 에이전트 개선 시 더 높은 effort나 큰 모델을 쓰기 전에 로딩 대기와 클릭 직전 위치 검사를 시험할 근거가 된다. 자신의 페이지·실행기에서 전체 성공률·오탐·추가 지연을 다시 측정해야 한다."
+        },
+        {
+          "title": "Claude 사용량·비용 분석 API 베타 — Console·Enterprise 집계 통합",
+          "category": "도구",
+          "url": "https://platform.claude.com/docs/en/manage-claude/usage-cost-analytics-api",
+          "facts": [
+            "Anthropic은 10월 29일 Usage and Cost Analytics API 베타를 발표했다. /v1/organizations/analytics/usage와 /cost에서 Claude Console·Enterprise 조직의 토큰·요청·비용을 모델·워크스페이스·API 키·사용자나 서비스 계정별로 조회한다.",
+            "analytics-usage-cost-2026-08-24 베타 헤더가 필요하다. 헤더의 8월 날짜를 출시일로 쓰지 않는다. Console은 Admin API 자격, Enterprise는 Analytics API 활성화와 primary owner가 발급한 read:analytics 범위 키가 필요하다.",
+            "일·시간·분 단위 집계와 필터·그룹화를 지원하지만 실시간 계측 API는 아니다. 데이터는 보통 4시간 안에 갱신되고 최대 24시간 걸릴 수 있으며 data_refreshed_at 이후는 누락·부분 집계일 수 있다. 비용의 amount는 할인 후·크레딧 적용 전 값이다.",
+            "기존 Usage and Cost API와 Enterprise의 usage_report·cost_report·사용자별 보고 엔드포인트는 legacy로 지정됐지만 계속 지원한다. 새 API는 행 구조·시간 범위·페이지 처리 등이 달라 주소만 바꾸는 이전은 충분하지 않다."
+          ],
+          "takeaway": "Claude 에이전트의 모델·서비스 등급별 실제 비용을 비교할 운영 기반이 늘었다. effort·작업 성공률·지연은 실행 로그와 따로 연결하고, 데이터 갱신 시점과 크레딧 전후를 맞춰 Codex 비용과 비교해야 한다."
+        },
         {
           "title": "Codex CLI 0.166.0 — 세션 복원·reasoning 토큰 집계·네트워크 진단 개선",
           "category": "도구",
