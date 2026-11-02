@@ -1,7 +1,48 @@
 {
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
-  "checked_at": "2026-11-01",
+  "checked_at": "2026-11-03",
   "days": [
+    {
+      "date": "2026-11-02",
+      "items": [
+        {
+          "title": "Claude message threads 베타 — 새 메시지만 전송, 서버 대화는 단기 보관",
+          "category": "도구",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/message-threads",
+          "facts": [
+            "Anthropic은 11월 2일 Messages API의 message threads 베타를 발표했다. message-threads-2026-08-12 헤더를 사용하며 헤더의 8월 날짜가 발표일은 아니다. Claude API·Claude Platform on AWS·Anthropic 관리형 Google Cloud·Microsoft Foundry에서 제공한다고 안내한다.",
+            "처음에 system·tools·대화 전체를 보내고 이후에는 새 메시지와 직전 응답 id만 보낸다. API가 대화를 다시 구성해 모델을 호출한다. 공급사는 긴 에이전트 루프의 업로드·검증·토큰화 작업이 줄어 첫 토큰 지연이 낮아진다고 설명하지만 독립 측정값이나 새 모델 성능 점수를 발표한 것은 아니다.",
+            "스레드는 마지막 요청 후 5분에 만료되고 마지막 사용 후 최대 1시간 안에 삭제한다. 저장은 best-effort이며 이어갈 수 없으면 404 오류가 나므로 앱이 대화 원본을 보관하고 새 create 요청으로 전체를 재전송하는 복구 경로가 필요하다. 영구 메모리나 장기 세션 저장소가 아니다.",
+            "스레드가 프롬프트를 자동으로 캐싱하지는 않으며 cache_control 등 기존 캐시 설정은 별도다. 전송량 감소를 문맥 전체의 입력 토큰 무료화나 단가 인하로 해석하지 않는다. 공식 문서는 ZDR·HIPAA 대상이 아니라고 구분한다."
+          ],
+          "takeaway": "긴 Claude API 에이전트의 전송 지연을 줄이는 실험 후보가 생겼다. Claude·Codex 비교에서는 모델·effort를 고정하고 첫 토큰 지연·전체 작업 시간·캐시·총비용을 나눠 측정하며 만료와 재전송도 시험해야 한다."
+        },
+        {
+          "title": "Gemini 2.5 Pro·Flash 지원 중단 예고 — 12월 1일 모델·요율 자동 전환",
+          "category": "모델",
+          "url": "https://aistudio.google.com/docs/changelog",
+          "facts": [
+            "Google은 11월 2일 Gemini 2.5 Pro·2.5 Flash를 deprecated로 지정하고 Google AI Studio에서 더 이상 선택할 수 없다고 공지했다. 이번 공지는 새 Gemini 모델 출시가 아니라 기존 모델의 지원·이전 정책 변경이다.",
+            "2026년 12월 1일부터 gemini-2.5-pro API 요청은 gemini-3.8-flash로, gemini-2.5-flash 요청은 gemini-3.5-flash-lite로 자동 연결하고 각각 대상 모델의 요율을 적용한다고 안내한다. 11월 2일에 API가 이미 모두 자동 전환됐다는 뜻은 아니다.",
+            "Google은 12월 1일 전에 모델 문자열을 직접 바꾸고 이전 가이드를 검토하라고 권고한다. 기존 2.5 단가·응답 특성이 계속 유지된다고 가정할 수 없으며 전환 뒤 실제 모델과 청구를 확인해야 한다.",
+            "공식 변경 기록은 function calling·thought_signature 검증, thinking_budget에서 thinking_level로의 전환, 일부 sampling 파라미터와 미리 채운 모델 턴 제거를 호환성 변경으로 명시한다. 같은 요청을 새 모델로 보내는 것만으로 기존 에이전트 동작이 보장되지는 않는다."
+          ],
+          "takeaway": "Gemini 2.5를 고정한 도구·에이전트는 기한 전에 함수 호출·추론 설정·출력·비용을 다시 검증해야 한다. Claude·Codex와 비교할 때 자동 연결된 새 모델을 옛 2.5 결과로 표시하지 않도록 실제 모델을 남겨야 한다."
+        },
+        {
+          "title": "LinearB Agentic Studio 공개 — 질문으로 개발 지표·AI 비용을 분석",
+          "category": "도구",
+          "url": "https://linearb.io/blog/agentic-studio",
+          "facts": [
+            "LinearB는 11월 2일 Agentic Studio를 공개했다. 기존 이용자는 탐색 메뉴의 Agentic 토글로 사용하고 기존 화면으로 돌아갈 수 있으며, 관리자가 Company Settings에서 허용 역할을 선택하거나 전체 접근을 끌 수 있다고 안내한다.",
+            "자연어 질문에 차트·수치·기간·사용한 지표와 해석을 함께 제공하고, 원하는 지표·차트를 만들어 대시보드로 공유하는 기능을 설명한다. 수치는 LinearB public API의 실시간 호출에서 가져온다는 공급사 설명이다.",
+            "공식 글은 Copilot·Cursor·Claude Code·Amazon Q·Kiro의 토큰·비용 추적과 AI 도입, 병합 빈도·cycle time·리뷰 지연·재작업 등 개발 전달 지표를 함께 본다고 명시한다. 이 글만으로 Codex의 별도 수집 범위나 모든 서비스의 동등한 계측을 확정하지 않는다.",
+            "이번 원문은 제품 제공·활용법 공지이며 같은 모델·effort에서 에이전트 성능이나 생산성이 향상됐다는 독립 실험 결과가 아니다. 모델 벤치마크 점수와 팀의 실제 전달 지표를 구분한다."
+          ],
+          "takeaway": "Claude Code 등 도입 후 비용만 늘었는지, 리뷰·재작업·배포 흐름도 개선됐는지 함께 확인하는 운영 도구 후보가 된다. 도입 전 수집 가능한 도구·지표·권한 범위를 확인해 자신의 팀 데이터로 비교해야 한다."
+        }
+      ]
+    },
     {
       "date": "2026-10-31",
       "items": [
@@ -196,6 +237,18 @@
     {
       "date": "2026-10-28",
       "items": [
+        {
+          "title": "Copilot 클라우드 경험 정식 제공 — 기기 간 세션 이어쓰기·Actions 자원 공유",
+          "category": "도구",
+          "url": "https://github.blog/changelog/2026-10-28-work-from-anywhere-with-a-new-connected-copilot-cloud-experience/",
+          "facts": [
+            "GitHub는 10월 28일 유료 Copilot 플랜에 연결된 클라우드 경험과 클라우드 샌드박스를 정식 제공하고 순차 배포한다고 발표했다. 웹·모바일·Copilot 앱·CLI·VS Code·Slack·Teams에서 같은 세션을 이어갈 수 있다. Copilot Free의 기존 Chat 제공과 새 유료 경험은 구분한다.",
+            "기본 실행 환경은 GitHub 관리형 샌드박스이며 종료 때 snapshot을 저장해 다른 화면에서 재개한다. Skills·커넥터·MCP로 작업 맥락을 더하고 조직 정책·도구 승인·MCP 허용 목록을 적용한다. 저장소 쓰기 권한이 없으면 해당 저장소에서는 읽기 전용이라고 안내한다.",
+            "플랜에 포함된 Actions 컴퓨팅 혜택은 고정 표준 러너 분에서 같은 가치의 달러 기준 공유 풀로 바뀌며 표준 러너·클라우드 샌드박스, Team·Enterprise Cloud의 더 큰 호스팅 러너에 쓸 수 있다. 제품별 계측·요율은 유지되고 비싼 실행 자원은 풀을 더 빨리 소모한다. 포함 금액 자체의 증가나 모델 토큰 단가 인하 발표가 아니다.",
+            "발표문은 클라우드 샌드박스 과금을 2026년 11월부터 시작하고 포함 Actions 혜택에서 차감한다고 명시하지만 정확한 시작 일자는 적지 않는다. 11월 1일 일괄 청구가 이미 실행됐다고 확정하지 않는다. 기존 Foundry Copilot 하네스 공개 미리보기와도 다른 제품의 정식 제공이다."
+          ],
+          "takeaway": "Claude·Codex와 클라우드 작업을 비교할 때 세션 재개·조직 권한 외에 추론과 별도의 샌드박스 자원 소모도 확인해야 한다. 빌드와 에이전트가 공유 혜택을 함께 쓰므로 실제 사용량·예산을 맞춰 비교할 수 있다."
+        },
         {
           "title": "Gemini 4 Carbon 발표 — 사이버 방어 중심 제한 접근, 일반 공개는 추후",
           "category": "모델",
