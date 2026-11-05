@@ -1,7 +1,60 @@
 {
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
-  "checked_at": "2026-11-05",
+  "checked_at": "2026-11-06",
   "days": [
+    {
+      "date": "2026-11-05",
+      "items": [
+        {
+          "title": "Claude 조직 접근 제어 베타 — Console IP 허용 목록과 Enterprise 전체 로그아웃 API",
+          "category": "도구",
+          "url": "https://platform.claude.com/docs/en/release-notes/overview#november-5-2026",
+          "facts": [
+            "Anthropic은 11월 5일 Claude Console 조직의 IP 허용 목록을 베타로 발표했다. 조직당 IPv4·IPv6 주소 또는 CIDR 범위를 최대 1,000개 등록하고, 대상 서비스에 목록 밖 주소로 접속한 요청을 거부한다.",
+            "가이드는 Messages·Files 등 Claude API와 Managed Agents의 관리 엔드포인트 등을 대상으로 명시한다. Managed Agents 런타임 내부의 네트워크 통제에는 적용되지 않으며 Bedrock·Claude Platform on AWS·Google Cloud·Foundry 경로도 이 목록의 적용 대상이 아니다.",
+            "같은 날 Claude Enterprise 조직은 Admin API의 `POST /v1/organizations/users/{user_id}/sign_out`을 베타로 사용할 수 있게 됐다. `write:members` 권한과 `admin-user-sign-out-2026-10-08` 베타 헤더가 필요하다. 헤더의 날짜는 이번 기능 발표일과 다르다.",
+            "이 요청은 계정 전체의 로그인 세션·신뢰 기기와 해당 조직의 OAuth 토큰을 종료한다. API 키·다른 조직의 OAuth 토큰·Claude Code 클라우드 세션·예약 루틴은 종료하지 않으며, 구성원 자격은 유지돼 즉시 다시 로그인할 수 있다."
+          ],
+          "takeaway": "API·무인 에이전트의 접속 네트워크와 사용자 세션을 따로 관리할 수 있다. 전체 로그아웃을 키 폐기나 실행 중인 클라우드 작업의 중단으로 취급하지 않아야 한다."
+        },
+        {
+          "title": "GPT-6 Cyber 발표 — 승인된 일부 Daybreak Red 고객에게 API·Codex로 제한 제공",
+          "category": "모델",
+          "url": "https://openai.com/index/introducing-gpt-6-cyber/",
+          "facts": [
+            "OpenAI는 11월 5일 보안 연구 모델 GPT-6 Cyber를 발표했다. 처음에는 승인된 일부 Daybreak Red 고객만 API·Codex에서 사용할 수 있으며, 모든 Red 고객으로 확대하는 것은 향후 계획이다.",
+            "공급사 평가의 ExploitGym 성공률은 GPT-6 Cyber 48.5%, GPT-5.6 Cyber 32.1%다. 약 51% 상대 향상이라는 설명은 이 평가의 결과이며 Claude·Astra·Sol의 일반 코딩 작업이나 같은 effort의 독립 비교로 확대할 수 없다.",
+            "별도 범위 준수 실험에서 배포용 프롬프트 없이 99.93%, 프롬프트를 사용하면 100%의 시행에서 범위 밖 서비스를 공격하지 않았다고 밝혔다. 이는 공급사의 제한된 실험 결과이며 모든 실제 배포에서의 준수 보장은 아니다.",
+            "Daybreak Red API는 기본적으로 IP 허용 목록을 요구하며 일부 예외가 있다. ZDR API 고객도 일반적으로 고객 저장소의 암호화 기록을 30일 보관·검사하는 Private Safety Processing을 사용해야 한다고 설명했다."
+          ],
+          "takeaway": "승인된 보안 연구에는 새 선택지가 생겼다. 일반 Codex 구독의 새 기본 모델로 간주하지 말고 접근 승인·실행 범위·데이터 처리 조건을 확인해 도입하면 된다."
+        },
+        {
+          "title": "Gemini Omni 1.2 Flash 정식 제공 — 최대 15초 영상과 낮아진 출력 요금, 1.1 전환 예고",
+          "category": "비전",
+          "url": "https://blog.google/innovation-and-ai/technology/developers-tools/introducing-gemini-omni-1-2-flash/",
+          "facts": [
+            "Google은 11월 5일 Gemini Omni 1.2 Flash를 Gemini API 유료 티어 등에 정식 제공한다고 발표했다. Gemini 앱의 Google AI Ultra 대상 배포는 순차적으로 진행한다고 설명했다.",
+            "일반 영상 생성·대화형 편집은 최대 15초를 지원한다. API 변경 이력은 첫·끝 프레임 보간을 3~10초, 영상 연장을 턴당 3~10초·전체 최대 30초로 구분하므로 모든 방식이 한 번에 15초인 것은 아니다.",
+            "Standard 동영상 출력 가격은 100만 토큰당 12달러로 전작보다 약 30% 낮아졌다. 공식 가격표의 720p 초당 5,792토큰 기준으로 약 0.07달러/초이며 입력은 별도다. 변경 이력은 유료 티어 처리 한도도 2배로 늘었다고 밝혔다.",
+            "12월 3일부터 `gemini-omni-1.1-flash` API 요청을 1.2로 자동 연결하고 1.2 요율을 적용할 예정이다. 이는 향후 전환 공지이며 확인일 현재 이미 모든 1.1 요청이 전환됐다는 뜻은 아니다."
+          ],
+          "takeaway": "영상 자동화에서 길이·편집 기능과 출력 비용을 함께 조정할 수 있다. 보간·연장별 길이 제한과 12월의 모델 자동 전환을 작업 흐름에 반영하면 된다."
+        },
+        {
+          "title": "Gemini API, Office 파일 입력·멀티모달 도구 응답 확대 — ODS는 첫 시트만 처리",
+          "category": "도구",
+          "url": "https://aistudio.google.com/docs/changelog#11-05-2026",
+          "facts": [
+            "Google은 11월 5일 Gemini API의 PPT·ODP·ODS 입력 지원과 DOC 페이지 이미지 처리를 추가했다. DOCX·DOTX·ODT·PPTX·XLSX·XLS의 기존 처리 방식은 바뀌지 않았다고 명시했다.",
+            "DOC·PPT·ODP는 전체 페이지·슬라이드를 이미지로 처리한다. ODS는 첫 시트의 데이터와 수식만 전달하며 다른 시트는 무시한다. 기존 XLSX·XLS도 첫 시트만 읽되 값만 전달하므로 형식별 차이가 있다.",
+            "GenerateContent의 함수 응답에는 Office·OpenDocument 파일과 음성·영상을 담을 수 있고, `fileData`로 Files API URI를 돌려줄 수도 있다. `inlineData`·`fileData`의 `displayName`과 영상 처리 모드도 지원한다.",
+            "Interactions의 `function_result`에는 `document`·`audio`·`video` 블록을 인라인 데이터나 URI로 전달할 수 있다. 영상 블록은 `v1beta`·`v1alpha`에서 제공되며 파일은 일반 입력과 같은 방식으로 처리된다."
+          ],
+          "takeaway": "도구가 생성한 문서·음성·영상 파일을 에이전트의 다음 판단에 바로 돌려줄 수 있다. 여러 시트가 있는 자료는 필요한 시트를 첫 위치로 옮기거나 파일을 나누어 처리해야 한다."
+        }
+      ]
+    },
     {
       "date": "2026-11-04",
       "items": [
@@ -76,6 +129,30 @@
             "가이드는 Gemini API 유료 Tier 1 이상, 프로젝트당 저장 음성 합계 200개 한도, 마지막 사용 후 1년 보관을 명시한다. 합성에 쓰거나 다음 리믹스의 기준으로 참조하면 만료 기간이 다시 시작된다."
           ],
           "takeaway": "음성 페르소나를 처음부터 다시 만들지 않고 변형을 관리할 수 있다. 제품별 목소리를 설계할 때 유료 티어·저장 한도·보관 기간을 함께 반영하면 된다."
+        },
+        {
+          "title": "Images 2.6 제공 — Codex·ChatGPT 이미지 작업과 API의 complexity·SVG 내보내기 확대",
+          "category": "비전",
+          "url": "https://openai.com/index/introducing-images-2-6/",
+          "facts": [
+            "OpenAI는 11월 4일 Images 2.6을 ChatGPT·Codex의 모든 구독 티어와 API에 제공한다고 발표했다. API에는 GPT-Image-2.6 Flare와 Sunburst가 있으며 GIF 제작 기능도 소개했다.",
+            "이미지 생성이 이전보다 50% 빨라졌고 Flare의 품질 `low` 설정에서는 최단 6초에 생성할 수 있다는 수치는 공급사의 설명이다. Sunburst는 `medium`·`high` 품질에서 세부 묘사와 편집 간 일관성을 강화했다고 밝혔다.",
+            "새 `complexity` 매개변수는 요청을 충족하기 위한 계획·장면 복잡도를 조절하고, `quality`는 시각적 디테일을 조절한다. 공급사는 일반 편집에 낮은 complexity를 권장하며 이를 텍스트 모델의 effort별 독립 평가로 제시하지 않았다.",
+            "ChatGPT에서 제공하던 영역 지정 이미지 마크업을 API에도 추가하고 SVG 내보내기를 지원한다. 캐릭터·제품·브랜드의 일관성 개선 역시 공급사의 기능 설명이며 이번 회차에서 속도·품질을 직접 재측정하지 않았다."
+          ],
+          "takeaway": "Codex로 웹·앱 자산을 만들 때 빠른 시안·부분 수정·벡터 결과물을 연결할 수 있다. 품질과 complexity를 따로 조절하며 실제 작업의 지연과 결과물을 확인하면 된다."
+        },
+        {
+          "title": "FrontierPhysics 논문 공개 — Opus·Astra·Sol·Fable의 연구 작업을 하네스·effort별 평가",
+          "category": "연구",
+          "url": "https://arxiv.org/abs/2611.06910",
+          "facts": [
+            "11월 4일 18:56:22 UTC에 공개된 FrontierPhysics v1은 물리학자 42명의 실제 연구에서 만든 9개 분야·56개 과제를 평가한다. 문헌 조사·계획·실험·원고 작성을 요구하며 22개 모델·26개 구성에서 과제당 3회, 구성당 168회 시행했다.",
+            "저자 실험은 기본적으로 최고 추론 effort를 쓰고 GPT 4종을 `xhigh`로도 실행했다. Claude는 Claude Code·GPT는 Codex CLI를 사용하며 시행당 10시간 제한이 있어 하네스와 예산을 함께 읽어야 한다.",
+            "전체 통과 Pass@1은 Opus 5.5 `max` 27.4%(46/168), Astra `max` 23.2%·`xhigh` 19.6%, GPT-6.1 Sol `max` 19.6%, Fable 5.1 `max` 11.3%였다. 저자 평가이며 low·medium 전체 곡선이나 모든 작업의 우열을 보여주는 결과는 아니다.",
+            "통과에는 결정적 검증과 필수 루브릭을 모두 충족해야 한다. 저자는 GPT-6 Astra 168회 중 9회의 잘못된 실패 판정과 리뷰어 모델에 따른 관대함 차이도 보고했다. 주요 구성의 신뢰구간이 겹치므로 작은 점수 차이를 확정적 순위로 단정할 수 없다."
+          ],
+          "takeaway": "연구 에이전트를 고를 때 모델 이름에 더해 effort·하네스·시행 예산·검증기를 확인할 새 사례다. 이 과학 연구 결과는 평소 코딩 업무에서 직접 비교할 후보를 정하는 참고 자료로 쓰면 된다."
         }
       ]
     },
@@ -1206,35 +1283,6 @@
             "같은 시기 Alphabet 은 DeepMind 의 일상 운영을 Hassabis 에서 부사장 Koray Kavukcuoglu 로 넘겼다 — 이 인사는 8월 11일 회차에 이미 기록했다."
           ],
           "takeaway": "규제가 법으로 오기 전에 업계 자율기구로 선점하려는 움직임이다. 캘리포니아 법안 표결(8월 13일 회차)과 EU AI Act 투명성 의무 시행이 겹친 시점이라는 것이 배경으로 보인다. 다만 현재는 \"제안했다\"는 단계이고 참여 기업·권한·강제력은 아무것도 정해지지 않았다."
-        }
-      ]
-    },
-    {
-      "date": "2026-08-13",
-      "items": [
-        {
-          "title": "캘리포니아 AI 법안 30여 건, 오늘 세출위 보류파일 표결",
-          "category": "규제",
-          "url": "https://www.transparencycoalition.ai/news/ai-legislative-update-august7-2026",
-          "facts": [
-            "캘리포니아 상·하원 세출위원회가 8월 13일 보류파일(suspense file) 표결을 연다.",
-            "보류파일에 오른 법안은 이 자리에서 위원회 과반을 얻지 못하면 **회기 내 되살릴 수 없다.**",
-            "계류 중인 AI 법안은 30여 건이다.",
-            "주요 법안으로 AB 412(학습에 쓴 저작물 문서화와 권리자 접근 수단 제공), AB 1988(PAUSE Act, 챗봇 안전 기준),"
-          ],
-          "takeaway": "학습 데이터 출처 문서화(AB 412)와 인력 대체 사전 고지(SB 951)는 통과 시 개발·운영 절차를 직접 바꾼다. 오늘이 사실상 생사 분기점이다."
-        },
-        {
-          "title": "arXiv 비전 신규 공개 — 위장 물체 검출의 폐쇄세계 가정, 물리 기반 디헤이징",
-          "category": "비전",
-          "url": "https://arxiv.org/list/cs.CV/recent",
-          "facts": [
-            "오늘 목록에 오른 논문 중 둘이 관심 영역과 닿는다. (제출일은 8월 11일, 공개는 오늘이다.)",
-            "OPCNet**(arXiv:2608.11135)은 기존 위장 물체 검출(COD)이 \"모든 이미지에 위장 물체가 있다\"는 폐쇄세계 가정 위에 서 있어",
-            "순수 배경이나 비위장 물체가 들어오면 거짓 양성이 급증한다고 지적한다. 14개 출처에서 모은 16,245장 규모의 OPC16K 를 내놓고,",
-            "과제를 분할에서 **위치 추정 + 위장 존재 여부 추론**의 결합 문제로 재정의한다."
-          ],
-          "takeaway": "둘 다 \"벤치마크가 실제 배포 조건과 다르다\"는 같은 문제를 다른 방향에서 친다. 특히 COD 의 거짓 양성 지적은 임계값·평가 설계와 직결된다."
         }
       ]
     }
