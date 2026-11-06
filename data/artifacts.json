@@ -576,6 +576,22 @@
       "local": true
     },
     {
+      "title": "Weight-Space Programming",
+      "subtitle": "LLM이 신경망 가중치를 읽고 고친다",
+      "stage": "align",
+      "summary": "직접 가중치 편집의 원리, Qwen 반복 억제 사례와 평가 한계, 선형 예제.",
+      "updated": "2026-11-06",
+      "slug": "weight-space-programming",
+      "tags": [
+        "common",
+        "alignment",
+        "training",
+        "efficiency"
+      ],
+      "url": "docs/weight-space-programming.html",
+      "local": true
+    },
+    {
       "title": "LoRA",
       "subtitle": "얼린 가중치 옆에 샛길을 내다",
       "stage": "align",
