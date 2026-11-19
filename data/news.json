@@ -1,7 +1,72 @@
 {
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
-  "checked_at": "2026-11-19",
+  "checked_at": "2026-11-20",
   "days": [
+    {
+      "date": "2026-11-19",
+      "items": [
+        {
+          "title": "Claude Code 2.1.328 안정판 — 클라우드 auto mode와 하위 모델 effort 회귀 수정",
+          "category": "도구",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.328",
+          "facts": [
+            "Anthropic은 11-19 01:14:04 UTC / 한국시간 10:14:04에 2.1.328 안정판을 게시했다. Opus 4.6·Sonnet 4.6의 auto mode를 Bedrock·Google Cloud Agent Platform·Foundry·Claude apps gateway에 추가했다. 별도 permission mode를 지정하지 않은 대화형 세션은 auto mode로 시작하며 모든 모델·비대화형 실행에 같은 기본값이 적용된다는 뜻은 아니다.",
+            "mcp_tool hook에도 onFailure: block을 추가해 hook 호출 실패 시 동작을 막을 수 있다. 호스트는 CLAUDE_CODE_DISABLE_DEFERRED_TOOL_RESUME으로 claude -p --resume·--continue가 hook이 미룬 도구 호출을 다시 실행하지 못하게 할 수 있다.",
+            "Bedrock·Agent Platform·Foundry가 하위 에이전트 진행 요약의 effort 설정을 거절하면 세션에서 해당 모델의 effort가 꺼지던 2.1.327 회귀를 고쳤다. 제3자 공급자의 복합 MCP 입력 스키마 누락·잘못된 스키마로 전체 요청이 실패하던 경우도 수정했다.",
+            "Code Mode의 장시간 승인 대기·재개 시 skill/hook 문맥 유지·읽기 전용 하위 에이전트의 쓰기 도구 노출을 수정했다. 자동 compaction의 시스템 프롬프트 재생성과 재시도·비스트리밍 응답의 토큰 표시도 고쳤다. 표시 토큰 수정은 실제 요금 인하나 모델 성능 상승 발표가 아니다."
+          ],
+          "takeaway": "제3자 클라우드와 하위 에이전트를 쓸 때 권한 기본값·hook 실패 처리·effort 유지에 영향을 주는 업데이트다. auto mode 도입 범위와 실제 사용 모델을 확인해 적용할 수 있다."
+        },
+        {
+          "title": "Claude Code 2.1.329 안정판 — Remote Control·팀 effort 복구와 Code Mode 관측 지원",
+          "category": "도구",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.329",
+          "facts": [
+            "Anthropic은 11-19 22:14:41 UTC / 한국시간 11-20 07:14:41에 2.1.329 안정판을 게시했다. Remote Control 재시작 후 실제 effort가 초기값으로 돌아가지만 앱은 선택값을 표시하던 문제를 수정했다. Ultracode에서 시작한 세션은 아직 제외된다.",
+            "agent teams의 이름 있는 teammate에서 Agent 도구의 effort 매개변수가 무시되던 문제도 수정했다. 이는 선택한 추론 설정의 적용·유지 수정이며 새로운 effort 단계나 해당 단계의 성능 점수를 추가한 발표가 아니다.",
+            "OpenTelemetry events·metrics를 켠 상태에서도 Code Mode를 사용할 수 있고 코드가 호출한 도구의 이벤트를 내보낸다. tracing은 여전히 Code Mode를 끈다고 명시해 관측 방식의 지원 범위를 구분했다.",
+            "잠금·네트워크 지연으로 설정을 읽지 못한 뒤 저장하면서 .claude.json이 기본값으로 초기화되던 경우, 인증 해제 중 refresh가 다시 로그인시키던 경우를 수정했다. /code-review는 PR 대신 현재 branch를 조용히 검토하던 경우 gh pr diff로 PR을 읽거나 읽지 못했다고 알리도록 고쳤다."
+          ],
+          "takeaway": "effort를 골랐다는 화면 표시와 실제 실행 설정이 일치하도록 하는 수정이 핵심이다. 원격·팀 세션과 관측 도구를 함께 쓸 때 업그레이드 후 설정 유지와 리뷰 대상을 확인할 가치가 있다."
+        },
+        {
+          "title": "Gemini 도구 검색 Preview — 필요할 때 스키마 로딩, 검색 호출 비용은 별도 고려",
+          "category": "도구",
+          "url": "https://aistudio.google.com/docs/tool-retrieval",
+          "facts": [
+            "Google은 API 변경 이력 11-19에서 Tool retrieval Preview를 발표했다. v1beta Interactions API에서 도구 스키마를 필요할 때 검색·로딩하며 generateContent에는 지원하지 않는다. 발표 근거: https://aistudio.google.com/docs/changelog",
+            "서버 검색은 tool_search와 defer_loading: true로 켜며 원격 MCP에도 지연 로딩을 적용한다. 초기에는 도구 이름·설명만 보이고 매개변수 스키마는 나중에 읽는다. execution: client 방식은 앱이 검색·순위·필터링을 맡고 검색마다 왕복 요청이 추가된다.",
+            "서버 검색도 같은 요청 안에서 전체 문맥·로드된 스키마를 포함하는 추가 모델 호출을 수행하며 total_tool_use_tokens로 집계한다. 로드한 스키마는 이후 입력에도 과금되고 캐시 조건에 따라 비용이 달라진다. 스키마 토큰을 줄였다고 총비용이 항상 줄어드는 기능은 아니다.",
+            "변경 이력은 Gemini 3.6 이후·Gemini 4 전체를 설명하지만 상세 가이드의 Supported models는 Hydrogen·Argon·3.8 Flash·3.6 Flash만 나열한다. 문서 간 범위가 달라 Neon·Carbon 지원을 이번에 확정하지 않았으며 실제 요청이나 추가 공식 설명이 필요하다. API 표면은 Preview 중 변경될 수 있다."
+          ],
+          "takeaway": "큰 도구 라이브러리에서 필요한 정의만 활성화할 수 있다. 지원 모델을 확인하고 검색 횟수·캐시·추가 문맥 처리량을 측정해 정적 로딩과 비교해야 한다."
+        },
+        {
+          "title": "Genie 4 유료 API 정식 제공 — 연구 미리보기 이후 실시간 월드 생성 접근 확대",
+          "category": "비전",
+          "url": "https://aistudio.google.com/docs/models/genie-4",
+          "facts": [
+            "Google은 공식 API 변경 이력 11-19에서 models/genie-4의 GA를 알렸다. 10-27 신뢰된 테스터 대상 연구 미리보기의 후속 제공 단계 변경이며 모델 최초 발표일을 바꾸지 않았다. 모델은 정식 제공이지만 연결 API 버전은 v1beta다. 발표 근거: https://aistudio.google.com/docs/changelog",
+            "Interactions API에서 텍스트·16:9 참고 이미지 또는 둘을 입력해 월드를 시작하고 WebRTC·WebSocket으로 24 fps 영상·48 kHz 스테레오 오디오를 전송한다. WASD·방향키와 진행 중 텍스트 이벤트로 조작하며 물리 정확도·로봇 훈련 성과를 독립 검증했다는 뜻은 아니다.",
+            "유료 tier 요금은 100만 토큰당 입력 $1.50·텍스트 출력 $9·영상 출력 $17.50이다. 영상 스트림은 스테레오 오디오 포함 약 $0.10/초로 설명하므로 초당 추정 비용과 각 토큰 단가를 구분한다.",
+            "가이드는 브라우저 탭을 닫거나 transport를 끊는 것만으로 서버 생성·과금이 즉시 멈추지 않으므로 세션을 complete()로 종료하라고 명시한다. 고정 길이 영상 편집·4K 업샘플링용 Omni와 실시간 상호작용 세션도 구분한다. 가이드: https://aistudio.google.com/docs/genie"
+          ],
+          "takeaway": "연구 미리보기에서 유료 API 실험으로 옮길 수 있는 후속 변화다. 실시간 에이전트 환경을 만들 때 장면 일관성·지역 지연·세션 종료와 생성 시간 비용을 함께 측정해야 한다."
+        },
+        {
+          "title": "OpenAI Performance Factory 공개 — Codex로 성능 회귀 조사·검토·복구 확인 자동화",
+          "category": "시스템",
+          "url": "https://openai.com/index/how-openai-performance-factory-keeps-chatgpt-fast/",
+          "facts": [
+            "OpenAI는 11-19 내부 Performance Factory의 구조·운영 사례를 공개했다. Codex 기반 cloud 에이전트가 성능 경보에서 조사 task를 만들고 원인·수정안을 제안하며 배포 뒤 기준 성능 복구 여부를 확인한다. 외부 고객용 제품 출시나 모든 ChatGPT 응답의 즉시 속도 향상 발표는 아니다.",
+            "공급사는 3개월 남짓 동안 조사 1,700건 이상·원인 규명 600건 이상·하루 17건 조사를 보고했다. task service·dispatch·cloud Codex·상태 변화 구독을 결합하며, 이 집계는 독립 벤치마크의 완료율이나 모델별 성능 점수가 아니다.",
+            "별도의 Codex 세션이 원인과 수정안을 반박·검토한다. 수동으로 확인한 원인 제안 100건 중 정확한 것은 70%, 나머지는 보완 또는 인과 확인이 필요했다고 밝혔다. PR의 병합·배포는 엔지니어가 판단하고 배포 뒤 성능이 회복되지 않으면 다시 조사한다.",
+            "model·skill 변경은 과거 장애 backtest로 평가하되 사건 정답·이전 조사 기억·후속 결과 누출을 제한한다. 조사 품질과 엔지니어에게 전달하는 요약 품질을 따로 평가하며, 경보 없는 선제 탐지는 향후 확장 방향으로 설명한다."
+          ],
+          "takeaway": "에이전트를 한 번 실행하는 것에서 상태·사건 기반 조사 공정으로 확장한 사례다. 실제 운영에는 독립 검토·사람의 변경 승인·배포 후 측정과 모델/skill 변경 평가가 필요하다는 근거를 제공한다."
+        }
+      ]
+    },
     {
       "date": "2026-11-18",
       "items": [
@@ -141,6 +206,18 @@
             "headless·원격 세션 재개 시 메시지·작업 유실과 compaction 중 잘린 응답의 도구 호출·결과 누락을 수정했다. claude -p는 모델 설정 조회가 멈추면 10초 뒤 해당 설정 없이 진행하며, 단일 모델 응답 속도나 토큰 한도를 높인 변경은 아니다."
           ],
           "takeaway": "MCP 설정·로컬 파일 보존과 중단·복구 동작에 영향을 주는 안정판이다. 무인 실행에서 인증값 입력 경로와 세션 재개를 확인할 가치가 있으며 모델 성능 향상 발표와는 구분한다."
+        },
+        {
+          "title": "QDA — Opus 5.5 high로 양자화 레시피를 탐색하는 폐루프 연구",
+          "category": "연구",
+          "url": "https://arxiv.org/abs/2611.23388v1",
+          "facts": [
+            "연구진은 11-17 19:00:09 UTC 제출한 사전공개 논문에서 에이전트가 양자화 레시피를 만들고 평가·수정하는 QDA를 제안했다. 원 모델의 비공개 추론 trace에 대한 출력 KL divergence로 후보를 수분 안에 평가하고 유망 후보는 긴 생성으로 반복 등 실패를 확인한다. 본문: https://arxiv.org/html/2611.23388v1",
+            "주요 실험의 에이전트는 Claude Code 2.1.303·Opus 5.5 high 단일 설정이다. 모델·정밀도별 탐색은 GH200 8개를 8시간 사용한 64 GPU-hours와 모델 토큰 비용 $19–75를 쓰며 최종 vLLM 평가는 그 탐색 예산에서 제외된다. 모든 effort나 Codex·Astra·Sol·Fable의 같은 조건 비교가 아니다.",
+            "4개 추론 모델의 W4A16·W4A8·W3A16에서 최강 공개 레시피 대비 평균 정확도 개선을 각각 0.9·1.4·2.2%p로 보고했다. 별도 320B GLM-5.3-Flash NVFP4 실험은 GB300 16개로 약 6.5시간·토큰 $69를 사용해 FP8 평균 정확도의 98.3%를 회복했다고 밝혔다. 98.3%는 원 정확도 비율로 정답률 98.3%나 API 비용 절감률이 아니다.",
+            "큰 모델 비교는 같은 engine·GPU·sampling에서 NVIDIA·Red Hat AI NVFP4 체크포인트의 96.9%·96.3% 회복률과 대조했다. 저자 평가이며 GPU 탐색·최종 검증 비용을 포함한 총소유비용 측정은 아니다. v1 초록은 library·evaluator·harness를 공개 예정으로 기술하므로 이 논문만으로 코드 공개 완료를 주장하지 않는다."
+          ],
+          "takeaway": "모델마다 다른 양자화 조합을 에이전트·저렴한 대리 지표로 탐색하는 활용법이다. 추론 비용을 낮출 가능성과 별개로 탐색 GPU·에이전트 토큰·최종 검증 비용, high 단일 설정과 하네스를 함께 봐야 한다."
         }
       ]
     },
@@ -1579,33 +1656,6 @@
             "Python·TypeScript·C#·Go·Java·PHP·Ruby SDK가 span을 내보낸다. API에서 span을 받으려면 Claude Console에 OpenTelemetry 목적지를 추가한다."
           ],
           "takeaway": "에이전트의 요청·세션 실행 경로를 기존 관측 도구에서 분석하는 기반이며, 작업 성공률이나 비용 평가는 별도로 수집해야 한다."
-        }
-      ]
-    },
-    {
-      "date": "2026-10-13",
-      "items": [
-        {
-          "title": "Gemini 4 Argon 일반 제공 — API·Antigravity·앱 접근 확대",
-          "category": "모델",
-          "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/",
-          "facts": [
-            "Google은 10월 13일 Gemini 4 Argon을 AI Studio·Gemini platform의 API로 개발자와 기업에 제공한다고 발표했다. Antigravity는 Google AI Ultra, Gemini 앱과 검색 AI Mode는 Ultra·Pro 가입자 대상으로 안내했다.",
-            "출시 프로모션 API 가격은 100만 토큰당 입력 2달러·출력 10달러이며 캐시 입력은 95% 할인으로 소개했다. 영구 가격으로 확정된 조건은 아니다.",
-            "Google은 대규모 코드 리팩터링, 업무 문서 분석과 다단계 실행의 개선 사례를 공개했다. 공급사 사례와 서로 다른 벤치마크의 순위를 사이트의 기존 Claude·Codex 비교 점수로 합산하지 않았다."
-          ],
-          "takeaway": "Gemini 에이전트 도입을 검토할 때 모델 API, Antigravity, 앱의 이용 조건을 각각 확인하고 실제 업무로 품질·비용을 비교할 수 있다."
-        },
-        {
-          "title": "Gemini 앱에 Antigravity 코딩 에이전트·40개 이상 앱 연결",
-          "category": "도구",
-          "url": "https://gemini.google/release-notes/",
-          "facts": [
-            "10월 13일 공식 릴리스 노트는 Gemini macOS 앱 안에 Antigravity를 통합했다고 밝혔다. 계획을 승인하면 에이전트가 백그라운드에서 코드를 작성·시험하고 검토 시점을 알린다.",
-            "코딩 연동은 Antigravity 지원 지역의 18세 이상 개인 계정과 자격을 갖춘 업무 계정에 영어로 제공한다고 안내했다. Windows 앱에도 같은 코딩 연동이 제공된다는 발표는 아니다.",
-            "Customize 메뉴에서 스킬·연결 앱을 관리하며 40개 이상 앱·서비스를 연결할 수 있다. 연결 앱 대부분은 미국 영어 대상이고 일부만 다른 영어권·브라질·인도로 확대된다."
-          ],
-          "takeaway": "채팅에서 코딩·외부 앱 실행으로 이어지는 흐름이 강화됐으며, 한국에서 사용할 기능은 언어·지역·계정별 지원 범위를 먼저 확인해야 한다."
         }
       ]
     }
