@@ -208,7 +208,30 @@
     <p class="subtitle">넓히는 문제와 좁히는 문제는 방향이 반대다</p>
     <p class="dek">장면은 약 <strong>20 스톱</strong>인데 센서는 12, 화면은 10이다. 부족한 범위를 여러 장으로 넓히는 일과 넓힌 것을 다시 화면에 눌러 담는 일은 <em>이름만 같고 방향이 반대인 두 문제</em>다. 휴대폰이 브라케팅을 포기하고 짧은 노출 버스트를 고른 이유도 여기 있다.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>FastGaMer · 1분 44초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">밝기만 키우면 HDR 색도 돌아올까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/fastgamer/poster.jpg" width="720" height="1280"
+             aria-label="FastGaMer 한국어 해설 영상" src="../media/vision/fastgamer/video.mp4">
+        <track kind="captions" src="../media/vision/fastgamer/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/fastgamer/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 선형 RGB 입력에 적용할 게인을 바꿔 보세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">단일 게인</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">채널별 게인</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/fastgamer/view-a.jpg" alt="단일 게인 설명용 도식"><p>입력 [0.2, 0.4, 0.6]에 2를 곱해 [0.4, 0.8, 1.2]를 얻습니다. 채널 비율이 유지됩니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/fastgamer/view-b.jpg" alt="채널별 게인 설명용 도식"><p>같은 입력에 [3, 2, 1.5]를 곱하면 [0.6, 0.8, 0.9]가 됩니다. 선형 값의 설명용 예시입니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/fastgamer/script.txt">시간표와 전체 대본</a>
+      <a href="https://openaccess.thecvf.com/content/CVPR2026/html/Guan_FastGaMer_Efficient_GainMap_Learning_for_Practical_Inverse_Tone_Mapping_CVPR_2026_paper.html">Guan et al. · CVPR 2026 · FastGaMer</a>
+      <a href="../media/vision/fastgamer/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>장면 ↔ 화면</dt><dd>약 20 ↔ 10 스톱</dd></div>
     <div><dt>브라케팅</dt><dd>−3/0/+3 → +6 스톱</dd></div>

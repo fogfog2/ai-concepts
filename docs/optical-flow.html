@@ -208,7 +208,30 @@
     <p class="subtitle">시간 축의 대응 문제 — 각 픽셀이 어디로 갔는가</p>
     <p class="dek">검출·분할·깊이는 전부 <em>한 장</em>을 다룬다. 동영상은 프레임이 이어져 있다는 점이 다르고, 따로 처리하면 <strong>일관성과 움직임 정보</strong>를 잃는다. Optical flow 는 픽셀마다 이동 벡터를 답하는데, 미지수 2개에 식이 1개라 <em>가정 없이는 풀리지 않는다</em>.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>All-Pairs Correlation · 1분 45초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">모든 점의 상관값을 저장해야 할까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/flow-correlation/poster.jpg" width="720" height="1280"
+             aria-label="All-Pairs Correlation 한국어 해설 영상" src="../media/vision/flow-correlation/video.mp4">
+        <track kind="captions" src="../media/vision/flow-correlation/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/flow-correlation/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 위치를 조회할 때 계산하는 범위를 비교하세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">전체 행렬</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">선택 블록</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/flow-correlation/view-a.jpg" alt="전체 행렬 설명용 도식"><p>출발점과 도착점의 모든 조합을 미리 계산한 상관 행렬입니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/flow-correlation/view-b.jpg" alt="선택 블록 설명용 도식"><p>조회 이웃이 걸친 블록을 계산합니다. 강조된 같은 셀의 내적은 두 방식에서 같습니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/flow-correlation/script.txt">시간표와 전체 대본</a>
+      <a href="https://openaccess.thecvf.com/content/CVPR2026/html/Briedis_Efficient_All-Pairs_Correlation_Volume_Sampling_for_Optical_Flow_Estimation_CVPR_2026_paper.html">CVPR 2026 · 그림 4, 표 1</a>
+      <a href="../media/vision/flow-correlation/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>출력</dt><dd>픽셀마다 이동 벡터 (u,v)</dd></div>
     <div><dt>근본 난점</dt><dd>조리개 문제</dd></div>

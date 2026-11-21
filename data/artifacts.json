@@ -571,7 +571,7 @@
       ],
       "url": "docs/denoising.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "디블러링",
@@ -587,7 +587,7 @@
       ],
       "url": "docs/deblurring.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "데이터 품질과 커리큘럼",
@@ -1375,7 +1375,7 @@
       ],
       "url": "docs/optical-flow.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "깊이 추정",
@@ -1423,7 +1423,7 @@
       ],
       "url": "docs/hdr-tone-mapping.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "다중 객체 추적",
@@ -1455,7 +1455,7 @@
       ],
       "url": "docs/segmentation.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "지역 특징과 매칭",

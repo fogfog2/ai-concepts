@@ -208,7 +208,30 @@
     <p class="subtitle">어디까지가 그것인가 — 시맨틱·인스턴스·판옵틱</p>
     <p class="dek">검출은 물체를 사각형으로 감싼다. 그런데 도로와 하늘은 사각형이 아니고, 결함의 면적은 상자로 잴 수 없다. 분할은 <strong>픽셀 단위로</strong> 답하지만, 그 말은 여러 뜻을 담고 있다 — 종류만 가를 것인가, 개체를 나눌 것인가, 배경까지 포함할 것인가.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>CAR-SAM · 1분 52초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">4비트에서 마스크 단서가 퍼진다면?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/car-sam/poster.jpg" width="720" height="1280"
+             aria-label="CAR-SAM 한국어 해설 영상" src="../media/vision/car-sam/video.mp4">
+        <track kind="captions" src="../media/vision/car-sam/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/car-sam/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 예시 프롬프트의 어텐션 분포를 비교하세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">집중된 분포</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">퍼진 분포</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/car-sam/view-a.jpg" alt="집중된 분포 설명용 도식"><p>예시 확률 [0.1, 0.7, 0.1, 0.1]은 특정 위치에 집중됩니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/car-sam/view-b.jpg" alt="퍼진 분포 설명용 도식"><p>예시 확률 [0.2, 0.4, 0.2, 0.2]에서는 같은 위치의 비중이 줄어듭니다. 두 분포는 설명용입니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/car-sam/script.txt">시간표와 전체 대본</a>
+      <a href="https://openaccess.thecvf.com/content/CVPR2026/html/Wen_CAR-SAM_Cross-Attention_Reconstruction_for_Post-Training_Quantization_of_the_Segment_Anything_CVPR_2026_paper.html">Wen et al. · CVPR 2026 · 표 1</a>
+      <a href="../media/vision/car-sam/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>시맨틱</dt><dd>종류만 · 개체 구분 없음</dd></div>
     <div><dt>인스턴스</dt><dd>개체 구분 · 배경 제외</dd></div>
