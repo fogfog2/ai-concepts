@@ -208,7 +208,30 @@
     <p class="subtitle">말로 못 하는 것을 그림으로 — 공간을 지정하는 법</p>
     <p class="dek">"왼쪽 위에 앉아 오른쪽을 보는 고양이"라고 써도 잘 안 된다. <strong>텍스트는 공간 정보를 담기에 부적합한 매체</strong>이기 때문이다. 필요한 것은 스케치·자세·깊이 맵 같은 <em>이미지 조건</em>이고, 그것을 원본을 망가뜨리지 않고 붙이는 방법이 ControlNet 이다.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>ControlNet · 1분 39초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">윤곽선 조건을 더해도 첫 출력이 그대로인 이유는?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/controlnet-zero-conv/poster.jpg" width="720" height="1280"
+             aria-label="ControlNet 한국어 해설 영상" src="../media/vision/controlnet-zero-conv/video.mp4">
+        <track kind="captions" src="../media/vision/controlnet-zero-conv/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/controlnet-zero-conv/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 기본 특징과 조건 특징에서 연결 가중치를 바꿔 보세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">초기 연결</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">학습 후 예시</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/controlnet-zero-conv/view-a.jpg" alt="초기 연결 설명용 도식"><p>출력 연결의 가중치와 편향이 0이면 조건 분기가 더하는 값은 0입니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/controlnet-zero-conv/view-b.jpg" alt="학습 후 예시 설명용 도식"><p>설명용 가중치 0.5와 조건 특징 0.6을 곱하면 기본 특징 0.4에 0.3을 더합니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/controlnet-zero-conv/script.txt">시간표와 전체 대본</a>
+      <a href="https://openaccess.thecvf.com/content/ICCV2023/html/Zhang_Adding_Conditional_Control_to_Text-to-Image_Diffusion_Models_ICCV_2023_paper.html">ControlNet · ICCV 2023 · 식 2 및 그림 2</a>
+      <a href="../media/vision/controlnet-zero-conv/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>푸는 문제</dt><dd>공간·구도 통제</dd></div>
     <div><dt>구조</dt><dd>원본 얼림 + 인코더 사본</dd></div>

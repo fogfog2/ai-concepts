@@ -208,7 +208,30 @@
     <p class="subtitle">얼린 가중치 옆에 샛길을 내다 — 0.4%만 학습하는 법</p>
     <p class="dek">7B 모델의 전체 파인튜닝에는 112GB가 든다. 가중치는 14GB뿐인데 옵티마이저 상태가 여덟 배를 차지한다. LoRA는 원본을 얼리고 <strong>변화량만 저랭크로</strong> 학습해 이 덩어리를 통째로 없앤다. 그리고 학습이 끝나면 원본에 더해버릴 수 있어 <strong>추론 비용은 0</strong>이다.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>BiLaLoRA · 1분 49초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">안개 제거 모델의 어느 층을 바꿀까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/bilalora-dehazing/poster.jpg" width="720" height="1280"
+             aria-label="BiLaLoRA 한국어 해설 영상" src="../media/vision/bilalora-dehazing/video.mp4">
+        <track kind="captions" src="../media/vision/bilalora-dehazing/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/bilalora-dehazing/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 네 후보 층에서 어댑터를 적용할 위치를 비교하세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">모든 후보 층</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">선택한 층</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/bilalora-dehazing/view-a.jpg" alt="모든 후보 층 설명용 도식"><p>네 층에 모두 저랭크 갱신을 넣은 설명용 기준입니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/bilalora-dehazing/view-b.jpg" alt="선택한 층 설명용 도식"><p>합성 예에서는 둘째와 넷째 층에만 갱신을 적용합니다. 실제 위치는 모델과 데이터에서 찾습니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/bilalora-dehazing/script.txt">시간표와 전체 대본</a>
+      <a href="https://openaccess.thecvf.com/content/CVPR2026/html/Zhang_Bilevel_Layer-Positioning_LoRA_for_Real_Image_Dehazing_CVPR_2026_paper.html">BiLaLoRA · CVPR 2026 · 식 3, 표 1</a>
+      <a href="../media/vision/bilalora-dehazing/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>핵심</dt><dd>ΔW = BA</dd></div>
     <div><dt>학습 비율</dt><dd>0.1 ~ 1%</dd></div>

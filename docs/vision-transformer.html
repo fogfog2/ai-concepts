@@ -208,7 +208,30 @@
     <p class="subtitle">이미지를 단어처럼 자르다 — 비전 전용 구조를 걷어내면 무엇이 남는가</p>
     <p class="dek">합성곱은 이미지에 대한 사전 지식을 구조에 새겨 넣어 강했다. ViT는 그것을 <em>전부 걷어내고</em> 이미지를 16×16 패치로 잘라 그냥 토큰 시퀀스로 다룬다. 데이터가 적으면 이 선택은 명백히 손해다 — 실제로 ImageNet만으로는 ResNet에 진다. 그런데 3억 장에 이르면 순위가 뒤집힌다. <strong>귀납적 편향은 시작점을 높이고 천장을 낮춘다.</strong></p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>Vision Transformer · 1분 28초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">사진을 자르는 크기가 어텐션을 얼마나 바꿀까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/vit-patch-tokens/poster.jpg" width="720" height="1280"
+             aria-label="Vision Transformer 한국어 해설 영상" src="../media/vision/vit-patch-tokens/video.mp4">
+        <track kind="captions" src="../media/vision/vit-patch-tokens/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/vit-patch-tokens/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>224×224 입력의 정사각형 패치 한 변을 바꿔 보세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">32픽셀</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">16픽셀</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/vit-patch-tokens/view-a.jpg" alt="32픽셀 설명용 도식"><p>7×7 패치 49개에 분류 토큰을 더해 시퀀스 길이는 50입니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/vit-patch-tokens/view-b.jpg" alt="16픽셀 설명용 도식"><p>14×14 패치 196개에 분류 토큰을 더해 시퀀스 길이는 197입니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/vit-patch-tokens/script.txt">시간표와 전체 대본</a>
+      <a href="https://openreview.net/forum?id=YicbFdNTTy">Vision Transformer · ICLR 2021 · 절 3.1</a>
+      <a href="../media/vision/vit-patch-tokens/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>토큰</dt><dd>픽셀 아닌 16×16 패치</dd></div>
     <div><dt>224² 이미지</dt><dd>196 패치 + [CLS]</dd></div>

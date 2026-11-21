@@ -208,7 +208,30 @@
     <p class="subtitle">INT8 로 실제 굴리기 — 가중치만이 아니라 활성값까지</p>
     <p class="dek">LLM 양자화는 가중치를 4비트로 줄여 <em>모델을 올리는</em> 것이 목적이다. 온디바이스는 다르다 — <strong>곱셈 자체를 정수로</strong> 해야 NPU 를 쓸 수 있고, 그러려면 활성값도 정수여야 한다. 가중치는 고정이지만 활성값은 입력마다 달라진다. 어려움은 전부 여기서 나온다.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>기울기 기반 비트 배정 · 1분 48초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">같은 비트 예산을 어느 층에 더 써야 할까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/gradient-bit-allocation/poster.jpg" width="720" height="1280"
+             aria-label="기울기 기반 비트 배정 한국어 해설 영상" src="../media/vision/gradient-bit-allocation/video.mp4">
+        <track kind="captions" src="../media/vision/gradient-bit-allocation/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/gradient-bit-allocation/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 크기의 두 층에 총 8비트를 나눠 보세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">균등 4 + 4</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">민감도 반영 3 + 5</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/gradient-bit-allocation/view-a.jpg" alt="균등 4 + 4 설명용 도식"><p>두 층에 똑같이 4비트를 주는 예시입니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/gradient-bit-allocation/view-b.jpg" alt="민감도 반영 3 + 5 설명용 도식"><p>같은 크기의 층에서 총합을 유지하고 더 민감한 두 번째 층에 한 비트를 옮긴 예시입니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/gradient-bit-allocation/script.txt">시간표와 전체 대본</a>
+      <a href="https://openaccess.thecvf.com/content/CVPR2026/html/Kim_Gradient_Knows_Best_Mixed-Precision_Quantization_via_Gradient-Guided_Bit_Allocation_for_CVPR_2026_paper.html">Gradient Knows Best · CVPR 2026 · 표 4</a>
+      <a href="../media/vision/gradient-bit-allocation/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>LLM 과 차이</dt><dd>활성값까지 양자화</dd></div>
     <div><dt>목표</dt><dd>NPU 정수 유닛</dd></div>

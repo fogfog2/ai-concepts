@@ -271,7 +271,7 @@
       ],
       "url": "docs/vision-transformer.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "Mixture of Experts",
@@ -287,7 +287,7 @@
       ],
       "url": "docs/mixture-of-experts.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "RNN & LSTM",
@@ -366,7 +366,7 @@
       ],
       "url": "docs/nas.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "경량 백본",
@@ -444,7 +444,7 @@
       ],
       "url": "docs/clip.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "Scaling Laws",
@@ -539,7 +539,7 @@
       ],
       "url": "docs/controlnet.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "Super-Resolution",
@@ -602,7 +602,7 @@
       ],
       "url": "docs/curriculum-data-quality.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "Weight-Space Programming",
@@ -635,7 +635,7 @@
       ],
       "url": "docs/lora.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "RLHF",
@@ -823,7 +823,7 @@
       ],
       "url": "docs/ondevice-quantization.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "캘리브레이션",
@@ -1518,7 +1518,7 @@
       ],
       "url": "docs/nms.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "＋ YOLOv5 (심화)",
@@ -1550,7 +1550,7 @@
       ],
       "url": "docs/yolox.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     }
   ]
 }

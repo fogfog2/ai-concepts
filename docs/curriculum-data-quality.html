@@ -208,7 +208,30 @@
     <p class="subtitle">무엇을 먹이느냐가 정한다 — 스케일링 법칙이 말하지 않는 것</p>
     <p class="dek">스케일링 법칙에서 데이터는 <strong>토큰 개수</strong>라는 숫자 하나로만 등장한다. 그런데 같은 1조 토큰이라도 정제된 것과 긁어낸 그대로는 전혀 다른 모델을 만든다. 중복 제거는 확실한 이득이지만, 품질 필터부터는 판단이 개입한다 — 무엇을 저품질로 정의하느냐가 <em>어떤 언어와 누구의 글이 남는지</em>를 정한다.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>스테레오 합성 데이터 · 1분 47초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">실내에서 잘 맞힌 스테레오가 도로에서 틀리는 이유는?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/stereo-training-data/poster.jpg" width="720" height="1280"
+             aria-label="스테레오 합성 데이터 한국어 해설 영상" src="../media/vision/stereo-training-data/video.mp4">
+        <track kind="captions" src="../media/vision/stereo-training-data/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/stereo-training-data/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 초점거리와 깊이에서 두 카메라 간격을 바꿔 보세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">간격 0.10 m</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">간격 0.30 m</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/stereo-training-data/view-a.jpg" alt="간격 0.10 m 설명용 도식"><p>초점거리 200 px, 깊이 2 m에서 이상적인 수평 시차는 10 px입니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/stereo-training-data/view-b.jpg" alt="간격 0.30 m 설명용 도식"><p>다른 값을 고정하면 시차는 30 px가 됩니다. 간격을 바꾸면 학습에 나타나는 시차 분포도 달라집니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/stereo-training-data/script.txt">시간표와 전체 대본</a>
+      <a href="https://openaccess.thecvf.com/content/CVPR2026/html/Yan_What_Makes_Good_Synthetic_Training_Data_for_Zero-Shot_Stereo_Matching_CVPR_2026_paper.html">CVPR 2026 · 합성 스테레오 학습 데이터 · 표 1</a>
+      <a href="../media/vision/stereo-training-data/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>가장 확실한 것</dt><dd>중복 제거</dd></div>
     <div><dt>근사 중복</dt><dd>MinHash + LSH</dd></div>

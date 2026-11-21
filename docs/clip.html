@@ -208,7 +208,30 @@
     <p class="subtitle">그림과 말을 같은 공간에 놓다 — 라벨 대신 캡션으로 배우기</p>
     <p class="dek">전통적 분류기는 학습 전에 정답 목록을 정해야 하고, 목록에 없는 것은 <em>구조적으로</em> 답할 수 없다. 더 근본적인 문제는 라벨이 의미를 담지 못한다는 것이다 — 클래스 37번은 그냥 37번이다. CLIP은 라벨 대신 <strong>인터넷에 이미 널려 있는 캡션</strong>을 감독 신호로 썼다. 그러자 고정 목록도, 별도 라벨링도 필요 없어졌다.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>CLIP · 1분 34초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">사진과 설명문은 어떻게 같은 좌표에서 만날까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/clip-zero-shot/poster.jpg" width="720" height="1280"
+             aria-label="CLIP 한국어 해설 영상" src="../media/vision/clip-zero-shot/video.mp4">
+        <track kind="captions" src="../media/vision/clip-zero-shot/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/clip-zero-shot/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>동일한 두 코사인 점수에 곱하는 스케일을 바꿔 보세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">스케일 2</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">스케일 10</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/clip-zero-shot/view-a.jpg" alt="스케일 2 설명용 도식"><p>코사인 0.8과 0.6에 2를 곱해 소프트맥스를 취하면 첫 설명의 상대 확률은 약 60%입니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/clip-zero-shot/view-b.jpg" alt="스케일 10 설명용 도식"><p>같은 점수에 10을 곱하면 첫 설명의 상대 확률은 약 88%입니다. 두 설명의 순서는 같습니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/clip-zero-shot/script.txt">시간표와 전체 대본</a>
+      <a href="https://proceedings.mlr.press/v139/radford21a.html">CLIP · ICML 2021 · 그림 1, 알고리즘</a>
+      <a href="../media/vision/clip-zero-shot/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>학습 데이터</dt><dd>웹 4억 (이미지,텍스트) 쌍</dd></div>
     <div><dt>방식</dt><dd>대칭 대조 학습</dd></div>
