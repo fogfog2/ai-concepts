@@ -164,7 +164,8 @@
         "training"
       ],
       "url": "docs/tokenization.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Normalization",
@@ -178,7 +179,8 @@
         "training"
       ],
       "url": "docs/normalization.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Embeddings & Positional Encoding",
@@ -192,7 +194,8 @@
         "arch"
       ],
       "url": "docs/embeddings.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Backpropagation & Optimizers",
@@ -206,7 +209,8 @@
         "training"
       ],
       "url": "docs/backprop-optimizers.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "CNN 기초",
@@ -221,7 +225,8 @@
         "training"
       ],
       "url": "docs/cnn-basics.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "잔차 연결",
@@ -235,7 +240,8 @@
         "arch"
       ],
       "url": "docs/residual-connections.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Transformer",
@@ -249,7 +255,8 @@
         "arch"
       ],
       "url": "docs/transformer.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Vision Transformer",
@@ -263,7 +270,8 @@
         "arch"
       ],
       "url": "docs/vision-transformer.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Mixture of Experts",
@@ -278,7 +286,8 @@
         "efficiency"
       ],
       "url": "docs/mixture-of-experts.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "RNN & LSTM",
@@ -292,7 +301,8 @@
         "arch"
       ],
       "url": "docs/rnn-lstm.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Mamba & State Space Models",
@@ -307,7 +317,8 @@
         "efficiency"
       ],
       "url": "docs/mamba-ssm.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Autoencoders & VAE",
@@ -322,7 +333,8 @@
         "generative"
       ],
       "url": "docs/autoencoders-vae.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "U-Net과 인코더·디코더",
@@ -337,7 +349,8 @@
         "detection"
       ],
       "url": "docs/u-net-encoder-decoder.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "NAS",
@@ -352,7 +365,8 @@
         "arch"
       ],
       "url": "docs/nas.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "경량 백본",
@@ -367,7 +381,8 @@
         "arch"
       ],
       "url": "docs/efficient-backbone.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Graph Neural Networks",
@@ -381,7 +396,8 @@
         "arch"
       ],
       "url": "docs/graph-neural-networks.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "BERT & Masked LM",
@@ -395,7 +411,8 @@
         "training"
       ],
       "url": "docs/bert-masked-lm.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Diffusion Models",
@@ -410,7 +427,8 @@
         "training"
       ],
       "url": "docs/diffusion-models.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "CLIP",
@@ -425,7 +443,8 @@
         "training"
       ],
       "url": "docs/clip.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Scaling Laws",
@@ -439,7 +458,8 @@
         "training"
       ],
       "url": "docs/scaling-laws.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Self-Supervised Learning",
@@ -454,7 +474,8 @@
         "feature"
       ],
       "url": "docs/self-supervised-learning.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "GAN",
@@ -469,7 +490,8 @@
         "training"
       ],
       "url": "docs/gan.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "메트릭 러닝",
@@ -484,7 +506,8 @@
         "training"
       ],
       "url": "docs/metric-learning.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "DINO 와 자기증류",
@@ -499,7 +522,8 @@
         "training"
       ],
       "url": "docs/dino-self-distillation.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "ControlNet",
@@ -514,7 +538,8 @@
         "enhance"
       ],
       "url": "docs/controlnet.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Super-Resolution",
@@ -529,7 +554,8 @@
         "generative"
       ],
       "url": "docs/super-resolution.html",
-      "local": true
+      "local": true,
+      "hasVideo": true
     },
     {
       "title": "노이즈 제거",
@@ -544,7 +570,8 @@
         "training"
       ],
       "url": "docs/denoising.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "디블러링",
@@ -559,7 +586,8 @@
         "training"
       ],
       "url": "docs/deblurring.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "데이터 품질과 커리큘럼",
@@ -573,7 +601,8 @@
         "training"
       ],
       "url": "docs/curriculum-data-quality.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Weight-Space Programming",
@@ -589,7 +618,8 @@
         "efficiency"
       ],
       "url": "docs/weight-space-programming.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "LoRA",
@@ -604,7 +634,8 @@
         "efficiency"
       ],
       "url": "docs/lora.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "RLHF",
@@ -618,7 +649,8 @@
         "alignment"
       ],
       "url": "docs/rlhf.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Instruction Tuning",
@@ -632,7 +664,8 @@
         "alignment"
       ],
       "url": "docs/instruction-tuning.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "DPO",
@@ -646,7 +679,8 @@
         "alignment"
       ],
       "url": "docs/dpo-alignment.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "RLVR",
@@ -661,7 +695,8 @@
         "training"
       ],
       "url": "docs/rlvr.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "PEFT — Adapter·Prefix·IA³",
@@ -676,7 +711,8 @@
         "efficiency"
       ],
       "url": "docs/peft-adapters.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Constitutional AI",
@@ -691,7 +727,8 @@
         "safety"
       ],
       "url": "docs/constitutional-ai.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "FlashAttention",
@@ -706,7 +743,8 @@
         "systems"
       ],
       "url": "docs/flash-attention.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "KV Cache & PagedAttention",
@@ -721,7 +759,8 @@
         "systems"
       ],
       "url": "docs/kv-cache-paged-attention.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "긴 문맥",
@@ -736,7 +775,8 @@
         "arch"
       ],
       "url": "docs/long-context.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Speculative Decoding",
@@ -750,7 +790,8 @@
         "efficiency"
       ],
       "url": "docs/speculative-decoding.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Quantization",
@@ -765,7 +806,8 @@
         "on-device"
       ],
       "url": "docs/quantization.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "온디바이스 양자화",
@@ -780,7 +822,8 @@
         "efficiency"
       ],
       "url": "docs/ondevice-quantization.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "캘리브레이션",
@@ -795,7 +838,8 @@
         "efficiency"
       ],
       "url": "docs/calibration.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "QAT",
@@ -810,7 +854,8 @@
         "training"
       ],
       "url": "docs/qat.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Knowledge Distillation",
@@ -825,7 +870,8 @@
         "on-device"
       ],
       "url": "docs/knowledge-distillation.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Pruning & Sparsity",
@@ -840,7 +886,8 @@
         "on-device"
       ],
       "url": "docs/pruning-sparsity.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "분산 학습 — DP·TP·PP",
@@ -855,7 +902,8 @@
         "training"
       ],
       "url": "docs/distributed-training.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "데이터 파이프라인",
@@ -870,7 +918,8 @@
         "training"
       ],
       "url": "docs/data-pipeline.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "실험 관리",
@@ -884,7 +933,8 @@
         "systems"
       ],
       "url": "docs/experiment-tracking.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Mixed Precision",
@@ -899,7 +949,8 @@
         "efficiency"
       ],
       "url": "docs/mixed-precision.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Gradient Checkpointing",
@@ -914,7 +965,8 @@
         "efficiency"
       ],
       "url": "docs/gradient-checkpointing.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "RAG",
@@ -929,7 +981,8 @@
         "feature"
       ],
       "url": "docs/rag.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Model Context Protocol",
@@ -943,7 +996,8 @@
         "systems"
       ],
       "url": "docs/model-context-protocol.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "In-Context Learning",
@@ -957,7 +1011,8 @@
         "training"
       ],
       "url": "docs/in-context-learning.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Chain-of-Thought",
@@ -971,7 +1026,8 @@
         "training"
       ],
       "url": "docs/chain-of-thought.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "AI Agents & Tool Use",
@@ -985,7 +1041,8 @@
         "systems"
       ],
       "url": "docs/ai-agents-tool-use.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "REA — 역공학 에이전트",
@@ -1000,7 +1057,8 @@
         "safety"
       ],
       "url": "docs/rea-reverse-engineering.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "장기 실행 연구 에이전트",
@@ -1015,7 +1073,8 @@
         "efficiency"
       ],
       "url": "docs/durable-research-agents.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Few-Shot / Zero-Shot",
@@ -1030,7 +1089,8 @@
         "training"
       ],
       "url": "docs/few-shot-learning.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Vision-Language 모델",
@@ -1045,7 +1105,8 @@
         "feature"
       ],
       "url": "docs/vision-language-models.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "벡터 검색",
@@ -1060,7 +1121,8 @@
         "systems"
       ],
       "url": "docs/vector-search.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "모바일 추론 런타임",
@@ -1075,7 +1137,8 @@
         "systems"
       ],
       "url": "docs/mobile-runtime.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "LLM 서빙 — 배칭과 스케줄링",
@@ -1090,7 +1153,8 @@
         "efficiency"
       ],
       "url": "docs/llm-serving.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "평가와 벤치마크",
@@ -1104,7 +1168,8 @@
         "safety"
       ],
       "url": "docs/evaluation-benchmarks.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "유사도 임계값",
@@ -1119,7 +1184,8 @@
         "safety"
       ],
       "url": "docs/similarity-threshold.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "화질 평가 지표",
@@ -1134,7 +1200,8 @@
         "safety"
       ],
       "url": "docs/image-quality-metrics.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "환각",
@@ -1148,7 +1215,8 @@
         "safety"
       ],
       "url": "docs/hallucination.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "적대적 예제와 강건성",
@@ -1163,7 +1231,8 @@
         "training"
       ],
       "url": "docs/adversarial-robustness.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Prompt Injection",
@@ -1178,7 +1247,8 @@
         "systems"
       ],
       "url": "docs/prompt-injection.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "해석가능성",
@@ -1192,7 +1262,8 @@
         "safety"
       ],
       "url": "docs/interpretability.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "① Object Detection 계보",
@@ -1207,7 +1278,8 @@
         "arch"
       ],
       "url": "docs/detection-lineage.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "② YOLO 계보",
@@ -1222,7 +1294,8 @@
         "on-device"
       ],
       "url": "docs/yolo-lineage.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "③ DETR 계보",
@@ -1237,7 +1310,8 @@
         "arch"
       ],
       "url": "docs/detr-lineage.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "④ RF-DETR",
@@ -1251,7 +1325,8 @@
         "detection"
       ],
       "url": "docs/rf-detr.html",
-      "local": true
+      "local": true,
+      "hasVideo": true
     },
     {
       "title": "RTMDet 계열",
@@ -1267,7 +1342,8 @@
         "on-device"
       ],
       "url": "docs/rtmdet-family.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "NeRF & 3D 표현",
@@ -1282,7 +1358,8 @@
         "generative"
       ],
       "url": "docs/nerf-3d.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "Optical Flow",
@@ -1297,7 +1374,8 @@
         "feature"
       ],
       "url": "docs/optical-flow.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "깊이 추정",
@@ -1312,7 +1390,8 @@
         "arch"
       ],
       "url": "docs/depth-estimation.html",
-      "local": true
+      "local": true,
+      "hasVideo": true
     },
     {
       "title": "ISP",
@@ -1327,7 +1406,8 @@
         "on-device"
       ],
       "url": "docs/isp-pipeline.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "HDR 과 톤 매핑",
@@ -1342,7 +1422,8 @@
         "on-device"
       ],
       "url": "docs/hdr-tone-mapping.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "다중 객체 추적",
@@ -1357,7 +1438,8 @@
         "feature"
       ],
       "url": "docs/object-tracking.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "분할",
@@ -1372,7 +1454,8 @@
         "arch"
       ],
       "url": "docs/segmentation.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "지역 특징과 매칭",
@@ -1386,7 +1469,8 @@
         "feature"
       ],
       "url": "docs/local-features.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "재식별 (Re-ID)",
@@ -1401,7 +1485,8 @@
         "detection"
       ],
       "url": "docs/person-reid.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "IoU 계열 손실",
@@ -1416,7 +1501,8 @@
         "training"
       ],
       "url": "docs/iou-losses.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "NMS",
@@ -1431,7 +1517,8 @@
         "efficiency"
       ],
       "url": "docs/nms.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "＋ YOLOv5 (심화)",
@@ -1446,7 +1533,8 @@
         "on-device"
       ],
       "url": "docs/yolov5.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     },
     {
       "title": "＋ YOLOX (심화)",
@@ -1461,7 +1549,8 @@
         "on-device"
       ],
       "url": "docs/yolox.html",
-      "local": true
+      "local": true,
+      "hasVideo": false
     }
   ]
 }

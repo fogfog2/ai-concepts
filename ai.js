@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  var state = {days: [], day: -1, items: [], stages: [], tags: [], domain: null, topics: [], query: '', docsReady: false};
+  var state = {days: [], day: -1, items: [], stages: [], tags: [], domain: null, topics: [], videoOnly: false, query: '', docsReady: false};
   var $ = function (id) { return document.getElementById(id); };
   var tabs = Array.from(document.querySelectorAll('[role="tab"]'));
   var esc = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); };
@@ -69,16 +69,22 @@
   }
   $('news-day').addEventListener('change', function () { state.day = Number(this.value); renderNews(); });
 
-  function visibleDocs() {
+  function matchesTags(tags, domain, exceptTopic) {
+    return (!domain || tags.indexOf(domain) >= 0) && state.topics.every(function (t) {
+      return t === exceptTopic || tags.indexOf(t) >= 0;
+    });
+  }
+  function visibleDocs(videoOnly) {
     return state.items.filter(function (d) {
-      var tags = d.tags || [];
-      return (!state.domain || tags.indexOf(state.domain) >= 0) && state.topics.every(function (t) { return tags.indexOf(t) >= 0; }) && (!state.query || [d.title, d.subtitle, d.summary, d.slug].join(' ').toLocaleLowerCase().indexOf(state.query) >= 0);
+      return (!videoOnly || d.hasVideo) && matchesTags(d.tags || [], state.domain) &&
+        (!state.query || [d.title, d.subtitle, d.summary, d.slug].join(' ').toLocaleLowerCase().indexOf(state.query) >= 0);
     });
   }
   function countWith(id, group) {
     return state.items.filter(function (d) {
       var tags = d.tags || [];
-      return tags.indexOf(id) >= 0 && (group === 'domain' || !state.domain || tags.indexOf(state.domain) >= 0) && state.topics.every(function (t) { return t === id || tags.indexOf(t) >= 0; });
+      return (!state.videoOnly || d.hasVideo) && tags.indexOf(id) >= 0 &&
+        matchesTags(tags, group === 'domain' ? null : state.domain, id);
     }).length;
   }
   function renderFilters() {
@@ -88,12 +94,17 @@
         return '<button type="button" class="chip' + (active ? ' on' : '') + '" data-group="' + name + '" data-tag="' + esc(t.id) + '" title="' + esc(t.desc) + '" aria-pressed="' + String(active) + '">' + esc(t.name) + '<span class="n">' + countWith(t.id, name) + '</span></button>';
       }).join('') + '</div>';
     }
-    $('filters').innerHTML = group('domain', '분야') + group('topic', '주제') + ((state.domain || state.topics.length) ? '<button type="button" class="chip clear" id="clear">필터 해제</button>' : '');
+    var video = '<div class="frow"><span class="flabel">형식</span><button type="button" id="video-only" class="chip' +
+      (state.videoOnly ? ' on' : '') + '" aria-pressed="' + String(state.videoOnly) +
+      '">영상 있음<span class="n" id="video-count">' + visibleDocs(true).length + '</span></button></div>';
+    $('filters').innerHTML = video + group('domain', '분야') + group('topic', '주제') +
+      ((state.domain || state.topics.length || state.videoOnly) ? '<button type="button" class="chip clear" id="clear">필터 해제</button>' : '');
   }
   $('filters').addEventListener('click', function (e) {
     var b = e.target.closest('button');
     if (!b) return;
-    if (b.id === 'clear') { state.domain = null; state.topics = []; }
+    if (b.id === 'clear') { state.domain = null; state.topics = []; state.videoOnly = false; }
+    else if (b.id === 'video-only') state.videoOnly = !state.videoOnly;
     else if (b.dataset.group === 'domain') state.domain = state.domain === b.dataset.tag ? null : b.dataset.tag;
     else {
       var i = state.topics.indexOf(b.dataset.tag);
@@ -106,7 +117,7 @@
     (next || $('filter-toggle')).focus();
   });
   function renderDocs() {
-    var docs = visibleDocs();
+    var docs = visibleDocs(state.videoOnly);
     $('docs-meta').textContent = docs.length + ' / ' + state.items.length + '편';
     $('docs-body').innerHTML = docs.length ? state.stages.map(function (s) {
       var list = docs.filter(function (d) { return d.stage === s.id; });
@@ -118,7 +129,10 @@
   }
   $('doc-search').addEventListener('input', function () {
     state.query = this.value.trim().toLocaleLowerCase();
-    if (state.docsReady) renderDocs();
+    if (state.docsReady) {
+      $('video-count').textContent = visibleDocs(true).length;
+      renderDocs();
+    }
   });
   document.addEventListener('keydown', function (e) {
     var active = document.activeElement;
