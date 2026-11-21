@@ -210,7 +210,7 @@
   </header>
 <!-- vision-reel:start -->
 <link rel="stylesheet" href="../vision-reels.css">
-<script src="../vision-reels.js" defer></script>
+<script src="../vision-reels.js?v=2" defer></script>
 <details class="vision-reel" id="video-explainer">
   <summary><span>영상 기반 설명 보기</span><small>EndoDA3 · 2분 50초</small></summary>
   <div class="vr-content">
@@ -229,6 +229,26 @@
     <div class="vr-links"><a href="../media/vision/endoda3/script.txt">시간표와 전체 대본</a>
       <a href="https://papers.miccai.org/miccai-2026/0346-Paper1638.html">Tan et al. · MICCAI 2026 · 식 4–5, 표 3</a>
       <a href="../media/vision/endoda3/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<details class="vision-reel" id="video-endostreamdepth">
+  <summary><span>영상 기반 설명 보기</span><small>EndoStreamDepth · 2분 05초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">깊이가 프레임마다 흔들린다면?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/endostreamdepth/poster.jpg" width="720" height="1280"
+             aria-label="EndoStreamDepth 한국어 해설 영상" src="../media/vision/endostreamdepth/video.mp4">
+        <track kind="captions" src="../media/vision/endostreamdepth/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/endostreamdepth/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 위치의 합성 깊이 궤적을 비교하세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-endostreamdepth-layer" id="vr-endostreamdepth-a" checked><label for="vr-endostreamdepth-a">단일 프레임</label><input class="vr-choice vr-b" type="radio" name="vr-endostreamdepth-layer" id="vr-endostreamdepth-b"><label for="vr-endostreamdepth-b">시간 상태 추가</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/endostreamdepth/view-a.jpg" alt="단일 프레임 설명용 도식"><p>같은 주름을 따라가며 얻은 프레임별 깊이의 흔들림을 보여주는 합성 예시입니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/endostreamdepth/view-b.jpg" alt="시간 상태 추가 설명용 도식"><p>같은 관측 위에 시간 상태를 활용한 예시 궤적을 겹쳤습니다. 두 곡선 모두 작동 원리를 설명하기 위해 만든 값입니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/endostreamdepth/script.txt">시간표와 전체 대본</a>
+      <a href="https://proceedings.mlr.press/v315/li26f.html">Li et al. · MIDL 2026 · 그림 4, 표 9</a>
+      <a href="../media/vision/endostreamdepth/video.mp4" download>MP4 다운로드</a></div>
   </div>
 </details>
 <!-- vision-reel:end -->

@@ -208,7 +208,30 @@
     <p class="subtitle">같은 지점을 다시 찾기 — 전역 벡터가 답하지 못하는 것</p>
     <p class="dek">전역 임베딩은 <em>"닮았다"</em>까지만 말한다. 어느 부분이 어느 부분에 대응하는지는 답하지 못한다. 지역 특징은 점을 뽑고 서술해 <strong>점 대 점 대응</strong>을 만든다 — 뷰가 크게 달라도 같은 물리적 지점을 짚기 위해서다.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>LoMa · 2분 15초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">같은 창문을 어떻게 찾을까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/loma/poster.jpg" width="720" height="1280"
+             aria-label="LoMa 한국어 해설 영상" src="../media/vision/loma/video.mp4">
+        <track kind="captions" src="../media/vision/loma/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/loma/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 네 대응의 허용 오차를 바꿔 보세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">2 px</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">7 px</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/loma/view-a.jpg" alt="2 px 설명용 도식"><p>예시 오차 1·3·6·9px 중 1개가 들어와 PCK는 25%입니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/loma/view-b.jpg" alt="7 px 설명용 도식"><p>같은 네 대응 중 3개가 들어와 PCK는 75%입니다. 두 화면 모두 설명용 수치입니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/loma/script.txt">시간표와 전체 대본</a>
+      <a href="https://www.davnords.com/loma">Nordström et al. · ECCV 2026 · §3–4</a>
+      <a href="../media/vision/loma/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>세 단계</dt><dd>검출 · 서술 · 매칭</dd></div>
     <div><dt>검출 요구</dt><dd>반복 가능성</dd></div>

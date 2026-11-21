@@ -1470,7 +1470,7 @@
       ],
       "url": "docs/local-features.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "재식별 (Re-ID)",
