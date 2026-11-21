@@ -1311,7 +1311,7 @@
       ],
       "url": "docs/detr-lineage.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "④ RF-DETR",
