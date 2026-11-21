@@ -208,7 +208,30 @@
     <p class="subtitle">카메라가 버린 정보를 되찾기 — 다시 재거나, 추측하거나</p>
     <p class="dek">사진은 3차원을 2차원으로 눌러 <strong>깊이를 버린다</strong>. 같은 픽셀을 만드는 3D 배치가 무수히 많아 한 장으로는 원리적으로 풀 수 없다. 그래서 정보를 더 넣거나(스테레오·센서) 가정을 넣는다(학습). 전자는 정확하지만 조건이 붙고, 후자는 어디서나 되지만 <em>절대 스케일을 모른다</em>.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>EndoDA3 · 2분 50초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">움직인 점의 깊이를 믿어도 될까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/endoda3/poster.jpg" width="720" height="1280"
+             aria-label="EndoDA3 한국어 해설 영상" src="../media/vision/endoda3/video.mp4">
+        <track kind="captions" src="../media/vision/endoda3/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/endoda3/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 프레임에서 두 지도를 비교하세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">깊이 잔차</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">예측 신뢰도</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/endoda3/view-a.jpg" alt="깊이 잔차 설명용 도식"><p>예상 위치와 도구 끝이 어긋난 영역에 큰 깊이 잔차가 나타납니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/endoda3/view-b.jpg" alt="예측 신뢰도 설명용 도식"><p>같은 위치에서 어둡게 표시한 낮은 신뢰도는 이 잔차의 학습 기여를 줄입니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/endoda3/script.txt">시간표와 전체 대본</a>
+      <a href="https://papers.miccai.org/miccai-2026/0346-Paper1638.html">Tan et al. · MICCAI 2026 · 식 4–5, 표 3</a>
+      <a href="../media/vision/endoda3/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>문제 성격</dt><dd>불량조건 역문제</dd></div>
     <div><dt>스테레오</dt><dd>Z = f·B / d</dd></div>

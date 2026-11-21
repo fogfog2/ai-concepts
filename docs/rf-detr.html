@@ -208,7 +208,30 @@
     <p class="subtitle">실시간 검출의 현재 도달점 — 그리고 당신의 모델을 옮길 것인가</p>
     <p class="dek">COCO 60 AP는 오랫동안 <em>느린 모델의 영역</em>이었다. RF-DETR-2XL이 60.1 AP를 17.2 ms에 내면서 그 경계가 무너졌다. 구조는 새 발명이 아니라 <strong>DINOv2 백본 + deformable 디코더</strong>의 조합이고, 강점의 출처도 어텐션이 아니라 <em>웹 규모 사전학습을 흡수하는 통로</em>에 있다. 다만 Apache 2.0은 Large까지이고, CPU 경로는 사실상 없다.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>RF-DETR Atto · 1분 50초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">디코더 없이 어떻게 검출할까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/rf-detr-atto/poster.jpg" width="720" height="1280"
+             aria-label="RF-DETR Atto 한국어 해설 영상" src="../media/vision/rf-detr-atto/video.mp4">
+        <track kind="captions" src="../media/vision/rf-detr-atto/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/rf-detr-atto/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>타이머의 양 끝을 바꿔 보세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">엔진 실행</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">전체 처리</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/rf-detr-atto/view-a.jpg" alt="엔진 실행 설명용 도식"><p>T4의 엔진 실행 중앙값은 1.0ms입니다. TensorRT 10.4, FP16, 배치 1 조건입니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/rf-detr-atto/view-b.jpg" alt="전체 처리 설명용 도식"><p>입력 준비와 최종 검출 선택까지 포함합니다. 개발사는 전체 구간의 지연을 보고하지 않았습니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/rf-detr-atto/script.txt">시간표와 전체 대본</a>
+      <a href="https://roboflow.com/blog/rf-detr-atto-detects-objects">Roboflow · T4 벤치마크 · 2026.11.20</a>
+      <a href="../media/vision/rf-detr-atto/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>최고</dt><dd>60.1 AP / 17.2 ms</dd></div>
     <div><dt>실용 상한</dt><dd>Large 56.5 AP (Apache)</dd></div>
