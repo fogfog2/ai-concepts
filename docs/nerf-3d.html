@@ -208,7 +208,30 @@
     <p class="subtitle">공간을 무엇으로 담을 것인가 — 함수에서 덩어리로</p>
     <p class="dek">메시는 <em>경계가 뚜렷한 불투명 표면</em>을 전제한다. 연기·유리·머리카락은 그 전제를 벗어난다. NeRF 는 장면을 <strong>공간의 색과 밀도를 답하는 함수</strong>로 바꿔 이 문제를 풀었지만 느렸고, 3D Gaussian Splatting 은 <strong>명시적 덩어리</strong>로 돌아와 실시간을 얻었다.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>SEELE · 1분 56초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">3D 가우시안 중 어느 것부터 계산할까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/seele-3dgs/poster.jpg" width="720" height="1280"
+             aria-label="SEELE 한국어 해설 영상" src="../media/vision/seele-3dgs/video.mp4">
+        <track kind="captions" src="../media/vision/seele-3dgs/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/seele-3dgs/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 장면에서 현재 시점에 읽어 오는 가우시안 묶음을 비교하세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">전체 상주</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">시점별 로딩</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/seele-3dgs/view-a.jpg" alt="전체 상주 설명용 도식"><p>전체 장면의 묶음을 GPU 메모리에 올려 둔 설명용 구성입니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/seele-3dgs/view-b.jpg" alt="시점별 로딩 설명용 도식"><p>현재 카메라에 필요한 묶음만 강조했습니다. 이동하면 앞으로 쓸 묶음을 미리 읽습니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/seele-3dgs/script.txt">시간표와 전체 대본</a>
+      <a href="https://openaccess.thecvf.com/content/CVPR2026/html/Zhu_Seele_A_Unified_Acceleration_Framework_for_Real-Time_Gaussian_Splatting_on_CVPR_2026_paper.html">SEELE · CVPR 2026 · 알고리즘 1, 표 4</a>
+      <a href="../media/vision/seele-3dgs/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>푸는 문제</dt><dd>새 시점 합성</dd></div>
     <div><dt>NeRF</dt><dd>5D → 색·밀도 함수</dd></div>

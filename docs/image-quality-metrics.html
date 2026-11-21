@@ -208,7 +208,30 @@
     <p class="subtitle">무엇을 재고 있는가 — PSNR 이 사람 눈과 어긋나는 지점</p>
     <p class="dek">가우시안 노이즈를 넣은 이미지와 전체 밝기를 +10 옮긴 이미지의 <strong>PSNR 이 소수점까지 같을 수 있다</strong>. 체감은 전혀 다른데도. 픽셀별 제곱오차는 <em>어떻게 틀렸는지</em>를 보지 않기 때문이다. 그래서 구조를 따로 재고(SSIM), 결국 사람 판단을 학습하기에 이른다(LPIPS).</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>PR-IQA · 1분 54초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">같은 시점의 정답 사진 없이 화질을 어떻게 잴까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/pr-iqa/poster.jpg" width="720" height="1280"
+             aria-label="PR-IQA 한국어 해설 영상" src="../media/vision/pr-iqa/video.mp4">
+        <track kind="captions" src="../media/vision/pr-iqa/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/pr-iqa/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 합성 시점에서 품질을 판단할 수 있는 영역을 비교하세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">겹침 영역</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">전체 예측</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/pr-iqa/view-a.jpg" alt="겹침 영역 설명용 도식"><p>참조 사진과 대응하는 영역에서 특징 유사도로 만든 부분 품질 지도를 표시합니다. 빈 칸에는 대응 관측이 없습니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/pr-iqa/view-b.jpg" alt="전체 예측 설명용 도식"><p>모델이 전체 품질 지도를 예측합니다. 사선은 대응 관측이 없어 문맥을 이용해 추정한 영역입니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/pr-iqa/script.txt">시간표와 전체 대본</a>
+      <a href="https://openaccess.thecvf.com/content/CVPR2026/html/Choi_PR-IQA_Partial-Reference_Image_Quality_Assessment_for_Diffusion-Based_Novel_View_Synthesis_CVPR_2026_paper.html">PR-IQA · CVPR 2026 · 그림 2, 표 2</a>
+      <a href="../media/vision/pr-iqa/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>PSNR</dt><dd>MSE 의 로그 — 충실도</dd></div>
     <div><dt>SSIM</dt><dd>휘도·대비·구조 분리</dd></div>

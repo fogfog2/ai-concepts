@@ -208,7 +208,30 @@
     <p class="subtitle">쓰지 않는 연결을 잘라내다 — 그런데 왜 빨라지지 않는가</p>
     <p class="dek">학습된 신경망은 가중치의 80~90%를 잘라내도 정확도를 유지한다. 그런데 <strong>90%를 잘라도 대개 전혀 빨라지지 않는다</strong> — GPU에게 0을 곱하는 비용과 다른 수를 곱하는 비용이 같기 때문이다. 자유롭게 자를수록 정확도는 지키지만 느리고, 규칙적으로 자를수록 빠르지만 손실이 크다.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>NuWa · 1분 51초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">두 종류만 구별할 기기에 어떤 ViT를 남길까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/nuwa-vit/poster.jpg" width="720" height="1280"
+             aria-label="NuWa 한국어 해설 영상" src="../media/vision/nuwa-vit/video.mp4">
+        <track kind="captions" src="../media/vision/nuwa-vit/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/nuwa-vit/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>보정용 표본에서 학습한 이진 마스크를 적용해 보세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">모든 채널</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">마스크 적용</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/nuwa-vit/view-a.jpg" alt="모든 채널 설명용 도식"><p>설명용 MLP의 여섯 중간 채널이 다음 선형층에 모두 연결됩니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/nuwa-vit/view-b.jpg" alt="마스크 적용 설명용 도식"><p>예시 마스크가 둘째와 다섯째 채널을 제거합니다. 남은 네 채널은 두 선형층 사이에 연결됩니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/nuwa-vit/script.txt">시간표와 전체 대본</a>
+      <a href="https://openaccess.thecvf.com/content/CVPR2026/html/Wei_NuWa_Deriving_Lightweight_Class-Specific_Vision_Transformers_for_Edge_Devices_CVPR_2026_paper.html">NuWa · CVPR 2026 · 표 3</a>
+      <a href="../media/vision/nuwa-vit/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>가장 단순한 기준</dt><dd>가중치 크기</dd></div>
     <div><dt>LLM 기준</dt><dd>가중치 × 활성값</dd></div>

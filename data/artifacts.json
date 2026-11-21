@@ -887,7 +887,7 @@
       ],
       "url": "docs/pruning-sparsity.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "분산 학습 — DP·TP·PP",
@@ -1201,7 +1201,7 @@
       ],
       "url": "docs/image-quality-metrics.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "환각",
@@ -1359,7 +1359,7 @@
       ],
       "url": "docs/nerf-3d.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "Optical Flow",
@@ -1407,7 +1407,7 @@
       ],
       "url": "docs/isp-pipeline.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "HDR 과 톤 매핑",
@@ -1439,7 +1439,7 @@
       ],
       "url": "docs/object-tracking.html",
       "local": true,
-      "hasVideo": false
+      "hasVideo": true
     },
     {
       "title": "분할",

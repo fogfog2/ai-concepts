@@ -208,7 +208,30 @@
     <p class="subtitle">센서 값을 사진으로 만드는 일 — 사람 눈과 모델의 목표는 다르다</p>
     <p class="dek">센서 화소는 <strong>색을 하나만</strong> 잰다. 최종 이미지의 약 66%는 이웃에서 추정한 값이고, 12비트가 8비트로 눌리는 과정에서 무엇을 살릴지가 결정된다. 이 모든 것을 하는 ISP 는 <em>사람이 보기 좋으라고</em> 만들어졌는데, 그 출력을 인식 모델이 받는다.</p>
   </header>
-
+<!-- vision-reel:start -->
+<link rel="stylesheet" href="../vision-reels.css">
+<script src="../vision-reels.js?v=2" defer></script>
+<details class="vision-reel" id="video-explainer">
+  <summary><span>영상 기반 설명 보기</span><small>다중분광 색 보정 · 1분 47초</small></summary>
+  <div class="vr-content">
+    <p class="vr-title">RGB 값이 같은 두 표면의 색을 어떻게 보정할까?</p>
+    <div class="vr-layout">
+      <video controls playsinline preload="none" data-poster="../media/vision/spectral-mobile-color/poster.jpg" width="720" height="1280"
+             aria-label="다중분광 색 보정 한국어 해설 영상" src="../media/vision/spectral-mobile-color/video.mp4">
+        <track kind="captions" src="../media/vision/spectral-mobile-color/ko.vtt" srclang="ko" label="한국어">
+        <a href="../media/vision/spectral-mobile-color/video.mp4">영상 파일 열기</a>
+      </video>
+      <fieldset class="vr-demo"><legend>같은 두 표면을 관측하는 센서를 바꿔 보세요.</legend>
+        <input class="vr-choice vr-a" type="radio" name="vr-layer" id="vr-a" checked><label for="vr-a">RGB 3채널</label><input class="vr-choice vr-b" type="radio" name="vr-layer" id="vr-b"><label for="vr-b">6개 대역</label>
+        <div class="vr-view vr-view-a"><img width="660" height="430" loading="lazy" src="../media/vision/spectral-mobile-color/view-a.jpg" alt="RGB 3채널 설명용 도식"><p>인접한 두 대역을 합하는 예시 센서에서는 두 표면의 세 채널 값이 모두 1입니다.</p></div><div class="vr-view vr-view-b"><img width="660" height="430" loading="lazy" src="../media/vision/spectral-mobile-color/view-b.jpg" alt="6개 대역 설명용 도식"><p>두 표면을 여섯 대역으로 나누어 읽으면 각 쌍 안의 반사 신호 차이가 드러납니다.</p></div>
+      </fieldset>
+    </div>
+    <div class="vr-links"><a href="../media/vision/spectral-mobile-color/script.txt">시간표와 전체 대본</a>
+      <a href="https://openaccess.thecvf.com/content/CVPR2026/html/Cogo_Leveraging_Multispectral_Sensors_for_Color_Correction_in_Mobile_Cameras_CVPR_2026_paper.html">CVPR 2026 · 다중분광 모바일 색 보정 · 표 3</a>
+      <a href="../media/vision/spectral-mobile-color/video.mp4" download>MP4 다운로드</a></div>
+  </div>
+</details>
+<!-- vision-reel:end -->
   <dl class="spec">
     <div><dt>RAW 의 결손</dt><dd>화소당 1채널 · 66% 추정</dd></div>
     <div><dt>비트</dt><dd>12~14 → 8</dd></div>
