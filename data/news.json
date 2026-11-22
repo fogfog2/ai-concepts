@@ -1,7 +1,24 @@
 {
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
-  "checked_at": "2026-11-22",
+  "checked_at": "2026-11-23",
   "days": [
+    {
+      "date": "2026-11-22",
+      "items": [
+        {
+          "title": "OpenAI 사전학습 손실 공개 — perplexity 측정과 개발 기준 제안",
+          "category": "연구",
+          "url": "https://openai.com/index/perplexity-and-intelligence/",
+          "facts": [
+            "OpenAI 수석과학자 Jakub Pachocki는 11-22 사전학습 perplexity 측정값과 공통 개발·평가 기준 제안을 공개했다. 여기서 perplexity는 다음 토큰 예측의 평균 품질 지표이며 검색 서비스 Perplexity나 새 모델·API 출시를 뜻하지 않는다.",
+            "공개 수치는 OpenAI 내부 코드의 고정 held-out snapshot에서 추적한 log-perplexity, 즉 cross-entropy loss다. 글은 GPT-3.5 약 0.99·GPT-4 약 0.91, 최근 모델 0.8 미만 등을 설명하지만 데이터 혼합·평가셋이 개발사마다 달라 Claude·Gemini와 직접 비교할 공통 점수는 아니다.",
+            "저자는 이 값이 특정 실용 과제와 바로 대응하지 않고 chain-of-thought 추론의 능력 향상도 직접 반영하지 않는다고 명시했다. 따라서 이 곡선을 low·medium·high·xhigh의 agent 성공률·비용·속도 평가나 실제 Codex/Claude Code 순위로 사용할 수 없다.",
+            "사전학습 진전에 대한 투명성과 공동 평가·red-team 기준, 감시·이해 능력이 갖춰지기 전 넘지 않을 개발 경계 논의를 제안했다. 이는 공급사 내부 측정과 저자의 제안으로, 업계가 채택한 표준이나 아직 모르는 미래 능력을 실증한 결과가 아니다."
+          ],
+          "takeaway": "학습 진전 자체를 장기 추적할 보조 지표와 공개 논의가 늘었다. 모델 선택에는 같은 업무·하네스·effort의 후속 평가를 계속 사용하고, 내부 loss 변화와 실제 agent 결과를 구분해 읽어야 한다."
+        }
+      ]
+    },
     {
       "date": "2026-11-20",
       "items": [
@@ -348,6 +365,18 @@
             "충돌·메모리 부족 후 재개 시 대화 이력이 유실되던 경우, cloud·Remote Control의 재전송 파일이 수정본을 덮어쓰던 경우, compaction이 요약 대신 답하거나 마지막 응답을 누락하던 경우를 수정했다. max_tokens가 모델 한도를 넘으면 API가 보고한 최대값으로 재시도하며 이는 한도 증가가 아니다."
           ],
           "takeaway": "팀 도구 호출과 긴 세션의 계정·권한·파일 보존 동작에 영향을 주는 업데이트다. 실제 모델 능력 개선이나 토큰 한도 확대로 과장하지 않고 인증 경로·복구 흐름의 수정으로 읽어야 한다."
+        },
+        {
+          "title": "Google Deferred tier GA — 비실시간 에이전트 추론 50% 할인과 대기 조건",
+          "category": "도구",
+          "url": "https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/deferred-tier",
+          "facts": [
+            "Google은 Agent Platform 공식 변경 이력 11-16에서 Deferred tier의 GA와 ADK 2.10.0 이상 에이전트 지원 확대를 발표했다. custom·제3자 에이전트의 비동기 Interactions API 호출도 지원하며 즉시 응답이 필요 없는 작업을 off-peak 실행으로 보낸다. 발표일 근거: https://docs.cloud.google.com/gemini-enterprise-agent-platform/release-notes",
+            "같은 모델의 Standard PayGo 대비 입력·출력·thinking token 요금이 50% 낮다. 계약·암묵적 캐시 할인과 중첩할 수 있고 Standard 요금으로 자동 fallback하지 않는다. 이는 모델 추론 요금으로 cloud 호스팅·외부 도구 등 전체 agent 비용이 무조건 절반이라는 뜻은 아니다.",
+            "요청은 global Interactions endpoint에서 background=true·store=true로 제출한다. 완료는 24시간 목표이고 state는 7일 보존하며 다중 turn은 각각 대기·과금된다. regional 및 us/eu multi-region endpoint는 지원하지 않는다. 실제 대기는 용량·수요에 달려 즉시 실행이나 24시간 이내 완료 보장이 아니다.",
+            "ADK는 use_interactions_api=True 모델과 RunConfig의 ServiceTier.DEFERRED로 사용하고 token streaming과 함께 쓸 수 없다. 클라이언트·프록시 timeout으로 polling이 끝나도 backend 작업과 과금은 계속될 수 있다. 큐에서 취소한 turn과 이미 실행을 시작한 model call의 청구 조건도 다르다. ADK 안내: https://docs.cloud.google.com/gemini-enterprise-agent-platform/scale/efficiency/autonomous-scheduling"
+          ],
+          "takeaway": "예약 조사·코드 이행·보안 scan·대량 agent 평가처럼 지연을 감수할 작업의 추론 비용을 줄일 선택지다. effort를 낮추는 방식과 구분하고, queue 대기·turn 수·종료 처리·전체 운영비를 함께 비교해야 한다."
         }
       ]
     },
@@ -1717,43 +1746,6 @@
             "최소 캐시 수명은 캐시 읽기 가격의 적용 자격을 다루며, 모든 요청에서 저장된 KV 재사용이나 낮은 지연을 보장하지 않는다. 적용 모델·공통 접두부·실제 사용량과 쓰기 비용을 함께 확인해야 한다."
           ],
           "takeaway": "같은 문맥을 하루 동안 반복 사용하는 에이전트는 절감을 검토할 수 있지만, 재사용이 적으면 높은 캐시 쓰기 비용이 이득을 상쇄할 수 있다."
-        }
-      ]
-    },
-    {
-      "date": "2026-10-15",
-      "items": [
-        {
-          "title": "Codex의 GPT-5.5 종료 — 한국시간 10월 15일 적용",
-          "category": "도구",
-          "url": "https://learn.chatgpt.com/docs/changelog",
-          "facts": [
-            "ChatGPT 계정으로 로그인한 Codex의 GPT-5.5 지원이 미국 태평양시간 10월 14일 정오, 한국시간 10월 15일 오전 4시에 종료된다. 공식 변경 기록의 게시일은 10월 14일이다.",
-            "OpenAI API와 API 키로 인증한 Codex 세션은 이번 종료 대상이 아니다. 공식 안내는 요금제와 클라이언트에서 사용할 수 있다면 GPT-6.1 Sol로 전환하도록 권고한다.",
-            "워크스페이스 기본 모델, 저장된 설정, 커스텀 에이전트, 예약 작업과 스크립트에 gpt-5.5가 남아 있는지 확인할 필요가 있다."
-          ],
-          "takeaway": "예약 실행이 예전 모델을 계속 지정하고 있다면 다음 실행 전에 모델 설정을 확인할 시점이다."
-        },
-        {
-          "title": "Codex CLI 0.163.0 — 실행 중 지시·설정 검색·도구 병렬 조회",
-          "category": "도구",
-          "url": "https://github.com/openai/codex/releases/tag/rust-v0.163.0",
-          "facts": [
-            "OpenAI는 10월 15일 Codex CLI 0.163.0을 공개했다. 10월 20일 확인 시 최신 안정 릴리스이며, 응답 중 후속 메시지로 방향을 바꾸고 턴 중단 시 실행 중인 Code Mode 셀과 중첩 도구 호출도 멈춘다.",
-            "/config에서 설정을 검색·변경하고 재시작 필요 여부를 확인할 수 있다. 스킬·메모리·대화 이력 등 서로 독립적인 읽기 전용 도구는 병렬로 조회한다.",
-            "저장된 스레드를 재개할 때 현재 관리 정책과 명시적 재정의를 지키면서 권한·네트워크 승인을 복원한다. /daemon으로 관리형 백그라운드 서버를 재시작하고 자동 재연결하는 기능도 추가했다."
-          ],
-          "takeaway": "긴 에이전트 작업을 실행 중에 조정하고, 재개·설정 변경 과정의 마찰을 줄이는 운영 개선이다."
-        },
-        {
-          "title": "Claude Opus 5.5 Fast mode 정식 제공 — 베타 헤더 제거",
-          "category": "도구",
-          "url": "https://platform.claude.com/docs/en/release-notes/overview",
-          "facts": [
-            "Anthropic은 10월 15일 Claude Opus 5.5 Fast mode를 연구 미리보기에서 정식 제공으로 전환했다. 별도 접근 신청과 fast-mode-2026-02-01 베타 헤더가 더 이상 필요하지 않다.",
-            "Start·Build·Scale 사용량 등급에 기본 Fast mode 속도 제한을 제공하며, 기존 헤더를 보내는 요청도 계속 동작한다. Opus 5·Opus 4.8 Fast mode는 연구 미리보기와 베타 헤더 요구가 유지된다."
-          ],
-          "takeaway": "Opus 5.5 에이전트의 지연 시간을 줄이는 옵션을 더 쉽게 적용할 수 있지만, 속도 옵션 자체를 벤치마크 품질 향상으로 해석하지 않는다."
         }
       ]
     }
