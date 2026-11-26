@@ -1,6 +1,6 @@
 {
   "note": "archive/*.md 가 단일 출처 — 이 파일을 직접 편집하지 말 것.",
-  "checked_at": "2026-11-26",
+  "checked_at": "2026-11-27",
   "days": [
     {
       "date": "2026-11-25",
@@ -40,6 +40,30 @@
             "음성에 불필요한 Markdown·인용 태그를 정리하고 단순 입력 검사와 OFF_TOPIC 신호로 별도 LLM guardrail 호출을 줄인다. 질문마다 새 thread를 사용하며 검색 문단에 근거하도록 지시한다. 이는 개발팀의 구현 사례로, 환각 0건·격리의 형식적 보장·독립 다국어 benchmark·측정된 end-to-end 지연 개선을 입증한 것은 아니다."
           ],
           "takeaway": "다국어 음성 도우미에서는 ASR·TTS뿐 아니라 검색 embedding의 언어 적합성이 중요하다. 언어·도메인을 바꿀 때도 출처 검색부터 검증하는 재사용 가능한 agent 구성 사례다."
+        },
+        {
+          "title": "코딩 subagent 실험 — Sol xhigh·Opus high의 과제별 이득과 비용 분리",
+          "category": "연구",
+          "url": "https://arxiv.org/abs/2611.33893v1",
+          "facts": [
+            "When Are Parallel Subagents Effective for Coding? v1은 11-25 07:11:29 UTC에 제출된 외부 연구다. NL2Repo·ProgramBench에서 명세로 전체 프로그램을 만드는 단독 agent와 병렬 subagent 허용 구성을 비교했다. 무작위 실험은 benchmark당 30개 과제·자연 종료/4시간 상한이며 점수는 숨겨진 테스트 통과 비율이지 완성 과제 비율이 아니다. 본문: https://arxiv.org/html/2611.33893v1",
+            "Codex 0.147의 주 실험은 Sol main/subagent xhigh와 GPT-5.6 Luna 기본 수준을 사용했고, 몇 주 뒤 장시간 실험은 0.154 high라 같은 버전·추론 설정 안에서만 비교한다. 무작위 과제의 같은 모델 subagent는 단독 대비 약 1–5%p 이득에 최대 약 3.8배 list-price 비용을 보였다. 동일 시간·동일 비용 비교와 자연 종료 최종 점수는 각각 다른 질문이다.",
+            "ProgramBench 어려운 16개 과제의 표 5에서 Multi의 단독 대비 평균 점수 이득은 GPT-5.6 Sol +8.8%p·GPT-6 Sol +6.0%p·GPT-6.1 Sol +2.8%p, list-price 비용 변화는 각각 +275%·+291%·+176%였다. 일부 설정은 15개 과제만 채점했다. 참조 실행 파일을 먼저 검사하라는 단일 문장은 주로 5.6 Sol에서 도움이 됐고 다른 모델·하네스에 보편적으로 전이되지 않았다.",
+            "Claude Code 2.1.283·Opus 5.5 high의 소규모 재실험은 benchmark당 10개·cell당 1회다. ProgramBench에서는 Multi가 더 높았지만 NL2Repo 평균은 단독 94.4 대 Multi 90.5였고 일부 run 중단·재개 한계가 있다. Codex와 동일 effort sweep·최신 Astra 6.2/Sol 6.2·Fable·Sonnet 직접 비교가 아니며 subagent 금지나 항상 유리하다는 결론도 아니다."
+          ],
+          "takeaway": "병렬화를 늘리기 전에 참조 동작 검사·fresh context·코드 모듈화로 얻을 수 있는 이득을 측정할 근거다. 실제 과제에서 숨은 테스트 점수와 전체 비용·경과 시간을 함께 비교해야 한다."
+        },
+        {
+          "title": "RouteabilityBench·RAP 연구 — 모델 라우팅 전에 평가셋의 선택 가능성부터 점검",
+          "category": "연구",
+          "url": "https://arxiv.org/abs/2611.34825v1",
+          "facts": [
+            "Routeability Before Routing v1은 11-25 18:08:01 UTC에 제출됐다. RAP와 RouteabilityBench는 모델별 prompt 점수 행렬을 확보한 뒤 라우터 결과를 해석하기 전에 진단하는 사후 평가 틀이다. 아직 평가하지 않은 모델 조합의 성능을 미리 인증하는 기능은 아니다. 본문: https://arxiv.org/html/2611.34825v1",
+            "고정한 HELM Capabilities v1.15.0의 66개 모델 부분집합과 GPQA·MMLU-Pro·IFEval·Omni-MATH를 분석했다. 단일 최선 모델과 완벽한 선택기의 점수 차이뿐 아니라 공동 1위 모델 수·prompt 표현의 예측력·실제 선택 후회값·기권/보정도 본다. 동점이 많은데 임의의 한 모델만 정답 label로 정하면 선택 정확도가 불안정해질 수 있다.",
+            "30개 고정 seed 분할·train 전용 변환·가설군별 통계 보정으로 일반적인 routing 개선이 단일 최선 모델을 일관되게 이기지는 않는다고 보고했다. 긍정 결과는 주로 특정 Omni-MATH 모델 조합·평가 절차에 한정되며 IFEval은 예측기 선택에 민감했다. 여러 seed를 독립 증거처럼 취급하는 분석과 더 보수적인 보정의 차이도 공개했다.",
+            "비용 분석은 parameter 수 대용 지표이며 실제 API 요금·통제된 지연 측정이 없다. 연구 범위는 single-turn 평가로 multi-turn·도구 사용·agent 배포 비용은 제외한다. 따라서 최신 Claude·Codex의 모델/effort별 추천 순위나 저렴한 모델로 자동 라우팅하면 돈·시간이 절약된다는 실증값으로 사용할 수 없다."
+          ],
+          "takeaway": "Astra·Sol·Luna와 Claude를 작업별로 선택하는 시스템에서도 평균 benchmark 순위만으로 router의 이득을 가정하면 안 된다. 실제 대상 조합의 동점·선택 여지·검증셋 성능·실제 비용을 먼저 확인하는 평가 관점이다."
         }
       ]
     },
@@ -117,6 +141,18 @@
             "반복되는 밝기 감소는 쌍성·기기 변화 등으로도 생길 수 있다. 후속 관측·통계 검증·다른 관측 방식과 학술 검토가 필요하다. 글에는 모델별 effort·전체 비용·실행 시간의 통제 비교가 없어 Astra와 Claude의 성능 순위나 탐색 가속 배수를 만들지 않는다."
           ],
           "takeaway": "자료 탐색→코드 실험→후보 재검사→외부 전문가 검증의 agent 활용 사례로 볼 수 있다. 유망한 신호를 찾았다는 사실과 새 외계행성을 확정했다는 주장은 구분한다."
+        },
+        {
+          "title": "Ternary Bonsai 2.5 27B 공개 — 3값 가중치 로컬 agent 모델과 xhigh 평가 조건",
+          "category": "모델",
+          "url": "https://prismml.com/news/bonsai-2-5-27b",
+          "facts": [
+            "PrismML은 11-24 Qwen3.8-27B 기반 Ternary Bonsai 2.5 27B를 Apache 2.0 가중치로 공개했다. 기존 Bonsai 2의 작은 크기를 유지하면서 다중 turn 도구 사용·코딩·과도한 thinking과 반복을 개선했다는 공급사 발표다. 모델 카드: https://huggingface.co/prism-ml/Ternary-Bonsai-2.5-27B-GGUF",
+            "3값(−1·0·+1) 중심 가중치·그룹별 scale 등으로 압축한 PTQ1_0 모델 파일은 약 5.93 GB·평균 1.76 bit/weight다. FP16 모델 파일 53.8 GB와의 비교이며 KV cache·실행 버퍼·이미지 구성요소 등을 포함한 전체 RAM/VRAM 최소 요구량이 5.93 GB라는 뜻은 아니다. 다른 파일 형식·MTP draft head 포함 여부도 크기를 바꾼다.",
+            "공식 백서의 동일 평가 경로·thinking xhigh에서 SWE-bench Verified는 기존 Bonsai 2 60.8→2.5 75.6, FP16 Qwen 기준은 80.6이었다. SWE-bench 500개와 DeepSWE는 mini-SWE-agent, Terminal-Bench 2.1의 89개는 Terminus-2로 평가했다. 공급사 pass@1 평가이며 실제 Claude Code·Codex 하네스나 모델별 모든 effort와 직접 비교한 결과는 아니다. 백서: https://github.com/PrismML-Eng/Bonsai-demo/blob/main/bonsai-2-5-27b-whitepaper.pdf",
+            "현재 공식 카드에서 Q2_0는 upstream llama.cpp, PTQ1_0·PQ2_0는 PrismML fork 등 형식별 실행 경로가 다르다. Apple용 MLX도 안내하지만 어느 형식이든 같은 속도를 보장하지 않는다. 백서는 여러 문맥 창에 걸쳐 수시간 실행하는 MLE/Vending/SWE-bench Pro 같은 장기 작업을 아직 측정하지 않았다고 명시한다."
+          ],
+          "takeaway": "개인 장치에서 파일·도구를 다루는 agent의 메모리를 줄이는 공개 모델 선택지다. 작은 가중치 파일·검증된 코딩 점수·전체 실행 메모리와 장기 안정성을 구분해 실제 장치에서 확인해야 한다."
         }
       ]
     },
